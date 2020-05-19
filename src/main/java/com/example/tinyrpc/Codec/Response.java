@@ -4,6 +4,7 @@ package com.example.tinyrpc.Codec;
  * @auther zhongshunchao
  * @date 19/05/2020 07:50
  */
+//封装对方发送过来的response请求
 public class Response {
     /**
      * ok.
@@ -55,10 +56,16 @@ public class Response {
      */
     public static final byte CLIENT_ERROR = 90;
 
-    private boolean isEvent;
-    private long requestId;
+    private boolean isEvent = false;
+    private boolean isResponse = false;
+    private long responseId;
     private byte status = OK;
-    public Response PONG;
+    private String mErrorMsg;
+    private Object mResult;
+
+    public Response(long responseId) {
+        this.responseId = responseId;
+    }
 
     public void setStatus(byte status) {
         this.status = status;
@@ -68,17 +75,6 @@ public class Response {
         return status;
     }
 
-    public Response(long requestId) {
-        this.requestId = requestId;
-    }
-
-    public long getRequestId() {
-        return requestId;
-    }
-
-    public void setRequestId(long requestId) {
-        this.requestId = requestId;
-    }
     public boolean isEvent() {
         return isEvent;
     }
@@ -87,4 +83,11 @@ public class Response {
         isEvent = event;
     }
 
+    public boolean isResponse() {
+        return isResponse;
+    }
+
+    public void setResponse(boolean response) {
+        isResponse = response;
+    }
 }
