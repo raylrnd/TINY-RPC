@@ -58,12 +58,12 @@ public class Response {
 
     private boolean isEvent = false;
     private boolean isResponse = false;
-    private long responseId;
+    private int responseId;
     private byte status = OK;
     private String mErrorMsg;
     private Object mResult;
 
-    public Response(long responseId) {
+    public Response(int responseId) {
         this.responseId = responseId;
     }
 
