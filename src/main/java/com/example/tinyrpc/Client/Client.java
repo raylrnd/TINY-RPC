@@ -1,7 +1,7 @@
 package com.example.tinyrpc.Client;
 
-import com.example.tinyrpc.Codec.MyDecoder;
-import com.example.tinyrpc.Codec.MyEncoder;
+import com.example.tinyrpc.Codec.Decoder;
+import com.example.tinyrpc.Codec.Encoder;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -32,10 +32,8 @@ public class Client {
                             //Encoder: netty自带编码器，可以自动将长度加到头部
                             ch.pipeline().addLast(new LengthFieldPrepender(LENGTH_FIELD_LENGTH, LENGTH_ADJUSTMENT))
                                     //Encoder: message to byte
-                                    .addLast(new MyEncoder())
-                                    //Decoder: 自定义长度解码器，解决粘包问题
-                                    .addLast(new LengthFieldBasedFrameDecoder(MAX_FRAME_LENGTH, LENGTH_FIELD_OFFSET, LENGTH_FIELD_LENGTH, LENGTH_ADJUSTMENT, INITIAL_BYTES_TO_STRIP))
-                                    //Decoder: byte to message
+                                    .addLast(new Encoder())
+                                    .addLast(new Decoder())
                                     //自定义处理逻辑，解析请求
                                     .addLast(new ClientHandler());
                         }

@@ -1,4 +1,4 @@
-package com.example.tinyrpc.Codec;
+package com.example.tinyrpc.common;
 
 /**
  * @auther zhongshunchao

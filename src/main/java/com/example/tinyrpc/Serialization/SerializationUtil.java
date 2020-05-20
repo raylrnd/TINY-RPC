@@ -1,4 +1,4 @@
-package com.example.tinyrpc.Codec;
+package com.example.tinyrpc.Serialization;
 
 import com.dyuproject.protostuff.LinkedBuffer;
 import com.dyuproject.protostuff.ProtostuffIOUtil;
@@ -7,6 +7,8 @@ import com.dyuproject.protostuff.runtime.RuntimeSchema;
 import org.springframework.objenesis.Objenesis;
 import org.springframework.objenesis.ObjenesisStd;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -22,6 +24,7 @@ public class SerializationUtil {
      * 2、反序列化：通过对象的类构建对应的schema，使用schema将byte数组和对象合并
      */
 
+    public static final HashMap<String, Serializer> serializerMap = new HashMap<>();
     private static Map<Class<?>, Schema<?>> cachedSchema = new ConcurrentHashMap<>();
 
     private static Objenesis objenesis = new ObjenesisStd(true);
@@ -61,7 +64,7 @@ public class SerializationUtil {
     /**
      * 反序列化 将byte[]转成Java Object
      */
-    public static <T> T deserializer(byte[] data, Class<T> clazz) {
+    public static <T> T deserializer(byte[] data, Class<T> clazz, byte serializationId) {
         try {
             // 通过objenesis根据泛型对象实例化对象
             T obj = objenesis.newInstance(clazz);

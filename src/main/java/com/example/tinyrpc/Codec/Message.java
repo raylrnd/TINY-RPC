@@ -2,12 +2,7 @@ package com.example.tinyrpc.Codec;
 
 /**
  * @auther zhongshunchao
- * @date 17/05/2020 15:41
+ * @date 2020/5/20 6:02 下午
  */
 public class Message {
-    public static final int MAGIC_NUMBER = 0xabcd;
-    //会话id
-    private String sessionId;
-
-
 }

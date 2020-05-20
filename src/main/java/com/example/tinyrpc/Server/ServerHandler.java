@@ -1,17 +1,22 @@
 package com.example.tinyrpc.Server;
 
+import com.example.tinyrpc.rpc.Invoker;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.SimpleChannelInboundHandler;
 
 
 /**
  * @auther zhongshunchao
  * @date 05/05/2020 15:02
  */
-public class ServerHandler extends ChannelInboundHandlerAdapter {
+// 消息被读取后，会自动释放资源
+public class ServerHandler extends SimpleChannelInboundHandler<Invoker> {
+
 
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, Invoker msg) throws Exception {
+        //调用代理，通过反射的方式调用本地jvm中的方法
 
     }
 }

@@ -1,10 +1,13 @@
 package com.example.tinyrpc.Codec;
 
+import com.example.tinyrpc.Serialization.SerializationUtil;
+import com.example.tinyrpc.Serialization.Serializer;
+import com.example.tinyrpc.common.Request;
+import com.example.tinyrpc.common.Response;
 import com.example.tinyrpc.rpc.Invoker;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
-import sun.jvm.hotspot.runtime.Bytes;
 
 import java.util.List;
 
@@ -17,7 +20,7 @@ import java.util.List;
  * 仿照Dubbo协议
  *  ------------ (32 bits)
  * | magic (16 bits)                      // 魔数，为"0xdeff"
- * | req/res (1bit)                       // 消息类型，有req/res、ping/pong
+ * | req/res (1bit)                       // 消息类型，有req/res
  * | 2way (1 bit)                         // 仅在 Req/Res 为1（请求）时才有用，标记是否期望从服务器返回值。如果需要来自服务器的返回值，则设置为1。
  * | event (1 bit)                        // 表示为PING/PONG事件，如果是req，则为PING请求；如果是res，则为PONG请求
  * | serialization_id (5 bits)            // 序列化器的ID
@@ -29,7 +32,13 @@ import java.util.List;
  *  -----------
  * | Data                                 // 支持变长格式
  */
-public class MyDecoder extends ByteToMessageDecoder {
+// 如果是Client，接收到的入站消息应该是response，直接将response移交给上层
+// 如果是Server，接收到的入站消息应该是request，利用反射得到RPC调用结果，然后发送给Client端
+// 如果req == 1, 应该移交给Client端进行处理。考虑到一台机器可能同时有client和server
+public class Decoder extends ByteToMessageDecoder {
+
+    public Serializer serializer;
+
     // message flag.
     protected static final byte FLAG_REQUEST = (byte) 0x80;
     protected static final byte FLAG_TWOWAY = (byte) 0x40;
@@ -67,7 +76,7 @@ public class MyDecoder extends ByteToMessageDecoder {
         int id = header[2] << 8 + header[3];
         //解析消息体
         buffer.readBytes(data);
-        Invoker invoker = SerializationUtil.deserializer(data, Invoker.class);
+        Invoker invoker = SerializationUtil.deserializer(data, Invoker.class, serializationId);
         // 开始body解析
         // 为响应报文
         if (isRequest) {
