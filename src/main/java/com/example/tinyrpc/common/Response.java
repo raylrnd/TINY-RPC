@@ -1,11 +1,13 @@
 package com.example.tinyrpc.common;
 
+import java.io.Serializable;
+
 /**
  * @auther zhongshunchao
  * @date 19/05/2020 07:50
  */
 //封装对方发送过来的response请求
-public class Response {
+public class Response implements Serializable {
     /**
      * ok.
      */
