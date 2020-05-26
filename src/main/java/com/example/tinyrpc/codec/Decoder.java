@@ -1,10 +1,10 @@
 package com.example.tinyrpc.codec;
 
+import com.example.tinyrpc.protocol.Invoker;
 import com.example.tinyrpc.serialization.SerializationUtil;
 import com.example.tinyrpc.serialization.Serializer;
 import com.example.tinyrpc.common.Request;
 import com.example.tinyrpc.common.Response;
-import com.example.tinyrpc.rpc.Invoker;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;

@@ -9,12 +9,18 @@ import com.example.tinyrpc.transport.Client;
  */
 public abstract class AbstractInvoker<T> implements Invoker<T> {
 
+    public Class interfaceClass;
     //@Autowired
     private Client client;
 
+    public AbstractInvoker(Class interfaceClass, Client client) {
+        this.interfaceClass = interfaceClass;
+        this.client = client;
+    }
+
     @Override
     public Class<T> getInterface() {
-        return null;
+        return interfaceClass;
     }
 
     public Client getClient() {

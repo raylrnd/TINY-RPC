@@ -60,13 +60,13 @@ public class Response implements Serializable {
 
     private boolean isEvent = false;
     private boolean isResponse = false;
-    private int responseId;
+    private long requestId;
     private byte status = OK;
-    private String mErrorMsg;
-    private Object mResult;
+    private String errorMsg;
+    private Object result;
 
-    public Response(int responseId) {
-        this.responseId = responseId;
+    public Response(long requestId) {
+        this.requestId = requestId;
     }
 
     public void setStatus(byte status) {
@@ -91,5 +91,29 @@ public class Response implements Serializable {
 
     public void setResponse(boolean response) {
         isResponse = response;
+    }
+
+    public String getErrorMsg() {
+        return errorMsg;
+    }
+
+    public void setErrorMsg(String errorMsg) {
+        this.errorMsg = errorMsg;
+    }
+
+    public Object getResult() {
+        return result;
+    }
+
+    public void setResult(Object result) {
+        this.result = result;
+    }
+
+    public long getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(long requestId) {
+        this.requestId = requestId;
     }
 }

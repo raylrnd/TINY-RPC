@@ -1,5 +1,6 @@
 package com.example.tinyrpc.transport;
 
+import com.example.tinyrpc.common.Request;
 import com.example.tinyrpc.common.Response;
 
 import java.util.concurrent.Future;
@@ -14,5 +15,5 @@ public interface Client {
 
     void close();
 
-    Future<Response> send(Object message);
+    Future<Response> send(Request message);
 }

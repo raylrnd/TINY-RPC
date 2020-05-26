@@ -16,6 +16,8 @@ public @interface Reference {
     boolean callback() default  false;
     boolean oneway() default  false;
     long timeout() default 3000;
-    String callbackMethod() default "";
-    int callbackParamIndex() default 1;
+    String serializer() default "protobuff";
+    String proxy() default "jsk";
+//    String callbackMethod() default "";
+//    int callbackParamIndex() default 1;
 }

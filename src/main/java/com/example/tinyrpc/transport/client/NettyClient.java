@@ -2,9 +2,12 @@ package com.example.tinyrpc.transport.client;
 
 import com.example.tinyrpc.codec.Decoder;
 import com.example.tinyrpc.codec.Encoder;
+import com.example.tinyrpc.common.Request;
 import com.example.tinyrpc.common.Response;
 import com.example.tinyrpc.transport.Client;
+import com.example.tinyrpc.transport.FutureContext;
 import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
@@ -13,6 +16,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.LengthFieldPrepender;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import static com.example.tinyrpc.constant.FrameConstant.*;
 
@@ -23,6 +27,7 @@ import static com.example.tinyrpc.constant.FrameConstant.*;
  */
 public class NettyClient implements Client {
 
+    private Channel channel;
     @Override
     public void run(String hostName, int port) {
         Bootstrap bootstrap = new Bootstrap();
@@ -43,6 +48,7 @@ public class NettyClient implements Client {
                         }
                     }).option(ChannelOption.SO_BACKLOG, 1024);
             ChannelFuture future = bootstrap.bind(hostName, port).sync();
+            channel = future.channel();
             future.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -55,8 +61,11 @@ public class NettyClient implements Client {
     }
 
     @Override
-    public Future<Response> send(Object message) {
-        return null;
+    public Future<Response> send(Request request) {
+        CompletableFuture<Response> responseFuture = new CompletableFuture<>();
+        FutureContext.FUTURE_CACHE.put(request.getRequestId(), responseFuture);
+        channel.writeAndFlush(request);
+        return responseFuture;
     }
 
 

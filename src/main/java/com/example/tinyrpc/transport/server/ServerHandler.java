@@ -1,6 +1,6 @@
 package com.example.tinyrpc.transport.server;
 
-import com.example.tinyrpc.rpc.Invoker;
+import com.example.tinyrpc.protocol.Invoker;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 

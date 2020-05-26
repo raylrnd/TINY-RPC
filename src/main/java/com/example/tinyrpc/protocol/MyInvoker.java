@@ -1,0 +1,39 @@
+package com.example.tinyrpc.protocol;
+
+import com.example.tinyrpc.common.Invocation;
+import com.example.tinyrpc.common.Request;
+import com.example.tinyrpc.common.Response;
+import com.example.tinyrpc.transport.Client;
+import com.example.tinyrpc.transport.FutureContext;
+
+import java.util.concurrent.*;
+
+/**
+ * @auther zhongshunchao
+ * @date 2020/5/21 11:16 上午
+ */
+public class MyInvoker<T> extends AbstractInvoker<T> {
+
+
+    public MyInvoker(Class interfaceClass, Client client) {
+        super(interfaceClass, client);
+    }
+
+    @Override
+    public Object invoke(Request request) throws Exception {
+        long requestId = request.getRequestId();
+        CompletableFuture<Response> future = FutureContext.FUTURE_CACHE.putIfAbsent(requestId, new CompletableFuture());
+        getClient().send(request);
+        Response response = null;
+        try {
+            response = future.get(5, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (TimeoutException e) {
+            e.printStackTrace();
+        }
+        return response;
+    }
+}

@@ -4,8 +4,7 @@ import com.example.tinyrpc.serialization.Serializer;
 
 /**
  * @auther zhongshunchao
- * @date 2020/5/20 6:23 下午
+ * @date 23/05/2020 14:26
  */
-public class ProtostuffSerializer implements Serializer {
-
+public class HessianSerializer implements Serializer {
 }

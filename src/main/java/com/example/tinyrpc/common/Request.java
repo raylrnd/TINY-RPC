@@ -31,4 +31,8 @@ public class Request implements Serializable {
     public void setData(Object data) {
         this.data = data;
     }
+
+    public long getRequestId() {
+        return requestId;
+    }
 }

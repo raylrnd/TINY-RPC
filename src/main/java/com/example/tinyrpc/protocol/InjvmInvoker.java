@@ -1,6 +1,7 @@
 package com.example.tinyrpc.protocol;
 
 import com.example.tinyrpc.common.Invocation;
+import com.example.tinyrpc.transport.Client;
 
 /**
  * @auther zhongshunchao
@@ -9,4 +10,12 @@ import com.example.tinyrpc.common.Invocation;
 class InjvmInvoker<T> extends AbstractInvoker<T> {
 
 
+    public InjvmInvoker(Class interfaceClass, Client client) {
+        super(interfaceClass, client);
+    }
+
+    @Override
+    public Object invoke(Invocation invocation) throws Exception {
+        return null;
+    }
 }
