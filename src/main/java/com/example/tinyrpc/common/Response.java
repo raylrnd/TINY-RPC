@@ -59,7 +59,6 @@ public class Response implements Serializable {
     public static final byte CLIENT_ERROR = 90;
 
     private boolean isEvent = false;
-    private boolean isResponse = false;
     private long requestId;
     private byte status = OK;
     private String errorMsg;
@@ -83,14 +82,6 @@ public class Response implements Serializable {
 
     public void setEvent(boolean event) {
         isEvent = event;
-    }
-
-    public boolean isResponse() {
-        return isResponse;
-    }
-
-    public void setResponse(boolean response) {
-        isResponse = response;
     }
 
     public String getErrorMsg() {

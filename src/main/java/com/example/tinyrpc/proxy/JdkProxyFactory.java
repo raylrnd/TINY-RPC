@@ -2,10 +2,9 @@ package com.example.tinyrpc.proxy;
 
 import com.example.tinyrpc.common.Invocation;
 import com.example.tinyrpc.common.Request;
-import com.example.tinyrpc.protocol.Invoker;
-import com.example.tinyrpc.transport.Client;
-import com.example.tinyrpc.transport.client.NettyClient;
-
+import com.example.tinyrpc.common.Response;
+import com.example.tinyrpc.config.ReferenceConfig;
+import com.example.tinyrpc.protocol.MyInvoker;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -15,23 +14,18 @@ import java.util.UUID;
  * @auther zhongshunchao
  * @date 2020/5/21 10:27 上午
  */
-public class JdkProxyFactory extends AbstractProxyFactory {
+public class JdkProxyFactory {
 
-    @Override
-    public <T> T createProxy(Invoker<T> invoker) {
-        return (T) Proxy.newProxyInstance(
-                invoker.getInterface().getClassLoader(),
-                new Class<?>[]{invoker.getInterface()},
-                new InvocationHandler() {
-                    @Override
-                    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                        return invokeProxy(invoker, method, args);
-                    }
-                }
-        );
+    private Class interfaceClass;
+
+    private ReferenceConfig referenceConfig;
+
+    public JdkProxyFactory(Class interfaceClass, ReferenceConfig referenceConfig) {
+        this.interfaceClass = interfaceClass;
+        this.referenceConfig = referenceConfig;
     }
 
-    public Object invokeProxy(Invoker invoker, Method method, Object[] args) throws Throwable{
+    public Object invokeProxy(Object proxy, Method method, Object[] args) throws Throwable{
         Class<?>[] parameterTypes = method.getParameterTypes();
         String[] paramTypes = new String[parameterTypes.length];
         for (int i = 0; i < parameterTypes.length; i++) {
@@ -39,22 +33,23 @@ public class JdkProxyFactory extends AbstractProxyFactory {
         }
         if (method.getDeclaringClass() == Object.class) {
             // 定义在 Object 类中的方法（未被子类重写），比如 wait/notify等，直接调用
-            return method.invoke(invoker, args);
+            return method.invoke(proxy, args);
         }
         // 如果 toString、hashCode 和 equals 等方法被子类重写了，这里也直接调用
         String methodName = method.getName();
         if ("toString".equals(methodName) && parameterTypes.length == 0) {
-            return invoker.toString();
+            return proxy.toString();
         }
         if ("hashCode".equals(methodName) && parameterTypes.length == 0) {
-            return invoker.hashCode();
+            return proxy.hashCode();
         }
         if ("equals".equals(methodName) && parameterTypes.length == 1) {
-            return invoker.equals(args[0]);
+            return proxy.equals(args[0]);
         }
         Request request = buildRequest(method, args);
-        invoker.invoke(request);
-        return request;
+        MyInvoker myInvoker = new MyInvoker();
+        Response response = myInvoker.invoke(request);
+        return response;
     }
 
     private Request buildRequest(Method method, Object[] args) {
@@ -65,6 +60,23 @@ public class JdkProxyFactory extends AbstractProxyFactory {
         invocation.setParameters(args);
         Request request = new Request(UUID.randomUUID().getLeastSignificantBits());
         request.setData(invocation);
+        request.setIs2way(!referenceConfig.isOneway());
+        request.setSerializationId(referenceConfig.getSerializer());
         return request;
     }
+
+    public Object createProxy() {
+        return Proxy.newProxyInstance(
+                interfaceClass.getClassLoader(),
+                new Class[]{interfaceClass},
+                new InvocationHandler() {
+                    @Override
+                    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                        return invokeProxy(proxy, method, args);
+                    }
+                }
+        );
+    }
+
+
 }

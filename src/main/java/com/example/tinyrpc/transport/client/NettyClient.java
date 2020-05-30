@@ -4,8 +4,8 @@ import com.example.tinyrpc.codec.Decoder;
 import com.example.tinyrpc.codec.Encoder;
 import com.example.tinyrpc.common.Request;
 import com.example.tinyrpc.common.Response;
+import com.example.tinyrpc.common.utils.FutureContext;
 import com.example.tinyrpc.transport.Client;
-import com.example.tinyrpc.transport.FutureContext;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -15,16 +15,17 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.LengthFieldPrepender;
-
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
-import static com.example.tinyrpc.constant.FrameConstant.*;
+import static com.example.tinyrpc.codec.Codec.*;
+
 
 
 /**
  * @auther zhongshunchao
  * @date 13/04/2020 12:54
  */
+
 public class NettyClient implements Client {
 
     private Channel channel;
@@ -53,11 +54,6 @@ public class NettyClient implements Client {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public void close() {
-
     }
 
     @Override

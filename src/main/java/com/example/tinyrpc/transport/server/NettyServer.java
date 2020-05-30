@@ -2,7 +2,6 @@ package com.example.tinyrpc.transport.server;
 
 import com.example.tinyrpc.codec.Decoder;
 import com.example.tinyrpc.codec.Encoder;
-import com.example.tinyrpc.constant.ProtocolConstant;
 
 import com.example.tinyrpc.transport.Server;
 import io.netty.bootstrap.ServerBootstrap;
@@ -13,6 +12,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.DelimiterBasedFrameDecoder;
+import static com.example.tinyrpc.codec.Codec.*;
 
 /**
  * @auther zhongshunchao
@@ -41,7 +41,7 @@ public class NettyServer implements Server {
                         protected void initChannel(SocketChannel ch) {
                             //插入到ChannelHandlerContext这个双链表当中
                             ch.pipeline().addLast(new Encoder())
-                                    .addLast(new DelimiterBasedFrameDecoder(ProtocolConstant.MAX_LENGTH, ProtocolConstant.MAGIC))
+                                    .addLast(new DelimiterBasedFrameDecoder(MAX_LENGTH, MAGIC))
                                     .addLast(new Decoder())
                                     .addLast(new ServerHandler());
                         }

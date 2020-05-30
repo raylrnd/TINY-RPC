@@ -1,14 +1,5 @@
 package com.example.tinyrpc.config;
 
-import com.example.tinyrpc.proxy.JavassistProxyFactory;
-import com.example.tinyrpc.proxy.JdkProxyFactory;
-import com.example.tinyrpc.proxy.ProxyFactory;
-import com.example.tinyrpc.serialization.Serializer;
-import com.example.tinyrpc.serialization.serializer.HessianSerializer;
-import com.example.tinyrpc.serialization.serializer.ProtostuffSerializer;
-
-import java.util.Objects;
-
 /**
  * @auther zhongshunchao
  * @date 23/05/2020 10:39
@@ -19,9 +10,8 @@ public class ReferenceConfig {
     boolean callback;
     boolean oneway;
     long timeout;
-    String serializer;
+    int serializer;
     String proxy;
-
 
     public boolean isAsync() {
         return async;
@@ -56,28 +46,16 @@ public class ReferenceConfig {
     }
 
 
-    public ProxyFactory getProxyFactory() {
-        switch (proxy) {
-            case "jdk":
-                return new JdkProxyFactory();
-            case "javassist":
-                return new JavassistProxyFactory();
-        }
-        return null;
+    public int getSerializer() {
+        return serializer;
     }
 
-    public Serializer getSerializer() {
-        switch (serializer) {
-            case "hessian":
-                return new HessianSerializer();
-            case "protobuff":
-                return new ProtostuffSerializer();
-        }
-        return null;
-    }
-
-    public void setSerializer(String serializer) {
+    public void setSerializer(int serializer) {
         this.serializer = serializer;
+    }
+
+    public String getProxy() {
+        return proxy;
     }
 
     public void setProxy(String proxy) {

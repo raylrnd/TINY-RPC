@@ -1,13 +1,9 @@
 package com.example.tinyrpc.transport.client;
 
-import com.example.tinyrpc.common.Invocation;
-import com.example.tinyrpc.common.Request;
 import com.example.tinyrpc.common.Response;
-import com.example.tinyrpc.transport.FutureContext;
-import io.netty.channel.Channel;
+import com.example.tinyrpc.common.utils.FutureContext;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-
 import java.util.concurrent.*;
 
 /**
@@ -15,17 +11,6 @@ import java.util.concurrent.*;
  * @date 08/05/2020 08:33
  */
 public class ClientHandler extends SimpleChannelInboundHandler<Response> {
-
-    private Channel channel;
-
-
-    @Override
-    public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
-        super.channelRegistered(ctx);
-        //注册channel的时候把它塞进来了
-        this.channel = ctx.channel();
-    }
-
 
     //读取responde消息
     @Override
@@ -38,7 +23,4 @@ public class ClientHandler extends SimpleChannelInboundHandler<Response> {
         }
         future.complete(result);
     }
-
-
-
 }
