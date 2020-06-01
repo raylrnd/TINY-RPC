@@ -4,6 +4,7 @@ package com.example.tinyrpc.common.annotation;
 import com.example.tinyrpc.config.ServiceConfig;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.stereotype.Component;
 
 
 /**
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
  * @date 29/05/2020 09:04
  */
 //解析@Providdr,将该类添加至缓存
+@Component
 public class MyServiceBeanPostProcessor implements BeanPostProcessor {
 
     @Override

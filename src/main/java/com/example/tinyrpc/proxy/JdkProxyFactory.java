@@ -58,7 +58,7 @@ public class JdkProxyFactory {
         invocation.setMethodName(method.getName());
         invocation.setParameterTypes(method.getParameterTypes());
         invocation.setParameters(args);
-        Request request = new Request(UUID.randomUUID().getLeastSignificantBits());
+        Request request = new Request(123456789);
         request.setData(invocation);
         request.setIs2way(!referenceConfig.isOneway());
         request.setSerializationId(referenceConfig.getSerializer());

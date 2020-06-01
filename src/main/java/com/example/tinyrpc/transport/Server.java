@@ -7,6 +7,4 @@ package com.example.tinyrpc.transport;
 public interface Server {
 
     void run(String hostName, int port);
-    void close();
-    void received(Object message);
 }

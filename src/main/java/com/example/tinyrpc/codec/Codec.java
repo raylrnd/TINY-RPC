@@ -20,6 +20,8 @@ public interface Codec {
     //自定义魔数"0xdeff"
     public static final byte [] MAGIC_ARRAY = {(byte)0xde, (byte)0xff};
     public static final ByteBuf MAGIC = Unpooled.copiedBuffer(MAGIC_ARRAY);    // 头部长度固定8个字节
+//    byte [] MAGIC_ARRAY = "$$".getBytes();
+//    public static final ByteBuf MAGIC = Unpooled.copiedBuffer(MAGIC_ARRAY);
     public static final int HEAD_LENGTH = 8;
     public static final int HEADER_LENGTH = 16;
     // 最大报文长度 8M

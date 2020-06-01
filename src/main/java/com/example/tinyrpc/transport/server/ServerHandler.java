@@ -16,8 +16,6 @@ import java.lang.reflect.Method;
 // 消息被读取后，会自动释放资源
 public class ServerHandler extends SimpleChannelInboundHandler<Request> {
 
-
-
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Request request) throws Exception {
         //调用代理，通过反射的方式调用本地jvm中的方法

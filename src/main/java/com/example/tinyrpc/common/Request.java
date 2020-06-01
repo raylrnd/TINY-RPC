@@ -38,7 +38,6 @@ public class Request implements Serializable {
         return requestId;
     }
 
-
     public boolean isIs2way() {
         return is2way;
     }

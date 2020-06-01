@@ -1,9 +1,13 @@
 package com.example.tinyrpc.codec;
 
+import com.alibaba.fastjson.JSONObject;
+import com.example.tinyrpc.common.Invocation;
 import com.example.tinyrpc.common.utils.SerializerUtil;
 import com.example.tinyrpc.serialization.Serializer;
 import com.example.tinyrpc.common.Request;
 import com.example.tinyrpc.common.Response;
+import com.example.tinyrpc.serialization.serializer.JsonSerializer;
+import com.example.tinyrpc.serialization.serializer.ProtostuffSerializer;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
@@ -19,6 +23,8 @@ import java.util.List;
 /**
  * 仿照Dubbo协议
  *  ------------ (32 bits)
+ *  totoal length except this             // 往下的所有字段长度的总和
+ *  ------------ (32 bits)
  * | magic (16 bits)                      // 魔数，为"0xdeff"
  * | default (1 bit)                      // 缺省字段，占位用
  * | 2way (1 bit)                         // 仅在 Req/Res 为1（请求）时才有用，标记是否期望从服务器返回值。如果需要来自服务器的返回值，则设置为1。
@@ -28,8 +34,6 @@ import java.util.List;
  * | status (8 bits)                      // 消息的状态：200/404/500等
  *  ----------- (64 bits)
  * | RPC Request ID (64 bits)
- *  ----------- (32 bits)
- * | Data Length (32 bits)
  *  -----------
  * | Data                                 // 支持变长格式
  */
@@ -43,20 +47,23 @@ public class Decoder extends ByteToMessageDecoder implements Codec{
     // 先读头部，解析出消息的长度
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf buffer, List<Object> out) throws Exception {
-        if (buffer.readableBytes() < 14) {
+        int len = buffer.readableBytes();
+        if (buffer.readableBytes() < 16) {
             // 头部异常
             throw new Exception("头部异常");
         }
         // 解析头部序列化编号、状态码
+        byte [] magic = new byte[2];
+        buffer.readBytes(magic);
         byte [] header = new byte[2];
         buffer.readBytes(header);
         // 解析Request ID
         long requestId = buffer.readLong();
         // 解析data length
-        int dataLength = buffer.readInt();
-        if (buffer.readableBytes() != dataLength) {
-            throw new Exception("实际长度与dataLength不符");
-        }
+//        int dataLength = buffer.readInt();
+//        if (buffer.readableBytes() != dataLength) {
+//            throw new Exception("实际长度与dataLength不符");
+//        }
         // 是否是请求消息
         boolean isRequest = (header[0] & FLAG_REQUEST) != 0;
         // 是否期望从服务器返回值
@@ -67,22 +74,13 @@ public class Decoder extends ByteToMessageDecoder implements Codec{
         int serializationId =  (header[0] & SERIALIZATION_MASK);
         // 解析status
         byte status = header[1];
-        byte [] body = new byte [dataLength];
+        byte [] body = new byte [len - 12];
         // 解析消息体
         buffer.readBytes(body);
-        if (isRequest) {
-            // 解析请求
-            Request req = new Request(requestId);
-            req.setEvent(isEvent);
-            Request request = SerializerUtil.getSerializer(serializationId).deserialize(body, Request.class);
-            out.add(request);
-        } else {
-            // 解析响应
-            Response res = new Response(requestId);
-            res.setEvent(isEvent);
-            res.setStatus(status);
-            Response response = SerializerUtil.getSerializer(serializationId).deserialize(body, Response.class);
-            out.add(response);
-        }
+        Request request = new Request(requestId);
+        request.setEvent(isEvent);
+        Invocation data = new ProtostuffSerializer().deserialize(body, Invocation.class);
+        request.setData(data);
+        out.add(request);
     }
 }

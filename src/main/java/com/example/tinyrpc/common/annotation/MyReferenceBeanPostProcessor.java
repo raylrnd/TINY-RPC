@@ -5,6 +5,7 @@ import com.example.tinyrpc.config.ReferenceConfig;
 import com.example.tinyrpc.proxy.JdkProxyFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.stereotype.Component;
 
 
 import java.lang.reflect.Field;
@@ -16,6 +17,7 @@ import static com.example.tinyrpc.common.utils.SerializerUtil.SERIALIZER_MAP;
  * @date 2020/5/21 3:06 下午
  */
 //解析@Reference
+@Component
 public class MyReferenceBeanPostProcessor implements BeanPostProcessor {
 
     @Override

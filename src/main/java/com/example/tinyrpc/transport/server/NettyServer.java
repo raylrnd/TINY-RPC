@@ -5,13 +5,18 @@ import com.example.tinyrpc.codec.Encoder;
 
 import com.example.tinyrpc.transport.Server;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.DelimiterBasedFrameDecoder;
+import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import io.netty.handler.codec.LengthFieldPrepender;
+
 import static com.example.tinyrpc.codec.Codec.*;
 
 /**
@@ -33,33 +38,26 @@ public class NettyServer implements Server {
     @Override
     public void run(String hostName, int port) {
         ServerBootstrap bootstrap = new ServerBootstrap();
-        NioEventLoopGroup nioEventLoopGroup = new NioEventLoopGroup();
+        EventLoopGroup bossGroup = new NioEventLoopGroup();
+        EventLoopGroup workGroup = new NioEventLoopGroup();
         try {
-            bootstrap.group(nioEventLoopGroup).channel(NioServerSocketChannel.class)
+            bootstrap.group(bossGroup, workGroup)
+                    .channel(NioServerSocketChannel.class)
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) {
-                            //插入到ChannelHandlerContext这个双链表当中
-                            ch.pipeline().addLast(new Encoder())
-                                    .addLast(new DelimiterBasedFrameDecoder(MAX_LENGTH, MAGIC))
+//                            插入到ChannelHandlerContext这个双链表当中
+                            ch.pipeline()
+                                    .addLast(new Encoder())
+                                    .addLast("LengthFieldBasedFrameDecoder", new LengthFieldBasedFrameDecoder(MAX_FRAME_LENGTH, LENGTH_FIELD_OFFSET, LENGTH_FIELD_LENGTH, LENGTH_ADJUSTMENT, INITIAL_BYTES_TO_STRIP))
                                     .addLast(new Decoder())
                                     .addLast(new ServerHandler());
                         }
-                    }).option(ChannelOption.SO_BACKLOG, 1024);
-            ChannelFuture future = bootstrap.bind(hostName, port).sync();
-            future.channel().closeFuture().sync();
+                    });
+            ChannelFuture future = bootstrap.bind(port).sync();
+//            future.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public void close() {
-
-    }
-
-    @Override
-    public void received(Object message) {
-
     }
 }

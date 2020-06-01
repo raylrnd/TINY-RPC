@@ -13,8 +13,12 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldPrepender;
+import io.netty.handler.codec.string.StringDecoder;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.stereotype.Component;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import static com.example.tinyrpc.codec.Codec.*;
@@ -25,32 +29,36 @@ import static com.example.tinyrpc.codec.Codec.*;
  * @auther zhongshunchao
  * @date 13/04/2020 12:54
  */
-
 public class NettyClient implements Client {
 
     private Channel channel;
+    public NettyClient() {
+        run("127.0.0.1", 8989);
+    }
     @Override
     public void run(String hostName, int port) {
         Bootstrap bootstrap = new Bootstrap();
         NioEventLoopGroup nioEventLoopGroup = new NioEventLoopGroup();
         try {
             bootstrap.group(nioEventLoopGroup)
-                    .channel(NioServerSocketChannel.class)
+                    .channel(NioSocketChannel.class)
                     .handler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) {
                             //Encoder: netty自带编码器，可以自动将长度加到头部
-                            ch.pipeline().addLast(new LengthFieldPrepender(LENGTH_FIELD_LENGTH, LENGTH_ADJUSTMENT))
+                            ch.pipeline()
                                     //Encoder: message to byte
                                     .addLast(new Encoder())
+                                    .addLast("LengthFieldBasedFrameDecoder", new LengthFieldBasedFrameDecoder(MAX_FRAME_LENGTH, LENGTH_FIELD_OFFSET, LENGTH_FIELD_LENGTH, LENGTH_ADJUSTMENT, INITIAL_BYTES_TO_STRIP))
                                     .addLast(new Decoder())
                                     //自定义处理逻辑，解析请求
                                     .addLast(new ClientHandler());
                         }
-                    }).option(ChannelOption.SO_BACKLOG, 1024);
-            ChannelFuture future = bootstrap.bind(hostName, port).sync();
+                    })
+                    .option(ChannelOption.SO_KEEPALIVE, true)
+                    .option(ChannelOption.TCP_NODELAY, true);
+            ChannelFuture future = bootstrap.connect(hostName, port).sync();
             channel = future.channel();
-            future.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -63,6 +71,4 @@ public class NettyClient implements Client {
         channel.writeAndFlush(request);
         return responseFuture;
     }
-
-
 }

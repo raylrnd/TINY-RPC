@@ -4,9 +4,7 @@ import com.example.tinyrpc.common.Request;
 import com.example.tinyrpc.common.Response;
 import com.example.tinyrpc.common.utils.FutureContext;
 import com.example.tinyrpc.transport.Client;
-import org.springframework.beans.factory.annotation.Autowired;
-
-
+import com.example.tinyrpc.transport.client.NettyClient;
 import java.util.concurrent.*;
 
 /**
@@ -15,16 +13,18 @@ import java.util.concurrent.*;
  */
 public class MyInvoker {
 
-    @Autowired
-    private Client client;
+    private Client client = new NettyClient();
 
     public Response invoke(Request request) {
         long requestId = request.getRequestId();
-        CompletableFuture<Response> future = FutureContext.FUTURE_CACHE.putIfAbsent(requestId, new CompletableFuture());
+        CompletableFuture<Response> future = new CompletableFuture();
+        FutureContext.FUTURE_CACHE.putIfAbsent(requestId, future);
         client.send(request);
         Response response = null;
         try {
-            response = future.get(5, TimeUnit.SECONDS);
+            if (future != null) {
+                response = future.get(900, TimeUnit.SECONDS);
+            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
