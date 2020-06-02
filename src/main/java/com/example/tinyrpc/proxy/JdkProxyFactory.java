@@ -14,18 +14,37 @@ import java.util.UUID;
  * @auther zhongshunchao
  * @date 2020/5/21 10:27 上午
  */
-public class JdkProxyFactory {
+public class JdkProxyFactory implements InvocationHandler{
 
-    private Class interfaceClass;
+    final private ReferenceConfig referenceConfig;
 
-    private ReferenceConfig referenceConfig;
-
-    public JdkProxyFactory(Class interfaceClass, ReferenceConfig referenceConfig) {
-        this.interfaceClass = interfaceClass;
+    public JdkProxyFactory(ReferenceConfig referenceConfig) {
         this.referenceConfig = referenceConfig;
     }
 
-    public Object invokeProxy(Object proxy, Method method, Object[] args) throws Throwable{
+    private Request buildRequest(Method method, Object[] args) {
+        Invocation invocation = new Invocation();
+        invocation.setClassName(method.getDeclaringClass().getName());
+        invocation.setMethodName(method.getName());
+        invocation.setParameterTypes(method.getParameterTypes());
+        invocation.setParameters(args);
+        Request request = new Request(123456789);
+        request.setData(invocation);
+        request.setIs2way(!referenceConfig.isOneway());
+        request.setSerializationId(referenceConfig.getSerializer());
+        return request;
+    }
+
+    public static Object createProxy(Class<?> interfaceClass, ReferenceConfig referenceConfig) {
+        return Proxy.newProxyInstance(
+                interfaceClass.getClassLoader(),
+                new Class[]{interfaceClass},
+                new JdkProxyFactory(referenceConfig)
+        );
+    }
+
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         Class<?>[] parameterTypes = method.getParameterTypes();
         String[] paramTypes = new String[parameterTypes.length];
         for (int i = 0; i < parameterTypes.length; i++) {
@@ -48,35 +67,8 @@ public class JdkProxyFactory {
         }
         Request request = buildRequest(method, args);
         MyInvoker myInvoker = new MyInvoker();
+        //发送Request
         Response response = myInvoker.invoke(request);
         return response;
     }
-
-    private Request buildRequest(Method method, Object[] args) {
-        Invocation invocation = new Invocation();
-        invocation.setClassName(method.getDeclaringClass().getName());
-        invocation.setMethodName(method.getName());
-        invocation.setParameterTypes(method.getParameterTypes());
-        invocation.setParameters(args);
-        Request request = new Request(123456789);
-        request.setData(invocation);
-        request.setIs2way(!referenceConfig.isOneway());
-        request.setSerializationId(referenceConfig.getSerializer());
-        return request;
-    }
-
-    public Object createProxy() {
-        return Proxy.newProxyInstance(
-                interfaceClass.getClassLoader(),
-                new Class[]{interfaceClass},
-                new InvocationHandler() {
-                    @Override
-                    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                        return invokeProxy(proxy, method, args);
-                    }
-                }
-        );
-    }
-
-
 }
