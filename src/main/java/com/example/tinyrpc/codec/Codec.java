@@ -25,9 +25,9 @@ public interface Codec {
     public static final int HEAD_LENGTH = 8;
     public static final int HEADER_LENGTH = 16;
     // 最大报文长度 8M
-    public static final int MAX_LENGTH = 1024 * 1024;
+    public static final int MAX_LENGTH = 1024 * 10;
 
-    public static final int MAX_FRAME_LENGTH = 1024 * 1024;
+    public static final int MAX_FRAME_LENGTH = 1024 * 10;
     public static final int LENGTH_FIELD_OFFSET = 0;
     public static final int LENGTH_FIELD_LENGTH = 4;
     public static final int LENGTH_ADJUSTMENT = 0;

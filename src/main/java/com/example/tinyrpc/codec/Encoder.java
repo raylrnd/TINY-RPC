@@ -20,22 +20,27 @@ public class Encoder extends MessageToByteEncoder implements Codec{
 
     @Override
     protected void encode(ChannelHandlerContext ctx, Object msg, ByteBuf buffer) throws Exception {
+        int savedStart = buffer.writerIndex();
+        buffer.writerIndex(savedStart + 4);
+        buffer.writeBytes(MAGIC_ARRAY);
         if (msg instanceof Request) {
             encodeRequest(ctx, (Request) msg, buffer);
         } else {
             encodeResponse(ctx, (Response) msg, buffer);
         }
+        int end = buffer.writerIndex();
+        buffer.writerIndex(savedStart);
+        buffer.writeInt(end - savedStart -4);
+        buffer.writerIndex(end);
     }
 
     public void encodeRequest(ChannelHandlerContext ctx, Request request, ByteBuf buffer) throws Exception {
-        int savedStart = buffer.writerIndex();
-        buffer.writerIndex(savedStart + 4);
-        buffer.writeBytes(MAGIC_ARRAY);
         // header.
         byte [] flag = new byte[2];
         if (request.isIs2way()) {
             flag[0] |= FLAG_TWOWAY;
         }
+        flag[0] |= FLAG_REQUEST;
         // is PING
         if (request.isEvent()) {
             flag[0] |= FLAG_EVENT;
@@ -45,21 +50,15 @@ public class Encoder extends MessageToByteEncoder implements Codec{
         buffer.writeBytes(flag);
         long requestId = request.getRequestId();
         buffer.writeLong(requestId);
-        byte[] body = null;
-        body = new ProtostuffSerializer().serialize(request.getData());
+        byte[] body = new ProtostuffSerializer().serialize(request.getData());
         buffer.writeBytes(body);
-        int end = buffer.writerIndex();
-        buffer.writerIndex(savedStart);
-        buffer.writeInt(end - savedStart -4);
-        buffer.writerIndex(end);
+
     }
 
     //比request多了个status
     private void encodeResponse(ChannelHandlerContext ctx, Response response, ByteBuf buffer) throws Exception {
-        Serializer serializer = new ProtostuffSerializer();
         // header.
         byte [] flag = new byte[2];
-        buffer.writeBytes(MAGIC_ARRAY);
         // is PONG
         if (response.isEvent()) {
             flag[0] |= FLAG_EVENT;
@@ -70,7 +69,7 @@ public class Encoder extends MessageToByteEncoder implements Codec{
         buffer.writeBytes(flag);
         long requestId = response.getRequestId();
         buffer.writeLong(requestId);
-        byte[] body = serializer.serialize(response.getResult());
+        byte[] body = new ProtostuffSerializer().serialize(response.getResult());
         buffer.writeBytes(body);
     }
 
