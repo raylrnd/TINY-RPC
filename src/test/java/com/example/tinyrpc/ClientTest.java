@@ -1,9 +1,12 @@
 package com.example.tinyrpc;
 
 import com.example.tinyrpc.demo.HelloWorld;
+import com.example.tinyrpc.transport.Server;
+import com.example.tinyrpc.transport.server.NettyServer;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -13,25 +16,16 @@ import org.springframework.test.context.junit4.SpringRunner;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-class DemoApplicationTests {
-
-//    @MyReference(async = true, callback = true)
-//    private IRemoteService helloService;
+class ClientTest {
 
     @Autowired
     public HelloWorld helloWorld;
 
     @Test
-    void contextLoads() {
+    void testClient() {
         String result = helloWorld.run();
-//        String hello = helloService.hello("he");
         System.out.println(result);
         System.out.close();
-    }
-
-    @Test
-    void runClient() {
-
     }
 
 }

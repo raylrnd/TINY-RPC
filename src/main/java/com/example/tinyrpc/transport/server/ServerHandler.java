@@ -27,6 +27,7 @@ public class ServerHandler extends SimpleChannelInboundHandler<Request> {
         Method method = bean.getClass().getMethod(data.getMethodName(), data.getParameterTypes());
         Object result = method.invoke(bean, data.getParameters());
         ResponseBody responseBody = new ResponseBody();
+        responseBody.setResult(result);
         response.setResponseBody(responseBody);
         ctx.writeAndFlush(response);
     }
