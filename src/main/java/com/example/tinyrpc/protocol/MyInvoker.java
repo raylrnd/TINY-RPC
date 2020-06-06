@@ -15,12 +15,9 @@ public class MyInvoker {
 
     private Client client = new NettyClient();
 
-    public Response invoke(Request request) {
-        long requestId = request.getRequestId();
-        CompletableFuture<Response> future = new CompletableFuture();
-        FutureContext.FUTURE_CACHE.putIfAbsent(requestId, future);
-        client.send(request);
-        Response response = null;
+    public Object invoke(Request request) {
+        Future<Object> future = client.send(request);
+        Object response = null;
         try {
             if (future != null) {
                 response = future.get(900, TimeUnit.SECONDS);

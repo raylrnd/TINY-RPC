@@ -3,6 +3,7 @@ package com.example.tinyrpc.transport.server;
 import com.example.tinyrpc.common.Invocation;
 import com.example.tinyrpc.common.Request;
 import com.example.tinyrpc.common.Response;
+import com.example.tinyrpc.common.ResponseBody;
 import com.example.tinyrpc.config.ServiceConfig;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -25,7 +26,8 @@ public class ServerHandler extends SimpleChannelInboundHandler<Request> {
         Object bean = ServiceConfig.SERVICE_MAP.get(className);
         Method method = bean.getClass().getMethod(data.getMethodName(), data.getParameterTypes());
         Object result = method.invoke(bean, data.getParameters());
-        response.setResult(result);
+        ResponseBody responseBody = new ResponseBody();
+        response.setResponseBody(responseBody);
         ctx.writeAndFlush(response);
     }
 }

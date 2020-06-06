@@ -6,6 +6,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import java.util.concurrent.*;
 
+import static com.example.tinyrpc.common.Response.SERVICE_ERROR;
+
 /**
  * @auther zhongshunchao
  * @date 08/05/2020 08:33
@@ -15,12 +17,19 @@ public class ClientHandler extends SimpleChannelInboundHandler<Response> {
     //读取responde消息
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Response response) throws Exception {
-        Object result = response.getResult();
+        if (response == null || response.getResponseBody() == null) {
+            // log
+        }
+        //解析状态码，如果是500，则不要向上传递result了，直接抛出异常
+        if (response.getStatus() == SERVICE_ERROR) {
+            //log
+            System.out.println(response.getResponseBody().getErrorMsg());
+        }
         long requestId = response.getRequestId();
         CompletableFuture future = FutureContext.FUTURE_CACHE.remove(requestId);
         if (future == null) {
             throw new Exception("requestId错误，response没有对应的request相匹配");
         }
-        future.complete(result);
+        future.complete(response.getResponseBody().getResult());
     }
 }

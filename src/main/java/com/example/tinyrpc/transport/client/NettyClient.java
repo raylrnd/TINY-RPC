@@ -65,9 +65,9 @@ public class NettyClient implements Client {
     }
 
     @Override
-    public Future<Response> send(Request request) {
-        CompletableFuture<Response> responseFuture = new CompletableFuture<>();
-        FutureContext.FUTURE_CACHE.put(request.getRequestId(), responseFuture);
+    public Future<Object> send(Request request) {
+        CompletableFuture<Object> responseFuture = new CompletableFuture<>();
+        FutureContext.FUTURE_CACHE.putIfAbsent(request.getRequestId(), responseFuture);
         channel.writeAndFlush(request);
         return responseFuture;
     }

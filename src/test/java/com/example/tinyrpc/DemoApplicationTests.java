@@ -23,8 +23,9 @@ class DemoApplicationTests {
 
     @Test
     void contextLoads() {
-        String run = helloWorld.run();
+        String result = helloWorld.run();
 //        String hello = helloService.hello("he");
+        System.out.println(result);
         System.out.close();
     }
 

@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class FutureContext {
     //CompletableFuture 为jdk1.8新增的异步计算框架
-    public static final ConcurrentHashMap<Long, CompletableFuture<Response>> FUTURE_CACHE = new ConcurrentHashMap<>();
+    public static final ConcurrentHashMap<Long, CompletableFuture<Object>> FUTURE_CACHE = new ConcurrentHashMap<>();
 
 
 }

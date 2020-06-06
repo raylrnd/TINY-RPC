@@ -15,5 +15,5 @@ public interface Client {
 
     void run(String hostName, int port);
 
-    Future<Response> send(Request message);
+    Future<Object> send(Request message);
 }

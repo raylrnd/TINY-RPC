@@ -48,8 +48,8 @@ public class JdkProxyFactory {
             return myInvoker.equals(args[0]);
         }
         Request request = buildRequest(method, args);
-        Response response = myInvoker.invoke(request);
-        return response;
+        Object result = myInvoker.invoke(request);
+        return result;
     }
 
     private Request buildRequest(Method method, Object[] args) {

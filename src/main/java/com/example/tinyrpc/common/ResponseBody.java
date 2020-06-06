@@ -8,11 +8,6 @@ public class ResponseBody {
     private String errorMsg;
     private Object result;
 
-    public ResponseBody(String errorMsg, Object result) {
-        this.errorMsg = errorMsg;
-        this.result = result;
-    }
-
     public String getErrorMsg() {
         return errorMsg;
     }
