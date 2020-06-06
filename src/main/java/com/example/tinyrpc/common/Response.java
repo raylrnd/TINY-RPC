@@ -61,8 +61,7 @@ public class Response implements Serializable {
     private boolean isEvent = false;
     private long requestId;
     private byte status = OK;
-    private String errorMsg;
-    private Object result;
+    private ResponseBody responseBody;
 
     public Response(long requestId) {
         this.requestId = requestId;
@@ -84,27 +83,19 @@ public class Response implements Serializable {
         isEvent = event;
     }
 
-    public String getErrorMsg() {
-        return errorMsg;
-    }
-
-    public void setErrorMsg(String errorMsg) {
-        this.errorMsg = errorMsg;
-    }
-
-    public Object getResult() {
-        return result;
-    }
-
-    public void setResult(Object result) {
-        this.result = result;
-    }
-
     public long getRequestId() {
         return requestId;
     }
 
     public void setRequestId(long requestId) {
         this.requestId = requestId;
+    }
+
+    public ResponseBody getResponseBody() {
+        return responseBody;
+    }
+
+    public void setResponseBody(ResponseBody responseBody) {
+        this.responseBody = responseBody;
     }
 }

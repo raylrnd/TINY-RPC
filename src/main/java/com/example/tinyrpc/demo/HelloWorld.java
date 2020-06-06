@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 public class HelloWorld {
     //client端通过接口的全限定名去zk注册中心寻找服务地址
     @MyReference(async = true, callback = true)
-    private IRemoteService helloService;
+    public IRemoteService helloService;
 
     public String run() {
         String result = helloService.hello("zhong shun chao");

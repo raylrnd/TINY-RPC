@@ -2,6 +2,7 @@ package com.example.tinyrpc.codec;
 
 import com.alibaba.fastjson.JSONObject;
 import com.example.tinyrpc.common.Invocation;
+import com.example.tinyrpc.common.ResponseBody;
 import com.example.tinyrpc.common.utils.SerializerUtil;
 import com.example.tinyrpc.serialization.Serializer;
 import com.example.tinyrpc.common.Request;
@@ -26,7 +27,7 @@ import java.util.List;
  *  totoal length except this             // 往下的所有字段长度的总和
  *  ------------ (32 bits)
  * | magic (16 bits)                      // 魔数，为"0xdeff"
- * | default (1 bit)                      // 缺省字段，占位用
+ * | Req/Res (1 bit)                      // Req/Res, 请求: 1; 响应: 0
  * | 2way (1 bit)                         // 仅在 Req/Res 为1（请求）时才有用，标记是否期望从服务器返回值。如果需要来自服务器的返回值，则设置为1。
  * | event (1 bit)                        // 表示为PING/PONG事件，如果是req，则为PING请求；如果是res，则为PONG请求
  * | default (1 bit)                      // 缺省字段，占位用
@@ -77,10 +78,18 @@ public class Decoder extends ByteToMessageDecoder implements Codec{
         byte [] body = new byte [len - 12];
         // 解析消息体
         buffer.readBytes(body);
-        Request request = new Request(requestId);
-        request.setEvent(isEvent);
-        Invocation data = new ProtostuffSerializer().deserialize(body, Invocation.class);
-        request.setData(data);
-        out.add(request);
+        if (isRequest) {
+            Request request = new Request(requestId);
+            request.setEvent(isEvent);
+            Invocation data = new ProtostuffSerializer().deserialize(body, Invocation.class);
+            request.setData(data);
+            out.add(request);
+        } else {
+            Response response = new Response(requestId);
+            response.setEvent(isEvent);
+            ResponseBody responseBody = new ProtostuffSerializer().deserialize(body, ResponseBody.class);
+            response.setResponseBody(responseBody);
+            out.add(response);
+        }
     }
 }

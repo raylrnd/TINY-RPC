@@ -69,7 +69,7 @@ public class Encoder extends MessageToByteEncoder implements Codec{
         buffer.writeBytes(flag);
         long requestId = response.getRequestId();
         buffer.writeLong(requestId);
-        byte[] body = new ProtostuffSerializer().serialize(response.getResult());
+        byte[] body = new ProtostuffSerializer().serialize(response.getResponseBody());
         buffer.writeBytes(body);
     }
 
