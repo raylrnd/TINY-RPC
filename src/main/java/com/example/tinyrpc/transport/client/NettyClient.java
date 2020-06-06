@@ -33,7 +33,7 @@ public class NettyClient implements Client {
 
     private Channel channel;
     public NettyClient() {
-        run("127.0.0.1", 8989);
+        run("127.0.0.1", 8787);
     }
     @Override
     public void run(String hostName, int port) {

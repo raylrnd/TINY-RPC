@@ -40,9 +40,12 @@ public class MyReferenceBeanPostProcessor implements BeanPostProcessor {
                     //将含有@Reference的字段的属性替换成代理对象
                     try {
                         field.setAccessible(true);
-                        Object proxy = new JdkProxyFactory(interfaceClass, referenceConfig).createProxy();
+                        JdkProxyFactory jdkProxyFactory = new JdkProxyFactory(interfaceClass, referenceConfig);
+                        Object proxy = jdkProxyFactory.createProxy();
                         field.set(bean, proxy);
                     } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }

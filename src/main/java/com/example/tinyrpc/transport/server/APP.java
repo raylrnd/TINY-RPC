@@ -9,6 +9,6 @@ import com.example.tinyrpc.transport.Server;
 public class APP {
     public static void main(String[] args) {
         Server server = new NettyServer();
-        server.run("127.0.0.1", 8989);
+        server.run("127.0.0.1", 8585);
     }
 }

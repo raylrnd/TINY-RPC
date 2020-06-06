@@ -33,7 +33,7 @@ public class ProtostuffSerializer implements Serializer {
     @Override
     public <T> T deserialize(byte[] data, Class<T> cls) {
         try {
-            T message = cls.newInstance();
+            T message = cls.getDeclaredConstructor().newInstance();
             Schema<T> schema = getSchema(cls);
             ProtostuffIOUtil.mergeFrom(data, message, schema);
             return message;
@@ -51,5 +51,15 @@ public class ProtostuffSerializer implements Serializer {
             }
         }
         return schema;
+    }
+
+    protected <T> T deserializeOnObject(byte[] data, Class<T> cls, T t) {
+        try {
+            Schema<T> schema = getSchema(cls);
+            ProtostuffIOUtil.mergeFrom(data, t, schema);
+            return t;
+        } catch (Exception e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        }
     }
 }

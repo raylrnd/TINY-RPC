@@ -8,7 +8,6 @@ import com.example.tinyrpc.protocol.MyInvoker;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.UUID;
 
 /**
  * @auther zhongshunchao
@@ -25,7 +24,8 @@ public class JdkProxyFactory {
         this.referenceConfig = referenceConfig;
     }
 
-    public Object invokeProxy(Object proxy, Method method, Object[] args) throws Throwable{
+    public Object invokeProxy(Method method, Object[] args) throws Throwable{
+        MyInvoker myInvoker = new MyInvoker();
         Class<?>[] parameterTypes = method.getParameterTypes();
         String[] paramTypes = new String[parameterTypes.length];
         for (int i = 0; i < parameterTypes.length; i++) {
@@ -33,21 +33,20 @@ public class JdkProxyFactory {
         }
         if (method.getDeclaringClass() == Object.class) {
             // 定义在 Object 类中的方法（未被子类重写），比如 wait/notify等，直接调用
-            return method.invoke(proxy, args);
+            return method.invoke(myInvoker, args);
         }
         // 如果 toString、hashCode 和 equals 等方法被子类重写了，这里也直接调用
         String methodName = method.getName();
         if ("toString".equals(methodName) && parameterTypes.length == 0) {
-            return proxy.toString();
+            return myInvoker.toString();
         }
         if ("hashCode".equals(methodName) && parameterTypes.length == 0) {
-            return proxy.hashCode();
+            return myInvoker.hashCode();
         }
         if ("equals".equals(methodName) && parameterTypes.length == 1) {
-            return proxy.equals(args[0]);
+            return myInvoker.equals(args[0]);
         }
         Request request = buildRequest(method, args);
-        MyInvoker myInvoker = new MyInvoker();
         Response response = myInvoker.invoke(request);
         return response;
     }
@@ -65,18 +64,16 @@ public class JdkProxyFactory {
         return request;
     }
 
-    public Object createProxy() {
+    public Object createProxy() throws Exception{
         return Proxy.newProxyInstance(
-                interfaceClass.getClassLoader(),
+                Thread.currentThread().getContextClassLoader(),
                 new Class[]{interfaceClass},
                 new InvocationHandler() {
                     @Override
                     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                        return invokeProxy(proxy, method, args);
+                        return invokeProxy(method, args);
                     }
                 }
         );
     }
-
-
 }
