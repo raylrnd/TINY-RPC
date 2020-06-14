@@ -4,6 +4,7 @@ import com.example.tinyrpc.codec.Decoder;
 import com.example.tinyrpc.codec.Encoder;
 
 import com.example.tinyrpc.transport.Server;
+import com.example.tinyrpc.transport.client.ClientHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.ChannelFuture;
@@ -16,6 +17,8 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldPrepender;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static com.example.tinyrpc.codec.Codec.*;
 
@@ -33,6 +36,8 @@ import static com.example.tinyrpc.codec.Codec.*;
  *  利用Proxy实现透明化的服务调用，将调用的结果回传给Client端
  */
 public class NettyServer implements Server {
+
+    private static Logger log = LoggerFactory.getLogger(ClientHandler.class);
 
     //Start Server
     @Override
@@ -55,6 +60,7 @@ public class NettyServer implements Server {
                         }
                     });
             ChannelFuture future = bootstrap.bind(port).sync();
+            log.info("conect Client" + hostName + ":" + port + "SUCESS");
 //            future.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             e.printStackTrace();
