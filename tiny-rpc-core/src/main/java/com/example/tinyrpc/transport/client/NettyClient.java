@@ -17,6 +17,8 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldPrepender;
 import io.netty.handler.codec.string.StringDecoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 import java.util.concurrent.CompletableFuture;
@@ -30,6 +32,8 @@ import static com.example.tinyrpc.codec.Codec.*;
  * @date 13/04/2020 12:54
  */
 public class NettyClient implements Client {
+
+    private static Logger log = LoggerFactory.getLogger(ClientHandler.class);
 
     private Channel channel;
     public NettyClient() {
@@ -59,6 +63,7 @@ public class NettyClient implements Client {
                     .option(ChannelOption.TCP_NODELAY, true);
             ChannelFuture future = bootstrap.connect(hostName, port).sync();
             channel = future.channel();
+            log.info("conect Server" + hostName + ":" + port + "SUCCESS");
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
