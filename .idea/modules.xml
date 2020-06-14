@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/demo.iml" filepath="$PROJECT_DIR$/demo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tiny-rpc-core/com.example.core.iml" filepath="$PROJECT_DIR$/tiny-rpc-core/com.example.core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tiny-rpc-parent.iml" filepath="$PROJECT_DIR$/tiny-rpc-parent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tiny-rpc-springboot-stater/tiny-rpc-springboot-stater.iml" filepath="$PROJECT_DIR$/tiny-rpc-springboot-stater/tiny-rpc-springboot-stater.iml" />
     </modules>
   </component>
 </project>
