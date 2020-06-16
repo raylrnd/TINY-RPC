@@ -15,10 +15,17 @@ import java.util.concurrent.*;
 public class MyInvoker implements Invoker {
 
     private Client client = new NettyClient();
-    private Map<String, Invoker> invokerMap = new ConcurrentHashMap<>();
+
+    private String className;
+
+    @Override
+    public String getInterface() {
+        return className;
+    }
 
     @Override
     public Object invoke(Request request) {
+        className = request.getData().getClassName();
         Future<Object> future = client.send(request);
         Object response = null;
         try {

@@ -48,13 +48,7 @@ public class ZkSupport {
         try {
             byte[] bytes = data.getBytes(Charset.forName("UTF-8"));
             zookeeper.create(path + "/" + data, bytes, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
-        } catch (KeeperException e) {
-//            if (e instanceof KeeperException.NodeExistsException) {
-//                throw new Exception();
-//            } else {
-//                e.printStackTrace();
-//            }
-        } catch (InterruptedException ex) {
+        } catch (InterruptedException | KeeperException ex) {
             ex.printStackTrace();
         }
     }
@@ -63,8 +57,7 @@ public class ZkSupport {
         return zookeeper.getChildren(path, watcher);
     }
 
-    public List<String> getChildren(String path, boolean watch)
-            throws KeeperException, InterruptedException {
+    public List<String> getChildren(String path, boolean watch) throws KeeperException, InterruptedException {
         return zookeeper.getChildren(path, watch);
     }
 
