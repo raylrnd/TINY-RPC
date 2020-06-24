@@ -59,8 +59,11 @@ public class Response implements Serializable {
     public static final byte CLIENT_ERROR = 90;
 
     private boolean isEvent = false;
+
     private long requestId;
+
     private byte status = OK;
+
     private ResponseBody responseBody;
 
     public Response(long requestId) {

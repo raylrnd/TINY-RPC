@@ -5,12 +5,10 @@ import com.example.tinyrpc.codec.Encoder;
 
 import com.example.tinyrpc.transport.Server;
 import com.example.tinyrpc.transport.client.ClientHandler;
+import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -39,10 +37,19 @@ public class NettyServer implements Server {
 
     private static Logger log = LoggerFactory.getLogger(ClientHandler.class);
 
+    private Channel channel;
+
+    private ServerBootstrap bootstrap;
+
+    private String address;
+
+    public NettyServer(String address) {
+        this.address = address;
+        this.bootstrap = new ServerBootstrap();
+        open(address);
+    }
     //Start Server
-    @Override
-    public void run(String hostName, int port) {
-        ServerBootstrap bootstrap = new ServerBootstrap();
+    public void open(String address) {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workGroup = new NioEventLoopGroup();
         try {
@@ -59,11 +66,18 @@ public class NettyServer implements Server {
                                     .addLast(new ServerHandler());
                         }
                     });
-            ChannelFuture future = bootstrap.bind(port).sync();
-            log.info("conect Client" + hostName + ":" + port + "SUCESS");
+            String[] ipAndPort = address.trim().split(":");
+            ChannelFuture future = bootstrap.bind(ipAndPort[0], Integer.valueOf(ipAndPort[1])).sync();
+            this.channel = future.channel();
+            log.info("conect Client" + address + "SUCESS");
 //            future.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void close() {
+        this.channel.closeFuture();
     }
 }

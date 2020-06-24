@@ -4,6 +4,8 @@ package com.example.tinyrpc.registry;
 
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 import java.nio.charset.Charset;
 import java.util.List;
@@ -12,6 +14,9 @@ import java.util.concurrent.CountDownLatch;
 
 
 public class ZkSupport {
+
+    private static Logger log = LoggerFactory.getLogger(ZkSupport.class);
+
     /**
      * zk变量
      */
@@ -20,6 +25,7 @@ public class ZkSupport {
      * 信号量设置，用于等待zookeeper连接建立之后 通知阻塞程序继续向下执行
      */
     private CountDownLatch connectedSemaphore = new CountDownLatch(1);
+
     private static final int ZK_SESSION_TIMEOUT = 5000;
 
     public void connect(String address) {
@@ -37,7 +43,6 @@ public class ZkSupport {
                     }
                 }
             });
-
             connectedSemaphore.await();
         } catch (Exception e) {
             e.printStackTrace();
@@ -50,6 +55,7 @@ public class ZkSupport {
             zookeeper.create(path + "/" + data, bytes, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
         } catch (InterruptedException | KeeperException ex) {
             ex.printStackTrace();
+            log.error("服务注册失败" + "path" + path + ":data" + data);
         }
     }
 

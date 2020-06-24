@@ -1,14 +1,16 @@
 package com.example.tinyrpc.protocol;
 
-import com.example.tinyrpc.common.Request;
+import com.example.tinyrpc.common.Invocation;
 
 /**
  * @auther zhongshunchao
  * @date 13/06/2020 20:52
  */
-public interface Invoker {
+public interface Invoker<T> {
 
-    String getInterface();
+    Class<?> getInterface();
 
-    Object invoke(Request request);
+    Object invoke(Invocation invocation);
+
+    void destroy();
 }

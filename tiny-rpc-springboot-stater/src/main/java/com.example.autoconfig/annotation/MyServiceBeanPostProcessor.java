@@ -1,11 +1,12 @@
 package com.example.autoconfig.annotation;
 
-
+import com.example.tinyrpc.common.URL;
 import com.example.tinyrpc.config.ServiceConfig;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.stereotype.Component;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * @auther zhongshunchao
@@ -15,14 +16,20 @@ import org.springframework.stereotype.Component;
 public class MyServiceBeanPostProcessor implements BeanPostProcessor {
 
     @Override
-    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+    public Object postProcessBeforeInitialization(Object bean, String beanName) {
         Class<?> beanClass = bean.getClass();
         if (!beanClass.isAnnotationPresent(MyService.class)) {
             return bean;
         }
         MyService rpcService = beanClass.getAnnotation(MyService.class);
-        Class<?> interfaceClass = rpcService.interfaceClass();
-        ServiceConfig.SERVICE_MAP.put(interfaceClass.getName(), bean);
+        URL url = new URL();
+        String interfaceName = rpcService.interfaceClass().getName();
+        url.setInterfaceName(interfaceName);
+        url.setPort(rpcService.port());
+        url.setWeight(rpcService.weight());
+        url.setIp("127.0.0.1");
+        ServiceConfig<?> serviceConfig = new ServiceConfig<>(url, bean);
+        ServiceConfig.SERVICE_MAP.put(interfaceName, bean);
         return bean;
     }
 

@@ -1,7 +1,9 @@
 package com.example.autoconfig.annotation;
 
 
+import com.example.tinyrpc.common.Invocation;
 import com.example.tinyrpc.config.ReferenceConfig;
+import com.example.tinyrpc.config.ServiceConfig;
 import com.example.tinyrpc.proxy.JdkProxyFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -30,22 +32,18 @@ public class MyReferenceBeanPostProcessor implements BeanPostProcessor {
                 Class interfaceClass = field.getType();
                 MyReference reference = field.getAnnotation(MyReference.class);
                 if (reference != null) {
-                    ReferenceConfig referenceConfig = new ReferenceConfig();
-                    referenceConfig.setAsync(reference.async());
-                    referenceConfig.setCallback(reference.callback());
-                    referenceConfig.setOneway(reference.oneway());
-                    referenceConfig.setTimeout(reference.timeout());
-                    referenceConfig.setSerializer(SERIALIZER_MAP.get(reference.serializer()));
-                    referenceConfig.setProxy(reference.proxy());
+                    Invocation invocation = new Invocation();
+                    invocation.setOneWay(reference.oneway());
+                    invocation.setTimeout(reference.timeout());
+                    invocation.setSerializer(SERIALIZER_MAP.get(reference.serializer()));
+                    invocation.setInterfaceClass(interfaceClass);
                     //将含有@Reference的字段的属性替换成代理对象
                     try {
                         field.setAccessible(true);
-                        JdkProxyFactory jdkProxyFactory = new JdkProxyFactory(interfaceClass, referenceConfig);
-                        Object proxy = jdkProxyFactory.createProxy();
+                        ReferenceConfig referenceConfig = new ReferenceConfig();
+                        Object proxy = referenceConfig.getProxy(invocation);
                         field.set(bean, proxy);
                     } catch (IllegalAccessException e) {
-                        e.printStackTrace();
-                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }

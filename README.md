@@ -6,7 +6,8 @@ TINY-RPC
 |version1.0 : 仅仅为可运行的版本  
 |version1.1 : 为TINY-RPC 添加 SpringBoot Stater  
 |version1.2 : 添加Zookeeper，提供服务发现和注册  
-|version1.3 : 添加负载均衡策略  
+|version1.3 : 添加负载均衡策略LoadBalancer  
+|version1.4 ：添加Filter，实现链路跟踪和限流
 How to Run:  
 在测试仓库[https://github.com/raylrnd/tiny-rpc-sample.git](https://github.com/raylrnd/tiny-rpc-sample.git)中分别运行'ServerDemo'和'ClientDemo'  
 version1.2 运行效果图  
@@ -34,4 +35,4 @@ version1.2实现思路：
 关键点是找到IP和端口号，然后发送数据，等待接收数据，得到调用结果。这里面有优化的点，可以将Client缓存起来。 
 
 version1.3  
-在客户端添加LoadBalance，从InvokerList里面select出要调用的Invoker。根据权重、随机等，要先实现Filter，获取负载均衡参数，Filter可以采用Pipline模式，参考Pigeon  
+在客户端添加LoadBalance和Filter，从InvokerList里面select出要调用的Invoker。根据权重、随机等，要先实现Filter，获取负载均衡参数，Filter可以采用Pipline模式，参考Pigeon  

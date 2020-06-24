@@ -5,7 +5,9 @@ package com.example.tinyrpc.common;
  * @date 06/06/2020 11:04
  */
 public class ResponseBody {
+
     private String errorMsg;
+
     private Object result;
 
     public String getErrorMsg() {

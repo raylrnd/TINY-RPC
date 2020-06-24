@@ -6,13 +6,11 @@ import com.example.tinyrpc.common.Request;
 import com.example.tinyrpc.common.Response;
 import com.example.tinyrpc.common.ResponseBody;
 import com.example.tinyrpc.config.ServiceConfig;
-import com.example.tinyrpc.serialization.serializer.JsonSerializer;
 import com.example.tinyrpc.transport.client.ClientHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.lang.reflect.Method;
 
 
@@ -31,10 +29,10 @@ public class ServerHandler extends SimpleChannelInboundHandler<Request> {
         //调用代理，通过反射的方式调用本地jvm中的方法
         Response response = new Response(request.getRequestId());
         Invocation data = request.getData();
-        String className = data.getClassName();
+        String className = data.getServiceName();
         Object bean = ServiceConfig.SERVICE_MAP.get(className);
         Method method = bean.getClass().getMethod(data.getMethodName(), data.getParameterTypes());
-        Object result = method.invoke(bean, data.getParameters());
+        Object result = method.invoke(bean, data.getArguments());
         ResponseBody responseBody = new ResponseBody();
         responseBody.setResult(result);
         response.setResponseBody(responseBody);

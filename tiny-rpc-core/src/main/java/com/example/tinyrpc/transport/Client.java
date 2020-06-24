@@ -13,7 +13,7 @@ import java.util.concurrent.Future;
 @Component
 public interface Client {
 
-    void run(String hostName, int port);
-
     Future<Object> send(Request message);
+
+    void close();
 }
