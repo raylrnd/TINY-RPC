@@ -1,9 +1,7 @@
 package com.example.tinyrpc.transport;
 
 import com.example.tinyrpc.common.Request;
-import com.example.tinyrpc.common.Response;
 import org.springframework.stereotype.Component;
-
 import java.util.concurrent.Future;
 
 /**

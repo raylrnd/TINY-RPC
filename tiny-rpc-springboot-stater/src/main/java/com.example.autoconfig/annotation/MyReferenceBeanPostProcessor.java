@@ -3,8 +3,6 @@ package com.example.autoconfig.annotation;
 
 import com.example.tinyrpc.common.Invocation;
 import com.example.tinyrpc.config.ReferenceConfig;
-import com.example.tinyrpc.config.ServiceConfig;
-import com.example.tinyrpc.proxy.JdkProxyFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import java.lang.reflect.Field;

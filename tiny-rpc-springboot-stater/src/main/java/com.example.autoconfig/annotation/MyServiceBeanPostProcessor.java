@@ -5,9 +5,6 @@ import com.example.tinyrpc.config.ServiceConfig;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
 /**
  * @auther zhongshunchao
  * @date 29/05/2020 09:04
