@@ -1,7 +1,5 @@
 package com.example.tinyrpc.registry;
 
-
-
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
@@ -10,8 +8,6 @@ import org.springframework.util.StringUtils;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
-
-
 
 public class ZkSupport {
 
@@ -39,10 +35,11 @@ public class ZkSupport {
                     if (Watcher.Event.EventType.None == eventType) {
                         //如果建立连接成功，则发送信号量，让后续阻塞程序向下执行
                         connectedSemaphore.countDown();
-
+                        log.info("ZK建立连接");
                     }
                 }
             });
+            log.info("开始连接ZK服务器");
             connectedSemaphore.await();
         } catch (Exception e) {
             e.printStackTrace();

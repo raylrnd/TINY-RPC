@@ -9,13 +9,13 @@ import java.util.concurrent.*;
  * @auther zhongshunchao
  * @date 2020/5/21 11:16 上午
  */
-public class ClientInvoker implements Invoker {
+public class ClusterInvoker implements Invoker {
 
     private Client client;
 
     private Class<?> interfaceClass;
 
-    public ClientInvoker(Client client, Class<?> interfaceClass) {
+    public ClusterInvoker(Client client, Class<?> interfaceClass) {
         this.client = client;
         this.interfaceClass = interfaceClass;
     }

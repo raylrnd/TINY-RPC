@@ -48,6 +48,10 @@ public class URL {
     }
 
     public String exposeURL() {
-        return ip + ":" + port + "$" + weight;
+        return getAddress() + "$" + weight;
+    }
+
+    public String getAddress() {
+        return ip + ":" + port;
     }
 }

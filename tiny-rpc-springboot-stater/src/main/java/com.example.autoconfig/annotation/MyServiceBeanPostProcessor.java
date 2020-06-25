@@ -28,8 +28,8 @@ public class MyServiceBeanPostProcessor implements BeanPostProcessor {
         url.setPort(rpcService.port());
         url.setWeight(rpcService.weight());
         url.setIp("127.0.0.1");
-        ServiceConfig<?> serviceConfig = new ServiceConfig<>(url, bean);
-        ServiceConfig.SERVICE_MAP.put(interfaceName, bean);
+        ServiceConfig serviceConfig = new ServiceConfig();
+        serviceConfig.export(url,bean);
         return bean;
     }
 

@@ -5,6 +5,7 @@ package com.example.tinyrpc.common.exception;
  * @date 24/06/2020 22:32
  */
 public class BusinessException extends RuntimeException {
+
     private String code;
 
     private String keyword;
