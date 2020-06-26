@@ -6,7 +6,7 @@ import com.example.tinyrpc.common.Invocation;
  * @auther zhongshunchao
  * @date 13/06/2020 20:52
  */
-public interface Invoker<T> {
+public interface Invoker {
 
     Class<?> getInterface();
 

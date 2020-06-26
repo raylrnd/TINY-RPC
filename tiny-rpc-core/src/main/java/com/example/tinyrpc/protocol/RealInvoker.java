@@ -3,27 +3,26 @@ package com.example.tinyrpc.protocol;
 import com.example.tinyrpc.common.Invocation;
 import com.example.tinyrpc.common.Request;
 import com.example.tinyrpc.transport.Client;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * @auther zhongshunchao
- * @date 2020/5/21 11:16 上午
+ * @date 26/06/2020 21:43
  */
-public class ClusterInvoker implements Invoker {
+public class RealInvoker implements Invoker{
 
     private Client client;
 
+    private int weight;
+
     private Class<?> interfaceClass;
 
-    public ClusterInvoker(Client client, Class<?> interfaceClass) {
-        this.client = client;
+    public RealInvoker(Class<?> interfaceClass, int weight) {
         this.interfaceClass = interfaceClass;
-    }
-
-
-    @Override
-    public Class<?> getInterface() {
-        return interfaceClass;
+        this.weight = weight;
     }
 
     @Override
@@ -48,6 +47,21 @@ public class ClusterInvoker implements Invoker {
             e.printStackTrace();
         }
         return response;
+    }
+
+
+    @Override
+    public Class<?> getInterface() {
+        return interfaceClass;
+    }
+
+    public int getWeight() {
+        return weight;
+    }
+
+
+    public void setClient(Client client) {
+        this.client = client;
     }
 
     @Override

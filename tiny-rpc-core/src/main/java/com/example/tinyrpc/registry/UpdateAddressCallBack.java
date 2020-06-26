@@ -10,6 +10,6 @@ import java.util.Set;
 @FunctionalInterface
 public interface UpdateAddressCallBack {
     //更新缓存中的zk地址
-    void updateAddress(List<String> addAddress, Set<String> closeAddress);
+    void updateAddress(List<String> addUrlList, Set<String> closeUrlSet);
 
 }

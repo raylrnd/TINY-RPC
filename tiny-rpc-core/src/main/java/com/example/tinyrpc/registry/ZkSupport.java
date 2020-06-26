@@ -1,5 +1,6 @@
 package com.example.tinyrpc.registry;
 
+import com.example.tinyrpc.common.exception.BusinessException;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
@@ -16,17 +17,19 @@ public class ZkSupport {
     /**
      * zk变量
      */
-    protected ZooKeeper zookeeper = null;
+    private ZooKeeper zookeeper = null;
     /**
      * 信号量设置，用于等待zookeeper连接建立之后 通知阻塞程序继续向下执行
      */
     private CountDownLatch connectedSemaphore = new CountDownLatch(1);
 
-    private static final int ZK_SESSION_TIMEOUT = 5000;
+    private static final int ZK_SESSION_TIMEOUT = 10000;
 
-    public void connect(String address) {
+    private static final String ZK_ADDRESS = "127.0.0.1:2181";
+
+    ZkSupport() {
         try {
-            this.zookeeper = new ZooKeeper(address, ZK_SESSION_TIMEOUT, (WatchedEvent event) -> {
+            this.zookeeper = new ZooKeeper(ZK_ADDRESS, ZK_SESSION_TIMEOUT, (WatchedEvent event) -> {
                 //获取事件的状态
                 Watcher.Event.KeeperState keeperState = event.getState();
                 Watcher.Event.EventType eventType = event.getType();
@@ -42,25 +45,25 @@ public class ZkSupport {
             log.info("开始连接ZK服务器");
             connectedSemaphore.await();
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new BusinessException("无法连接注册中心 Zookeeper ：" + ZK_ADDRESS);
         }
     }
 
-    public void createNodeIfAbsent(String data, String path) {
+    void createNodeIfAbsent(String data, String path) {
         try {
             byte[] bytes = data.getBytes(Charset.forName("UTF-8"));
             zookeeper.create(path + "/" + data, bytes, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
         } catch (InterruptedException | KeeperException ex) {
             ex.printStackTrace();
-            log.error("服务注册失败" + "path" + path + ":data" + data);
+            log.error("服务注册失败 path :" + path + ": data ；" + data);
         }
     }
 
-    public List<String> getChildren(final String path, Watcher watcher) throws KeeperException, InterruptedException {
+    List<String> getChildren(final String path, Watcher watcher) throws KeeperException, InterruptedException {
         return zookeeper.getChildren(path, watcher);
     }
 
-    public List<String> getChildren(String path, boolean watch) throws KeeperException, InterruptedException {
+    List<String> getChildren(String path, boolean watch) throws KeeperException, InterruptedException {
         return zookeeper.getChildren(path, watch);
     }
 
@@ -72,7 +75,7 @@ public class ZkSupport {
      * @param path
      * @param createMode
      */
-    public void createPathIfAbsent(String path, CreateMode createMode) throws KeeperException, InterruptedException {
+    void createPathIfAbsent(String path, CreateMode createMode) throws KeeperException, InterruptedException {
         String[] split = path.split("/");
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < split.length; i++) {
@@ -87,6 +90,11 @@ public class ZkSupport {
                 sb.append("/");
             }
         }
+    }
+
+    boolean hasNoRoot(String path) throws KeeperException, InterruptedException {
+        Stat stat = zookeeper.exists(path, false);
+        return stat == null;
     }
 
     /**

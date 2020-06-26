@@ -1,6 +1,5 @@
 package com.example.tinyrpc.cluster;
 
-import com.example.tinyrpc.common.Invocation;
 import com.example.tinyrpc.protocol.Invoker;
 
 import java.util.List;

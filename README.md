@@ -36,3 +36,9 @@ version1.2实现思路：
 
 version1.3  
 在客户端添加LoadBalance和Filter，从InvokerList里面select出要调用的Invoker。根据权重、随机等，要先实现Filter，获取负载均衡参数，Filter可以采用Pipline模式，参考Pigeon  
+
+本项目的Zookeeper目录格式为 ： 
+|path                                   |  value               |  
+|/TINY-RPC/com.example.tinyrpc.AService | 192.168.1.1:1221$100 |  
+|/TINY-RPC/com.example.tinyrpc.BService | 192.168.1.4:1221$200 |  
+|/TINY-RPC/com.example.tinyrpc.AService | 192.168.1.2:1221&300 |  

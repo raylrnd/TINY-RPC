@@ -64,7 +64,7 @@ public class NettyServer implements Server {
             String[] ipAndPort = address.trim().split(":");
             ChannelFuture future = bootstrap.bind(ipAndPort[0], Integer.valueOf(ipAndPort[1])).sync();
             this.channel = future.channel();
-            log.info("conect Client" + address + "SUCESS");
+            log.info("Server successfully conneted at : " + address);
 //            future.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             e.printStackTrace();

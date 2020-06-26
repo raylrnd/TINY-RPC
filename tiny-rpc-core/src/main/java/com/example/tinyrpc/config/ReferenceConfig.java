@@ -14,16 +14,16 @@ import com.example.tinyrpc.proxy.ProxyFactory;
 //@Reference里的内容
 public class ReferenceConfig {
 
-    private transient volatile boolean destroyed;
+//    private transient volatile boolean destroyed;
 
     private static final Protocol REF_PROTOCOL = new RegistryProtocol();
 
     private static final ProxyFactory PROXY_FACTORY = new JdkProxyFactory();
 
     public Object getProxy(Invocation invocation) {
-        if (destroyed) {
-            throw new IllegalStateException("The invoker of ReferenceConfig has already destroyed!");
-        }
+//        if (destroyed) {
+//            throw new IllegalStateException("The invoker of ReferenceConfig has already destroyed!");
+//        }
         Invoker invoker = REF_PROTOCOL.refer(invocation.getInterfaceClass());
         return PROXY_FACTORY.getProxy(invoker, invocation);
     }
