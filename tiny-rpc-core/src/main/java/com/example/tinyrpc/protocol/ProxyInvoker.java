@@ -20,8 +20,6 @@ public class ProxyInvoker implements Invoker {
 
     private Class<?> interfaceClass;
 
-//    private int weight;
-
     /**
      * address -> Client(Invoker) ：全局InvokerMap
      */
@@ -36,7 +34,7 @@ public class ProxyInvoker implements Invoker {
      */
     private static final ExecutorService POOL = Executors.newFixedThreadPool(8);
 
-    public ProxyInvoker(Class<?> interfaceClass) {
+    ProxyInvoker(Class<?> interfaceClass) {
         this.interfaceClass = interfaceClass;
         init();
     }
@@ -50,6 +48,7 @@ public class ProxyInvoker implements Invoker {
         for (String url : serviceUrlList) {
             createInvoker(url);
         }
+        this.realInvoker = LOAD_BALANCE.select(new ArrayList<>(invokerMap.values()));
     }
 
     private void dealZkCallBack(List<String> addUrlList, Set<String> closeUrlSet) {
@@ -70,13 +69,12 @@ public class ProxyInvoker implements Invoker {
                 }
             });
         }
-
         //重新进行负载均衡
-        this.realInvoker = LOAD_BALANCE.select((List<Invoker>) invokerMap.values());
+        this.realInvoker = LOAD_BALANCE.select(new ArrayList<>(invokerMap.values()));
     }
 
     private String[] getSplitsFromUrlString(String url) {
-        String[] split = url.split("$");
+        String[] split = url.split("&");
         if (split.length < 2) {
             throw new BusinessException("UrlUtils解析url失败，无效的url ：" + url);
         }

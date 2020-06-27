@@ -48,7 +48,7 @@ public class URL {
     }
 
     public String exposeURL() {
-        return getAddress() + "$" + weight;
+        return getAddress() + "&" + weight;
     }
 
     public String getAddress() {

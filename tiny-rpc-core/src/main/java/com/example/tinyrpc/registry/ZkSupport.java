@@ -5,7 +5,7 @@ import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
+
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -76,19 +76,9 @@ public class ZkSupport {
      * @param createMode
      */
     void createPathIfAbsent(String path, CreateMode createMode) throws KeeperException, InterruptedException {
-        String[] split = path.split("/");
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < split.length; i++) {
-            if (StringUtils.hasText(split[i])) {
-                sb.append(split[i]);
-                Stat s = zookeeper.exists(sb.toString(), false);
-                if (s == null) {
-                    zookeeper.create(sb.toString(), new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE, createMode);
-                }
-            }
-            if (i < split.length - 1) {
-                sb.append("/");
-            }
+        Stat s = zookeeper.exists(path, false);
+        if (s == null) {
+            zookeeper.create(path, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE, createMode);
         }
     }
 

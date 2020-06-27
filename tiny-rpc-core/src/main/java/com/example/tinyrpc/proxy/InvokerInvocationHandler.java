@@ -43,6 +43,7 @@ public class InvokerInvocationHandler implements InvocationHandler {
         }
         invocation.setMethodName(methodName);
         invocation.setArguments(args);
+        invocation.setParameterTypes(parameterTypes);
         return invoker.invoke(invocation);
     }
 }

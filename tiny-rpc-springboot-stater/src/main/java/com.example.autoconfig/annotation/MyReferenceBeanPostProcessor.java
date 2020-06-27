@@ -35,6 +35,7 @@ public class MyReferenceBeanPostProcessor implements BeanPostProcessor {
                     invocation.setTimeout(reference.timeout());
                     invocation.setSerializer(SERIALIZER_MAP.get(reference.serializer()));
                     invocation.setInterfaceClass(interfaceClass);
+                    invocation.setServiceName(interfaceClass.getName());
                     //将含有@Reference的字段的属性替换成代理对象
                     try {
                         field.setAccessible(true);

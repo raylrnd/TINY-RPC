@@ -16,8 +16,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * 这里参考Dubbo的做法，初始化的时候拉取全量的数据。之后每当注册中心的值变化时，更新之前缓存过的全量数据中的被改变的部分。
  * 本项目的Zookeeper目录格式为 ：
  * |path                                   |  value               |
- * |/TINY-RPC/com.example.tinyrpc.AService | 192.168.1.1:1221$100 |
- * |/TINY-RPC/com.example.tinyrpc.BService | 192.168.1.4:1221$200 |
+ * |/TINY-RPC/com.example.tinyrpc.AService | 192.168.1.1:1221&100 |
+ * |/TINY-RPC/com.example.tinyrpc.BService | 192.168.1.4:1221&200 |
  * |/TINY-RPC/com.example.tinyrpc.AService | 192.168.1.2:1221&300 |
  * @auther zhongshunchao
  * @date 20/06/2020 17:16

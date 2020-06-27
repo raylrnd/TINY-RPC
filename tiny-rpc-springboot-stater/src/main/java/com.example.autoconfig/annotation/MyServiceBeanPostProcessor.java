@@ -13,7 +13,7 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 public class MyServiceBeanPostProcessor implements BeanPostProcessor {
 
     @Override
-    public Object postProcessBeforeInitialization(Object bean, String beanName) {
+    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
         Class<?> beanClass = bean.getClass();
         if (!beanClass.isAnnotationPresent(MyService.class)) {
             return bean;
@@ -26,7 +26,7 @@ public class MyServiceBeanPostProcessor implements BeanPostProcessor {
         url.setWeight(rpcService.weight());
         url.setIp("127.0.0.1");
         ServiceConfig serviceConfig = new ServiceConfig();
-        serviceConfig.export(url,bean);
+        serviceConfig.export(url, bean);
         return bean;
     }
 
