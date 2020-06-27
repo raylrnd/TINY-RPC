@@ -1,20 +1,30 @@
 package com.example.tinyrpc.protocol;
 
+import com.alibaba.fastjson.JSON;
 import com.example.tinyrpc.cluster.LoadBalance;
 import com.example.tinyrpc.cluster.RandomLoadBalancer;
 import com.example.tinyrpc.common.Invocation;
 import com.example.tinyrpc.common.exception.BusinessException;
+import com.example.tinyrpc.proxy.InvokerInvocationHandler;
 import com.example.tinyrpc.registry.ZkServiceRegistry;
 import com.example.tinyrpc.transport.Client;
 import com.example.tinyrpc.transport.client.NettyClient;
-import java.util.*;
-import java.util.concurrent.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @auther zhongshunchao
  * @date 2020/5/21 11:16 上午
  */
 public class ProxyInvoker implements Invoker {
+
+    private static final Logger log = LoggerFactory.getLogger(InvokerInvocationHandler.class);
 
     private Invoker realInvoker;
 
@@ -28,11 +38,6 @@ public class ProxyInvoker implements Invoker {
     private final ZkServiceRegistry zkServiceRegistry = ZkServiceRegistry.getInstance();
 
     private static final LoadBalance LOAD_BALANCE = new RandomLoadBalancer();
-
-    /**
-     * 因为是IO密集型任务，所以这里我设置为电脑的核心数*2
-     */
-    private static final ExecutorService POOL = Executors.newFixedThreadPool(8);
 
     ProxyInvoker(Class<?> interfaceClass) {
         this.interfaceClass = interfaceClass;
@@ -51,26 +56,33 @@ public class ProxyInvoker implements Invoker {
         this.realInvoker = LOAD_BALANCE.select(new ArrayList<>(invokerMap.values()));
     }
 
+    //这里之前犯过一个错误，不能异步删除和添加Client，防止子线程还没来的及删除该client，然后该client被select了，这样就会导致使用了无效的client
     private void dealZkCallBack(List<String> addUrlList, Set<String> closeUrlSet) {
+
+        log.info("接收到来自Zookeeper的CallBack， 需要添加的地址为 addUrlList : " + JSON.toJSONString(addUrlList) + " ； 需要关闭的url为 closeUrlSet ：" + JSON.toJSONString(closeUrlSet));
+
+
         // open Client
         for (String url : addUrlList) {
-            POOL.submit(() -> createInvoker(url));
+            createInvoker(url);
         }
 
         // close Client
         for (String url : closeUrlSet) {
-            POOL.submit(() -> {
-                String[] splits = getSplitsFromUrlString(url);
-                String address = splits[0];
-                Invoker invoker = invokerMap.get(address);
-                if (invoker != null) {
-                    invoker.destroy();
-                    invokerMap.remove(address);
-                }
-            });
+            String[] splits = getSplitsFromUrlString(url);
+            String address = splits[0];
+            Invoker invoker = invokerMap.get(address);
+            if (invoker != null) {
+                invoker.destroy();
+                invokerMap.remove(address);
+            }
         }
-        //重新进行负载均衡
+
+        log.info("系统开始进行负载均衡...");
+        log.info("全局zk地址缓存invokerMap为" + JSON.toJSONString(invokerMap));
         this.realInvoker = LOAD_BALANCE.select(new ArrayList<>(invokerMap.values()));
+        log.info("此次被LoadBalancer选中的invoker 为 ：" + JSON.toJSONString(realInvoker));
+
     }
 
     private String[] getSplitsFromUrlString(String url) {

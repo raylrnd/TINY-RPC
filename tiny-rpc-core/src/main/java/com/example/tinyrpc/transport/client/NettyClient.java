@@ -18,9 +18,9 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.example.tinyrpc.codec.Codec.*;
 
@@ -85,6 +85,7 @@ public class NettyClient implements Client {
 
     @Override
     public void close() {
+        log.info("正在关闭 Client ：" + address);
         if (this.channel != null && channel.isOpen()) {
             try {
                 this.channel.close().sync();
