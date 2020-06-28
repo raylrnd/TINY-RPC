@@ -72,7 +72,7 @@ public class NettyClient implements Client {
         String[] ipAndPort = address.trim().split(":");
         ChannelFuture future = bootstrap.connect(ipAndPort[0], Integer.valueOf(ipAndPort[1]));
         channel = future.channel();
-        log.info("Client CONNECTED at: " + address);
+        log.info("Client CONNECTED at: {}", address);
     }
 
     @Override
@@ -85,13 +85,12 @@ public class NettyClient implements Client {
 
     @Override
     public void close() {
-        log.info("正在关闭 Client ：" + address);
+        log.info("正在关闭 Client:{}", address);
         if (this.channel != null && channel.isOpen()) {
             try {
                 this.channel.close().sync();
             } catch (InterruptedException e) {
-                e.printStackTrace();
-                log.error("Client :" + address + "关闭异常");
+                log.error("Fail to close client, address:" + address);
             }
         }
     }

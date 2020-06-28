@@ -1,18 +1,24 @@
-package com.example.tinyrpc.protocol;
+package com.example.tinyrpc.protocol.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.example.tinyrpc.common.Invocation;
 import com.example.tinyrpc.common.Request;
+import com.example.tinyrpc.common.URL;
+import com.example.tinyrpc.common.exception.BusinessException;
+import com.example.tinyrpc.protocol.Invoker;
 import com.example.tinyrpc.transport.Client;
-import java.util.concurrent.ExecutionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /**
  * @auther zhongshunchao
  * @date 26/06/2020 21:43
  */
-public class RealInvoker implements Invoker{
+public class RealInvoker implements Invoker {
+
+    private static Logger log = LoggerFactory.getLogger(RealInvoker.class);
 
     private Client client;
 
@@ -20,45 +26,42 @@ public class RealInvoker implements Invoker{
 
     private Class<?> interfaceClass;
 
-    public RealInvoker(Class<?> interfaceClass, int weight) {
+    private URL url;
+
+    public RealInvoker(Class<?> interfaceClass, int weight, URL url) {
         this.interfaceClass = interfaceClass;
         this.weight = weight;
+        this.url = url;
     }
 
     @Override
     public Object invoke(Invocation invocation) {
-        //build Request
+        Invocation.Attachments attachments = invocation.getAttachments();
         Request request = new Request(123456789);
         request.setData(invocation);
-        request.setIs2way(!invocation.isOneWay());
-        request.setSerializationId(invocation.getSerializer());
-        //应该在这里进行负载均衡
+        request.setIs2way(!attachments.isOneWay());
+        request.setSerializationId(attachments.getSerializer());
         Future<Object> future = client.send(request);
         Object response = null;
         try {
             if (future != null) {
                 response = future.get(900, TimeUnit.SECONDS);
             }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (TimeoutException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            throw new BusinessException("Fail to get result from Server when invoking invocation:" + JSON.toJSONString(invocation));
         }
         return response;
     }
 
+    @Override
+    public URL getUrl() {
+        return url;
+    }
 
     @Override
     public Class<?> getInterface() {
         return interfaceClass;
     }
-
-    public int getWeight() {
-        return weight;
-    }
-
 
     public void setClient(Client client) {
         this.client = client;

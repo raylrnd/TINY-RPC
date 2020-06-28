@@ -15,30 +15,99 @@ public class Invocation {
 
     private Object[] arguments;
 
-    private boolean event = false;
-
-    private boolean oneWay = false;
-
-    private transient long timeout;
-
-    private transient int serializer;
+    private Attachments attachments;
 
     private transient Class<?> interfaceClass;
 
-    public boolean isEvent() {
-        return event;
-    }
+    public static class Attachments {
 
-    public void setEvent(boolean event) {
-        this.event = event;
-    }
+        private boolean event = false;
 
-    public boolean isOneWay() {
-        return oneWay;
-    }
+        private boolean oneWay = false;
 
-    public void setOneWay(boolean oneWay) {
-        this.oneWay = oneWay;
+        private transient long timeout;
+
+        private transient int serializer;
+
+        private String protocol;
+
+        private String proxy;
+
+        private String loadbalance;
+
+        private String[] filters;
+
+        public boolean isEvent() {
+            return event;
+        }
+
+        public Attachments setEvent(boolean event) {
+            this.event = event;
+            return this;
+        }
+
+        public boolean isOneWay() {
+            return oneWay;
+        }
+
+        public Attachments setOneWay(boolean oneWay) {
+            this.oneWay = oneWay;
+            return this;
+        }
+
+        public long getTimeout() {
+            return timeout;
+        }
+
+        public Attachments setTimeout(long timeout) {
+            this.timeout = timeout;
+            return this;
+        }
+
+        public int getSerializer() {
+            return serializer;
+        }
+
+        public Attachments setSerializer(int serializer) {
+            this.serializer = serializer;
+            return this;
+        }
+
+        public String getProtocol() {
+            return protocol;
+        }
+
+        public Attachments setProtocol(String protocol) {
+            this.protocol = protocol;
+            return this;
+        }
+
+        public String getProxy() {
+            return proxy;
+        }
+
+        public Attachments setProxy(String proxy) {
+            this.proxy = proxy;
+            return this;
+        }
+
+        public String getLoadbalance() {
+            return loadbalance;
+        }
+
+        public Attachments setLoadbalance(String loadbalance) {
+            this.loadbalance = loadbalance;
+            return this;
+        }
+
+        public String[] getFilters() {
+            return filters;
+        }
+
+        public Attachments setFilters(String[] filters) {
+            this.filters = filters;
+            return this;
+        }
     }
 
     public String getServiceName() {
@@ -73,21 +142,6 @@ public class Invocation {
         this.arguments = arguments;
     }
 
-    public long getTimeout() {
-        return timeout;
-    }
-
-    public void setTimeout(long timeout) {
-        this.timeout = timeout;
-    }
-
-    public int getSerializer() {
-        return serializer;
-    }
-
-    public void setSerializer(int serializer) {
-        this.serializer = serializer;
-    }
 
     public Class<?> getInterfaceClass() {
         return interfaceClass;
@@ -95,5 +149,13 @@ public class Invocation {
 
     public void setInterfaceClass(Class<?> interfaceClass) {
         this.interfaceClass = interfaceClass;
+    }
+
+    public Attachments getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(Attachments attachments) {
+        this.attachments = attachments;
     }
 }

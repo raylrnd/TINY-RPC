@@ -5,7 +5,9 @@ import com.example.tinyrpc.common.Invocation;
 import com.example.tinyrpc.config.ReferenceConfig;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+
 import java.lang.reflect.Field;
+
 import static com.example.tinyrpc.common.utils.SerializerUtil.SERIALIZER_MAP;
 
 /**
@@ -13,7 +15,7 @@ import static com.example.tinyrpc.common.utils.SerializerUtil.SERIALIZER_MAP;
  * @date 2020/5/21 3:06 下午
  */
 //解析@Reference
-public class MyReferenceBeanPostProcessor implements BeanPostProcessor {
+public class ReferenceBeanPostProcessor implements BeanPostProcessor {
 
     @Override
     public Object postProcessBeforeInitialization(Object o, String s) throws BeansException {
@@ -26,16 +28,18 @@ public class MyReferenceBeanPostProcessor implements BeanPostProcessor {
         Field[] fields = curClass.getDeclaredFields();
         //扫描含有@Reference的字段
         for (Field field : fields) {
-            if (field.isAnnotationPresent(MyReference.class)){
+            if (field.isAnnotationPresent(Reference.class)){
                 Class interfaceClass = field.getType();
-                MyReference reference = field.getAnnotation(MyReference.class);
+                Reference reference = field.getAnnotation(Reference.class);
                 if (reference != null) {
                     Invocation invocation = new Invocation();
-                    invocation.setOneWay(reference.oneway());
-                    invocation.setTimeout(reference.timeout());
-                    invocation.setSerializer(SERIALIZER_MAP.get(reference.serializer()));
+                    Invocation.Attachments attachments = new Invocation.Attachments();
+                    attachments.setOneWay(reference.oneway()).setTimeout(reference.timeout()).setProtocol(reference.protocol())
+                            .setProxy(reference.proxy()).setLoadbalance(reference.loadbalance())
+                            .setSerializer(SERIALIZER_MAP.get(reference.serializer())).setFilters(reference.filter());
                     invocation.setInterfaceClass(interfaceClass);
                     invocation.setServiceName(interfaceClass.getName());
+                    invocation.setAttachments(attachments);
                     //将含有@Reference的字段的属性替换成代理对象
                     try {
                         field.setAccessible(true);

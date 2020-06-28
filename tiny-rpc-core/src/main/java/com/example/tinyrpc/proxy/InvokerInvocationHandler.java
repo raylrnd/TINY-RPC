@@ -27,7 +27,7 @@ public class InvokerInvocationHandler implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         String methodName = method.getName();
-        log.info("start invoking method {" + methodName + " }");
+        log.info("start invoking method {}", methodName);
         if (method.getDeclaringClass() == Object.class) {
             return method.invoke(invoker, args);
         }

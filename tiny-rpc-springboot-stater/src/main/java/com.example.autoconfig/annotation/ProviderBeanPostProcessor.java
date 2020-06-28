@@ -10,15 +10,15 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
  * @date 29/05/2020 09:04
  */
 //解析@Providdr,将该类添加至缓存
-public class MyServiceBeanPostProcessor implements BeanPostProcessor {
+public class ProviderBeanPostProcessor implements BeanPostProcessor {
 
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
         Class<?> beanClass = bean.getClass();
-        if (!beanClass.isAnnotationPresent(MyService.class)) {
+        if (!beanClass.isAnnotationPresent(Provider.class)) {
             return bean;
         }
-        MyService rpcService = beanClass.getAnnotation(MyService.class);
+        Provider rpcService = beanClass.getAnnotation(Provider.class);
         URL url = new URL();
         String interfaceName = rpcService.interfaceClass().getName();
         url.setInterfaceName(interfaceName);

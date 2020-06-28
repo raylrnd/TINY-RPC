@@ -3,8 +3,8 @@ package com.example.tinyrpc.common;
 /**
  * @auther zhongshunchao
  * @date 24/06/2020 18:24
+ * dubbo中的URL中定义了一些扩展点的实现名、应用名、方法名，所属类目、版本号等
  */
-//dubbo中的URL中定义了一些扩展点的实现名、应用名、方法名，所属类目、版本号等
 public class URL {
 
     private String interfaceName;
@@ -14,6 +14,8 @@ public class URL {
     private String ip;
 
     private int port;
+
+    private String address;
 
     public String getInterfaceName() {
         return interfaceName;
@@ -51,7 +53,12 @@ public class URL {
         return getAddress() + "&" + weight;
     }
 
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
     public String getAddress() {
-        return ip + ":" + port;
+        return address;
     }
 }

@@ -11,13 +11,19 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface MyReference {
+public @interface Reference {
     boolean async() default false;
     boolean callback() default  false;
     boolean oneway() default  false;
     long timeout() default 3000;
     String serializer() default "protobuff";
-    String proxy() default "jsk";
+    String proxy() default "jdk";
+    String protocol() default "TINY-RPC";
+    String[] filter() default {};
+    /**
+     * Load balance strategy, legal values include: random, roundrobin, leastactive
+     */
+    String loadbalance() default "random";
 //    String callbackMethod() default "";
 //    int callbackParamIndex() default 1;
 }

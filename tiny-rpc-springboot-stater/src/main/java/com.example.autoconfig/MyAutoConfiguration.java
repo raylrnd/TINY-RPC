@@ -1,7 +1,7 @@
 package com.example.autoconfig;
 
-import com.example.autoconfig.annotation.MyReferenceBeanPostProcessor;
-import com.example.autoconfig.annotation.MyServiceBeanPostProcessor;
+import com.example.autoconfig.annotation.ReferenceBeanPostProcessor;
+import com.example.autoconfig.annotation.ProviderBeanPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -13,12 +13,12 @@ import org.springframework.context.annotation.Configuration;
 public class MyAutoConfiguration {
 
     @Bean
-    public MyReferenceBeanPostProcessor myReferenceBeanPostProcessor() {
-        return new MyReferenceBeanPostProcessor();
+    public ReferenceBeanPostProcessor myReferenceBeanPostProcessor() {
+        return new ReferenceBeanPostProcessor();
     }
 
     @Bean
-    public MyServiceBeanPostProcessor myServiceBeanPostProcessor() {
-        return new MyServiceBeanPostProcessor();
+    public ProviderBeanPostProcessor myServiceBeanPostProcessor() {
+        return new ProviderBeanPostProcessor();
     }
 }

@@ -5,7 +5,6 @@ import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -17,7 +16,7 @@ public class ZkSupport {
     /**
      * zk变量
      */
-    private ZooKeeper zookeeper = null;
+    private ZooKeeper zookeeper;
     /**
      * 信号量设置，用于等待zookeeper连接建立之后 通知阻塞程序继续向下执行
      */
@@ -38,14 +37,14 @@ public class ZkSupport {
                     if (Watcher.Event.EventType.None == eventType) {
                         //如果建立连接成功，则发送信号量，让后续阻塞程序向下执行
                         connectedSemaphore.countDown();
-                        log.info("ZK建立连接");
+                        log.info("Zookeeper connected successfully at address:" + ZK_ADDRESS);
                     }
                 }
             });
-            log.info("开始连接ZK服务器");
+            log.info("Start connecting Zookeeper");
             connectedSemaphore.await();
         } catch (Exception e) {
-            throw new BusinessException("无法连接注册中心 Zookeeper ：" + ZK_ADDRESS);
+            throw new BusinessException("Cannot connect Zookeeper ：" + ZK_ADDRESS);
         }
     }
 
@@ -55,7 +54,7 @@ public class ZkSupport {
             zookeeper.create(path + "/" + data, bytes, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
         } catch (InterruptedException | KeeperException ex) {
             ex.printStackTrace();
-            log.error("服务注册失败 path :" + path + ": data ；" + data);
+            log.error("Fail to register path :" + path + ": data ；" + data);
         }
     }
 
@@ -94,7 +93,7 @@ public class ZkSupport {
         try {
             this.zookeeper.close();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            log.error("Fail to close connection from Zookeeper, exception:" + e.getMessage());
         }
     }
 }

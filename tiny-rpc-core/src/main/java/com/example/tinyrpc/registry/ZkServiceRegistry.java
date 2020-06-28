@@ -46,7 +46,7 @@ public class ZkServiceRegistry {
             }
             List<String> allServiceNameList = ZK_SUPPORT.getChildren(ZK_REGISTRY_PATH, false);
             if (allServiceNameList.isEmpty()) {
-                log.info("注册中心的根目录 ：" + ZK_REGISTRY_PATH + " 下无数据");
+                log.info("注册中心的根目录 :{}下无数据", ZK_REGISTRY_PATH);
             } else {
                 for (String serviceName : allServiceNameList) {
                     List<String> addressList = ZK_SUPPORT.getChildren(getPath(serviceName), false);
@@ -54,7 +54,7 @@ public class ZkServiceRegistry {
                 }
             }
         } catch (KeeperException | InterruptedException e) {
-            e.printStackTrace();
+            log.error("Error when initializing SERVICE_URL_MAP, exception:" + e.getMessage());
         }
     }
 

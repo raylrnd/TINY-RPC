@@ -1,17 +1,12 @@
 package com.example.tinyrpc.transport.server;
 
-import com.alibaba.fastjson.JSON;
-import com.example.tinyrpc.common.Invocation;
 import com.example.tinyrpc.common.Request;
-import com.example.tinyrpc.common.Response;
-import com.example.tinyrpc.common.ResponseBody;
-import com.example.tinyrpc.config.ServiceConfig;
+import com.example.tinyrpc.transport.Server;
 import com.example.tinyrpc.transport.client.ClientHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.lang.reflect.Method;
 
 
 /**
@@ -23,19 +18,15 @@ public class ServerHandler extends SimpleChannelInboundHandler<Request> {
 
     private static Logger log = LoggerFactory.getLogger(ClientHandler.class);
 
+    private Server server;
+
+    ServerHandler(NettyServer nettyServer) {
+        this.server = nettyServer;
+    }
+
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Request request) throws Exception {
-        log.info("服务端 ServerHandler 收到Request为：" + JSON.toJSONString(request));
-        //调用代理，通过反射的方式调用本地jvm中的方法
-        Response response = new Response(request.getRequestId());
-        Invocation data = request.getData();
-        String className = data.getServiceName();
-        Object bean = ServiceConfig.SERVICE_MAP.get(className);
-        Method method = bean.getClass().getMethod(data.getMethodName(), data.getParameterTypes());
-        Object result = method.invoke(bean, data.getArguments());
-        ResponseBody responseBody = new ResponseBody();
-        responseBody.setResult(result);
-        response.setResponseBody(responseBody);
-        ctx.writeAndFlush(response);
+        log.info("服务端 ServerHandler 收到Request为：{}", request);
+        server.handleRequest(ctx, request);
     }
 }

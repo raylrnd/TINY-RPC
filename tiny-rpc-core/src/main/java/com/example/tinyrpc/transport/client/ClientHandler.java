@@ -1,6 +1,5 @@
 package com.example.tinyrpc.transport.client;
 
-import com.alibaba.fastjson.JSON;
 import com.example.tinyrpc.common.Response;
 import com.example.tinyrpc.common.exception.BusinessException;
 import com.example.tinyrpc.common.utils.FutureContext;
@@ -8,7 +7,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.util.concurrent.*;
+
+import java.util.concurrent.CompletableFuture;
 
 import static com.example.tinyrpc.common.Response.SERVICE_ERROR;
 
@@ -23,7 +23,7 @@ public class ClientHandler extends SimpleChannelInboundHandler<Response> {
     //读取responde消息
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Response response) throws Exception {
-        log.info("客户端 ClientHandler 收到Response为：" + JSON.toJSONString(response));
+        log.info("客户端 ClientHandler 收到Response为:{}" + response);
         if (response == null || response.getResponseBody() == null) {
             throw new BusinessException("response is null");
         }

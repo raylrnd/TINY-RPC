@@ -1,9 +1,10 @@
 package com.example.tinyrpc.config;
 
+import com.example.tinyrpc.common.ExtensionLoader;
 import com.example.tinyrpc.common.Invocation;
 import com.example.tinyrpc.protocol.Invoker;
 import com.example.tinyrpc.protocol.Protocol;
-import com.example.tinyrpc.protocol.RegistryProtocol;
+import com.example.tinyrpc.protocol.impl.ProtocolFilterWrapper;
 import com.example.tinyrpc.proxy.JdkProxyFactory;
 import com.example.tinyrpc.proxy.ProxyFactory;
 
@@ -16,15 +17,15 @@ public class ReferenceConfig {
 
 //    private transient volatile boolean destroyed;
 
-    private static final Protocol REF_PROTOCOL = new RegistryProtocol();
+    private Protocol protocol = new ProtocolFilterWrapper();
 
-    private static final ProxyFactory PROXY_FACTORY = new JdkProxyFactory();
+    private ProxyFactory proxyFactory = new JdkProxyFactory();
 
     public Object getProxy(Invocation invocation) {
-//        if (destroyed) {
-//            throw new IllegalStateException("The invoker of ReferenceConfig has already destroyed!");
-//        }
-        Invoker invoker = REF_PROTOCOL.refer(invocation.getInterfaceClass());
-        return PROXY_FACTORY.getProxy(invoker, invocation);
+        Invocation.Attachments attachments = invocation.getAttachments();
+        protocol = (Protocol) ExtensionLoader.getExtension(attachments.getProtocol());
+        proxyFactory = (ProxyFactory) ExtensionLoader.getExtension(attachments.getProxy());
+        Invoker invoker = protocol.refer(invocation);
+        return proxyFactory.getProxy(invoker, invocation);
     }
 }

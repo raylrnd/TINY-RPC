@@ -17,9 +17,6 @@ import java.util.List;
 /**
  * @auther zhongshunchao
  * @date 08/05/2020 08:23
- */
-
-/**
  * 仿照Dubbo协议
  *  ------------ (32 bits)
  *  totoal length except this             // 往下的所有字段长度的总和

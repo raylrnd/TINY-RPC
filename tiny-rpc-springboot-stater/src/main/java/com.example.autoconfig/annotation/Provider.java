@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Component
-public @interface MyService {
+public @interface Provider {
     Class<?> interfaceClass() default void.class;
     int port() default 8787;
     int weight() default 1;
