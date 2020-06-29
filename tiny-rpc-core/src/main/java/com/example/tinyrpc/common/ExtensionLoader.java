@@ -26,10 +26,10 @@ public class ExtensionLoader {
 
     private static Logger log = LoggerFactory.getLogger(ExtensionLoader.class);
 
-    //alias -> Class
+    // alias -> Class
     private static final Map<String, Class<?>> ALIAS_CLASS_MAP = new HashMap<>();
 
-    //Class -> Instance
+    // Class -> Instance
     private static final Map<Class<?>, Object> INSTANCE_MAP = new ConcurrentHashMap<>();
 
     private static final String INTERNAL_LOAD = "META-INF/TINY-RPC/internal";
@@ -38,15 +38,16 @@ public class ExtensionLoader {
 
     private static List<Filter> defaultFilterList = new ArrayList<>();
 
-    //这里的corePoolSize和maxmumPoolSize是按经验公式设置的。队列长度如果设置过长，会导致调用超时；如果设置过短，会导致大量请求被拒绝。
+    // 这里的corePoolSize和maxmumPoolSize是按经验公式设置的。队列长度如果设置过长，会导致调用超时；如果设置过短，会导致大量请求被拒绝。
     private static final ExecutorService DEFAULT_EXECUTOR_SERVICE = new ThreadPoolExecutor(8, 16, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(100)
             , new CustomizableThreadFactory("default-business-thread-"), new ThreadPoolExecutor.AbortPolicy());
 
-    //dubbo 源码中采用策略模式获取不同的目录
+    // dubbo 源码中采用策略模式获取不同的目录
     static {
-        //通过类加载器读取目录下所有文件并读取
+        // 通过类加载器读取目录下所有文件并读取
         loadDirectory(ExtensionLoader.class.getClassLoader().getResource(INTERNAL_LOAD));
         loadDirectory(ExtensionLoader.class.getClassLoader().getResource(EXTERNAL_LOAD));
+        log.info("Current ALIAS_CLASS_MAP:{}, INSTANCE_MAP:{}" ,ALIAS_CLASS_MAP, INSTANCE_MAP);
     }
 
     private static void loadDirectory(URL parent) {
@@ -59,6 +60,8 @@ public class ExtensionLoader {
                     handleFile(file);
                 }
                 log.info("Extension configuration file read complete");
+            } else {
+                log.warn("cannot find files under path:{}" + parent.getFile());
             }
         }
     }

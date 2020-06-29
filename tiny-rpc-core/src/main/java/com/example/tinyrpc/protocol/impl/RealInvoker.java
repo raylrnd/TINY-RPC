@@ -36,11 +36,11 @@ public class RealInvoker implements Invoker {
 
     @Override
     public Object invoke(Invocation invocation) {
-        Invocation.Attachments attachments = invocation.getAttachments();
+        URL url = invocation.getUrl();
         Request request = new Request(123456789);
         request.setData(invocation);
-        request.setIs2way(!attachments.isOneWay());
-        request.setSerializationId(attachments.getSerializer());
+        request.setIs2way(!url.isOneWay());
+        request.setSerializationId(url.getSerializer());
         Future<Object> future = client.send(request);
         Object response = null;
         try {

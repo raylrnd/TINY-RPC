@@ -18,7 +18,8 @@ public @interface Provider {
     Class<?> interfaceClass() default void.class;
     int port() default 8787;
     int weight() default 1;
-    boolean callback() default false;
-    String callbackMethod() default "";
-    int callbackParamIndex() default 1;
+    String serializer() default "protobuff";
+    String proxy() default "jdk";
+    String protocol() default "TINY-RPC";
+    String[] filter() default {};
 }

@@ -17,6 +17,92 @@ public class URL {
 
     private String address;
 
+    private boolean event = false;
+
+    private boolean oneWay = false;
+
+    private long timeout;
+
+    private int serializer;
+
+    private String protocol;
+
+    private String proxy;
+
+    private String loadbalance;
+
+    private String[] filters;
+
+    public boolean isEvent() {
+        return event;
+    }
+
+    public void setEvent(boolean event) {
+        this.event = event;
+    }
+
+    public boolean isOneWay() {
+        return oneWay;
+    }
+
+    public URL setOneWay(boolean oneWay) {
+        this.oneWay = oneWay;
+        return this;
+    }
+
+    public long getTimeout() {
+        return timeout;
+    }
+
+    public URL setTimeout(long timeout) {
+        this.timeout = timeout;
+        return this;
+    }
+
+    public int getSerializer() {
+        return serializer;
+    }
+
+    public URL setSerializer(int serializer) {
+        this.serializer = serializer;
+        return this;
+    }
+
+    public String getProtocol() {
+        return protocol;
+    }
+
+    public URL setProtocol(String protocol) {
+        this.protocol = protocol;
+        return this;
+    }
+
+    public String getProxy() {
+        return proxy;
+    }
+
+    public URL setProxy(String proxy) {
+        this.proxy = proxy;
+        return this;
+    }
+
+    public String getLoadbalance() {
+        return loadbalance;
+    }
+
+    public URL setLoadbalance(String loadbalance) {
+        this.loadbalance = loadbalance;
+        return this;
+    }
+
+    public String[] getFilters() {
+        return filters;
+    }
+
+    public void setFilters(String[] filters) {
+        this.filters = filters;
+    }
+
     public String getInterfaceName() {
         return interfaceName;
     }

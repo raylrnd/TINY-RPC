@@ -15,100 +15,9 @@ public class Invocation {
 
     private Object[] arguments;
 
-    private Attachments attachments;
+    private URL url;
 
     private transient Class<?> interfaceClass;
-
-    public static class Attachments {
-
-        private boolean event = false;
-
-        private boolean oneWay = false;
-
-        private transient long timeout;
-
-        private transient int serializer;
-
-        private String protocol;
-
-        private String proxy;
-
-        private String loadbalance;
-
-        private String[] filters;
-
-        public boolean isEvent() {
-            return event;
-        }
-
-        public Attachments setEvent(boolean event) {
-            this.event = event;
-            return this;
-        }
-
-        public boolean isOneWay() {
-            return oneWay;
-        }
-
-        public Attachments setOneWay(boolean oneWay) {
-            this.oneWay = oneWay;
-            return this;
-        }
-
-        public long getTimeout() {
-            return timeout;
-        }
-
-        public Attachments setTimeout(long timeout) {
-            this.timeout = timeout;
-            return this;
-        }
-
-        public int getSerializer() {
-            return serializer;
-        }
-
-        public Attachments setSerializer(int serializer) {
-            this.serializer = serializer;
-            return this;
-        }
-
-        public String getProtocol() {
-            return protocol;
-        }
-
-        public Attachments setProtocol(String protocol) {
-            this.protocol = protocol;
-            return this;
-        }
-
-        public String getProxy() {
-            return proxy;
-        }
-
-        public Attachments setProxy(String proxy) {
-            this.proxy = proxy;
-            return this;
-        }
-
-        public String getLoadbalance() {
-            return loadbalance;
-        }
-
-        public Attachments setLoadbalance(String loadbalance) {
-            this.loadbalance = loadbalance;
-            return this;
-        }
-
-        public String[] getFilters() {
-            return filters;
-        }
-
-        public Attachments setFilters(String[] filters) {
-            this.filters = filters;
-            return this;
-        }
-    }
 
     public String getServiceName() {
         return serviceName;
@@ -151,11 +60,11 @@ public class Invocation {
         this.interfaceClass = interfaceClass;
     }
 
-    public Attachments getAttachments() {
-        return attachments;
+    public URL getUrl() {
+        return url;
     }
 
-    public void setAttachments(Attachments attachments) {
-        this.attachments = attachments;
+    public void setUrl(URL url) {
+        this.url = url;
     }
 }

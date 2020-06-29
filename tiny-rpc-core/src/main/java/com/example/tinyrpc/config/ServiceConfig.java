@@ -1,10 +1,11 @@
 package com.example.tinyrpc.config;
 
+import com.example.tinyrpc.common.ExtensionLoader;
 import com.example.tinyrpc.common.URL;
 import com.example.tinyrpc.protocol.Protocol;
-import com.example.tinyrpc.protocol.impl.ProtocolFilterWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.util.HashMap;
 
 /**
@@ -17,11 +18,10 @@ public class ServiceConfig {
 
     public static final HashMap<String, Object> SERVICE_MAP = new HashMap<>();
 
-    private static final Protocol REF_PROTOCOL = new ProtocolFilterWrapper();
-
     //将服务发布到ZK并开启server
     public void export(URL url, Object bean) {
-        REF_PROTOCOL.export(url);
+        Protocol protocol = (Protocol) ExtensionLoader.getExtension(url.getProtocol());
+        protocol.export(url);
         ServiceConfig.SERVICE_MAP.put(url.getInterfaceName(), bean);
     }
 

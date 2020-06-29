@@ -2,6 +2,7 @@ package com.example.autoconfig.annotation;
 
 
 import com.example.tinyrpc.common.Invocation;
+import com.example.tinyrpc.common.URL;
 import com.example.tinyrpc.config.ReferenceConfig;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -33,13 +34,13 @@ public class ReferenceBeanPostProcessor implements BeanPostProcessor {
                 Reference reference = field.getAnnotation(Reference.class);
                 if (reference != null) {
                     Invocation invocation = new Invocation();
-                    Invocation.Attachments attachments = new Invocation.Attachments();
-                    attachments.setOneWay(reference.oneway()).setTimeout(reference.timeout()).setProtocol(reference.protocol())
+                    URL url = new URL();
+                    url.setOneWay(reference.oneway()).setTimeout(reference.timeout()).setProtocol(reference.protocol())
                             .setProxy(reference.proxy()).setLoadbalance(reference.loadbalance())
                             .setSerializer(SERIALIZER_MAP.get(reference.serializer())).setFilters(reference.filter());
                     invocation.setInterfaceClass(interfaceClass);
                     invocation.setServiceName(interfaceClass.getName());
-                    invocation.setAttachments(attachments);
+                    invocation.setUrl(url);
                     //将含有@Reference的字段的属性替换成代理对象
                     try {
                         field.setAccessible(true);

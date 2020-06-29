@@ -20,7 +20,7 @@ public class ProtocolFilterWrapper implements Protocol {
 
     private final Protocol protocol;
 
-    private Invocation.Attachments attachments;
+    private URL url;
 
     public ProtocolFilterWrapper() {
         this.protocol = new RegistryProtocol();
@@ -29,7 +29,7 @@ public class ProtocolFilterWrapper implements Protocol {
     private Invoker buildInvokerChain(final Invoker invoker) {
         Invoker last = invoker;
         // 获得所有激活的Filter(简化处理，不进行排序)
-        List<Filter> filters = ExtensionLoader.buidFilterChain(attachments.getFilters());
+        List<Filter> filters = ExtensionLoader.buidFilterChain(url.getFilters());
         log.info("Build Filter Successful, Filters:{}", filters);
         if (filters.size() > 0) {
             for (int i = filters.size() - 1; i >= 0; i--) {
@@ -66,7 +66,7 @@ public class ProtocolFilterWrapper implements Protocol {
 
     @Override
     public Invoker refer(Invocation invocation) {
-        this.attachments = invocation.getAttachments();
+        this.url = invocation.getUrl();
         return buildInvokerChain(protocol.refer(invocation));
     }
 

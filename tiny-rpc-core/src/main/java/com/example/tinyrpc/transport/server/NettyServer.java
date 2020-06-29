@@ -44,7 +44,6 @@ public class NettyServer implements Server {
 
     private String address;
 
-    //当前任务为CPU密集型，corePoolSize = CPU * 2, maximumPoolSize = CPU * 4, 空闲存活时间1s
     private ExecutorService executor = ExtensionLoader.getDefaultExecutor();
 
     public NettyServer(String address) {
@@ -79,15 +78,13 @@ public class NettyServer implements Server {
     }
 
     public void handleRequest(ChannelHandlerContext ctx, Request request) throws Exception{
-
         executor.submit(() -> {
             //调用代理，通过反射的方式调用本地jvm中的方法
             Response response = new Response(request.getRequestId());
             Invocation data = request.getData();
             String className = data.getServiceName();
             Object bean = ServiceConfig.SERVICE_MAP.get(className);
-
-            Method method = null;
+            Method method;
             try {
                 method = bean.getClass().getMethod(data.getMethodName(), data.getParameterTypes());
                 Object result = method.invoke(bean, data.getArguments());
@@ -96,10 +93,8 @@ public class NettyServer implements Server {
                 response.setResponseBody(responseBody);
                 ctx.writeAndFlush(response);
             } catch (Exception e) {
-                log.error("HandleRequest error, exception:" + e.getMessage());
+                throw new BusinessException("HandleRequest error, exception:" + e.getMessage());
             }
-
-
         });
     }
 

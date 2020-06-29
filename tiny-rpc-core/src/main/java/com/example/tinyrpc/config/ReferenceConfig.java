@@ -2,10 +2,9 @@ package com.example.tinyrpc.config;
 
 import com.example.tinyrpc.common.ExtensionLoader;
 import com.example.tinyrpc.common.Invocation;
+import com.example.tinyrpc.common.URL;
 import com.example.tinyrpc.protocol.Invoker;
 import com.example.tinyrpc.protocol.Protocol;
-import com.example.tinyrpc.protocol.impl.ProtocolFilterWrapper;
-import com.example.tinyrpc.proxy.JdkProxyFactory;
 import com.example.tinyrpc.proxy.ProxyFactory;
 
 /**
@@ -15,16 +14,10 @@ import com.example.tinyrpc.proxy.ProxyFactory;
 //@Reference里的内容
 public class ReferenceConfig {
 
-//    private transient volatile boolean destroyed;
-
-    private Protocol protocol = new ProtocolFilterWrapper();
-
-    private ProxyFactory proxyFactory = new JdkProxyFactory();
-
     public Object getProxy(Invocation invocation) {
-        Invocation.Attachments attachments = invocation.getAttachments();
-        protocol = (Protocol) ExtensionLoader.getExtension(attachments.getProtocol());
-        proxyFactory = (ProxyFactory) ExtensionLoader.getExtension(attachments.getProxy());
+        URL url = invocation.getUrl();
+        Protocol protocol = (Protocol) ExtensionLoader.getExtension(url.getProtocol());
+        ProxyFactory proxyFactory = (ProxyFactory) ExtensionLoader.getExtension(url.getProxy());
         Invoker invoker = protocol.refer(invocation);
         return proxyFactory.getProxy(invoker, invocation);
     }
