@@ -1,7 +1,8 @@
 package com.example.tinyrpc.protocol.impl;
 
 import com.example.tinyrpc.cluster.LoadBalance;
-import com.example.tinyrpc.cluster.RandomLoadBalancer;
+import com.example.tinyrpc.cluster.impl.RandomLoadBalancer;
+import com.example.tinyrpc.common.ExtensionLoader;
 import com.example.tinyrpc.common.Invocation;
 import com.example.tinyrpc.common.URL;
 import com.example.tinyrpc.common.exception.BusinessException;
@@ -24,11 +25,11 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class InvokerClientWrapper implements Invoker {
 
-    private static final Logger log = LoggerFactory.getLogger(InvokerClientWrapper.class);
+    private static final Logger logger = LoggerFactory.getLogger(InvokerClientWrapper.class);
 
     private Invoker realInvoker;
 
-    private Class<?> interfaceClass;
+    private Invocation invocation;
 
     /**
      * address -> Client(Invoker) ：全局InvokerMap
@@ -37,10 +38,10 @@ public class InvokerClientWrapper implements Invoker {
 
     private final ZkServiceRegistry zkServiceRegistry = ZkServiceRegistry.getInstance();
 
-    private static final LoadBalance LOAD_BALANCE = new RandomLoadBalancer();
+    private final LoadBalance loadBalance = ExtensionLoader.getExtensionLoader().getExtension(LoadBalance.class, invocation.getUrl().getLoadbalance());
 
-    InvokerClientWrapper(Class<?> interfaceClass) {
-        this.interfaceClass = interfaceClass;
+    InvokerClientWrapper(Invocation invocation) {
+        this.invocation = invocation;
         init();
     }
 
@@ -48,18 +49,18 @@ public class InvokerClientWrapper implements Invoker {
      * 初始化方法，每个对象只执行一次，初始化invokerMap
      */
     private void init() {
-        String serviceName = this.interfaceClass.getCanonicalName();
-        Set<String> serviceUrlList = zkServiceRegistry.findServiceUrl(serviceName, this::dealZkCallBack);
+        String serviceName = this.invocation.getInterfaceClass().getCanonicalName();
+        Set<String> serviceUrlList = zkServiceRegistry.findServiceUrl(serviceName, this::handleZkCallBack);
         for (String url : serviceUrlList) {
             createInvoker(url);
         }
-        this.realInvoker = LOAD_BALANCE.select(new ArrayList<>(invokerMap.values()));
+        this.realInvoker = loadBalance.select(new ArrayList<>(invokerMap.values()));
     }
 
     //这里之前犯过一个错误，不能异步删除和添加Client，防止子线程还没来的及删除该client，然后该client被select了，这样就会导致使用了无效的client
-    private void dealZkCallBack(List<String> addUrlList, Set<String> closeUrlSet) {
+    private void handleZkCallBack(List<String> addUrlList, Set<String> closeUrlSet) {
 
-        log.info("接收到来自Zookeeper的CallBack， 需要添加的地址为 addUrlList : {}", addUrlList, " ； 需要关闭的url为 closeUrlSet ：{}", closeUrlSet);
+        logger.info("接收到来自Zookeeper的CallBack， 需要添加的地址为 addUrlList : {}", addUrlList, " ； 需要关闭的url为 closeUrlSet ：{}", closeUrlSet);
 
         // open Client
         for (String url : addUrlList) {
@@ -77,10 +78,10 @@ public class InvokerClientWrapper implements Invoker {
             }
         }
 
-        log.info("系统开始进行负载均衡...");
-        log.info("全局zk地址缓存invokerMap为{}", invokerMap);
-        this.realInvoker = LOAD_BALANCE.select(new ArrayList<>(invokerMap.values()));
-        log.info("此次被LoadBalancer选中的invoker 为 ：{}", realInvoker);
+        logger.info("系统开始进行负载均衡...");
+        logger.info("全局zk地址缓存invokerMap为{}", invokerMap);
+        this.realInvoker = loadBalance.select(new ArrayList<>(invokerMap.values()));
+        logger.info("此次被LoadBalancer选中的invoker 为 ：{}", realInvoker);
 
     }
 
@@ -99,7 +100,7 @@ public class InvokerClientWrapper implements Invoker {
         Client client = new NettyClient(address);
         URL realUrl = new URL();
         realUrl.setAddress(address);
-        RealInvoker invoker = new RealInvoker(interfaceClass, weight, realUrl);
+        RealInvoker invoker = new RealInvoker(invocation.getInterfaceClass(), weight, realUrl);
         invoker.setClient(client);
         invokerMap.put(address, invoker);
     }
@@ -112,7 +113,7 @@ public class InvokerClientWrapper implements Invoker {
 
     @Override
     public Class<?> getInterface() {
-        return interfaceClass;
+        return invocation.getInterfaceClass();
     }
 
     @Override

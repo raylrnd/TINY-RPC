@@ -24,7 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ZkServiceRegistry {
 
-    private static Logger log = LoggerFactory.getLogger(ZkServiceRegistry.class);
+    private static Logger logger = LoggerFactory.getLogger(ZkServiceRegistry.class);
 
     private static final String ZK_REGISTRY_PATH = "/TINY-RPC";
 
@@ -46,7 +46,7 @@ public class ZkServiceRegistry {
             }
             List<String> allServiceNameList = ZK_SUPPORT.getChildren(ZK_REGISTRY_PATH, false);
             if (allServiceNameList.isEmpty()) {
-                log.warn("There is no Node under root path:{}", ZK_REGISTRY_PATH);
+                logger.warn("There is no Node under root path:{}", ZK_REGISTRY_PATH);
             } else {
                 for (String serviceName : allServiceNameList) {
                     List<String> addressList = ZK_SUPPORT.getChildren(getPath(serviceName), false);
@@ -54,7 +54,7 @@ public class ZkServiceRegistry {
                 }
             }
         } catch (KeeperException | InterruptedException e) {
-            log.error("Error when initializing SERVICE_URL_MAP, exception:" + e.getMessage());
+            logger.error("Error when initializing SERVICE_URL_MAP, exception:" + e.getMessage());
         }
     }
 
@@ -90,7 +90,7 @@ public class ZkServiceRegistry {
             }
             return updateAddress(interfaceName, newUrlList, updateAddressCallBack);
         } catch (KeeperException | InterruptedException e) {
-            log.info("更新服务地址缓存失败");
+            logger.info("更新服务地址缓存失败");
             //如果和Zookeeper断线失联，则从缓存中获取
             return SERVICE_URL_MAP.get(interfaceName);
         }

@@ -1,1 +1,1 @@
-jdk=com.example.tinyrpc.proxy.JdkProxyFactory
+jdk=com.example.tinyrpc.proxy.impl.JdkProxyFactory

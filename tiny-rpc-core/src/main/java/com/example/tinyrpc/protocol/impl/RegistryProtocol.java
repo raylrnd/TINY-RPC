@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class RegistryProtocol implements Protocol {
 
-    private static Logger log = LoggerFactory.getLogger(RegistryProtocol.class);
+    private static Logger logger = LoggerFactory.getLogger(RegistryProtocol.class);
 
     /**
      * interfaceName -> InvokerClientWrapper
@@ -40,7 +40,7 @@ public class RegistryProtocol implements Protocol {
         if (invoker != null) {
             return invoker;
         } else {
-            return new InvokerClientWrapper(invocation.getInterfaceClass());
+            return new InvokerClientWrapper(invocation);
         }
     }
 

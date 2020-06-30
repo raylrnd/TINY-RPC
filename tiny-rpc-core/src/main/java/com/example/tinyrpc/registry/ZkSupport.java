@@ -11,7 +11,7 @@ import java.util.concurrent.CountDownLatch;
 
 public class ZkSupport {
 
-    private static Logger log = LoggerFactory.getLogger(ZkSupport.class);
+    private static Logger logger = LoggerFactory.getLogger(ZkSupport.class);
 
     /**
      * zk变量
@@ -37,11 +37,11 @@ public class ZkSupport {
                     if (Watcher.Event.EventType.None == eventType) {
                         //如果建立连接成功，则发送信号量，让后续阻塞程序向下执行
                         connectedSemaphore.countDown();
-                        log.info("Zookeeper connected successfully at address:" + ZK_ADDRESS);
+                        logger.info("Zookeeper connected successfully at address:" + ZK_ADDRESS);
                     }
                 }
             });
-            log.info("Start connecting Zookeeper");
+            logger.info("Start connecting Zookeeper");
             connectedSemaphore.await();
         } catch (Exception e) {
             throw new BusinessException("Cannot connect Zookeeper ：" + ZK_ADDRESS);
@@ -54,7 +54,7 @@ public class ZkSupport {
             zookeeper.create(path + "/" + data, bytes, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
         } catch (InterruptedException | KeeperException ex) {
             ex.printStackTrace();
-            log.error("Fail to register path :" + path + ": data ；" + data);
+            logger.error("Fail to register path :" + path + ": data ；" + data);
         }
     }
 
@@ -93,7 +93,7 @@ public class ZkSupport {
         try {
             this.zookeeper.close();
         } catch (InterruptedException e) {
-            log.error("Fail to close connection from Zookeeper, exception:" + e.getMessage());
+            logger.error("Fail to close connection from Zookeeper, exception:" + e.getMessage());
         }
     }
 }

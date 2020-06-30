@@ -18,12 +18,12 @@ import static com.example.tinyrpc.common.Response.SERVICE_ERROR;
  */
 public class ClientHandler extends SimpleChannelInboundHandler<Response> {
 
-    private static Logger log = LoggerFactory.getLogger(ClientHandler.class);
+    private static Logger logger = LoggerFactory.getLogger(ClientHandler.class);
 
     //读取responde消息
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Response response) throws Exception {
-        log.info("客户端 ClientHandler 收到Response为:{}" + response);
+        logger.info("客户端 ClientHandler 收到Response为:{}" + response);
         if (response == null || response.getResponseBody() == null) {
             throw new BusinessException("response is null");
         }

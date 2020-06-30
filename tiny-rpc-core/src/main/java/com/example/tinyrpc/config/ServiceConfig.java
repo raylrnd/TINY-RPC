@@ -14,7 +14,7 @@ import java.util.HashMap;
  */
 public class ServiceConfig {
 
-    private static Logger log = LoggerFactory.getLogger(ServiceConfig.class);
+    private static Logger logger = LoggerFactory.getLogger(ServiceConfig.class);
 
     public static final HashMap<String, Object> SERVICE_MAP = new HashMap<>();
 

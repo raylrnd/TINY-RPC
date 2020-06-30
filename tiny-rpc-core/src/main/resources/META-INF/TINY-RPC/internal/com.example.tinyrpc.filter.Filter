@@ -1,2 +1,2 @@
-active-limit-filter=com.example.tinyrpc.filter.ActiveLimitFilter
-log-filter=com.example.tinyrpc.filter.LogFilter
+active-limit-filter=com.example.tinyrpc.filter.impl.ActiveLimitFilter
+log-filter=com.example.tinyrpc.filter.impl.LogFilter

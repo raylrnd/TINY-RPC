@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class RealInvoker implements Invoker {
 
-    private static Logger log = LoggerFactory.getLogger(RealInvoker.class);
+    private static Logger logger = LoggerFactory.getLogger(RealInvoker.class);
 
     private Client client;
 

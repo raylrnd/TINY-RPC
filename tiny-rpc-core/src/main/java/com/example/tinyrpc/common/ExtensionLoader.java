@@ -20,7 +20,7 @@ import java.util.concurrent.*;
  */
 public class ExtensionLoader {
 
-    private static Logger log = LoggerFactory.getLogger(ExtensionLoader.class);
+    private static Logger logger = LoggerFactory.getLogger(ExtensionLoader.class);
 
     // alias -> Class
     private static final Map<String, Class> EXTERNAL_ALIAS_CLASS_MAP = new HashMap<>();
@@ -37,7 +37,7 @@ public class ExtensionLoader {
 
     private static List<Filter> defaultFilterList = new ArrayList<>();
 
-    public static volatile ExtensionLoader instance;
+    private static volatile ExtensionLoader instance;
 
     public static ExtensionLoader getExtensionLoader() {
         if (instance == null) {
@@ -60,7 +60,7 @@ public class ExtensionLoader {
 //        loadDirectory(ExtensionLoader.class.getResource(INTERNAL_LOAD));
         loadExternalDirectory(this.getClass().getClassLoader().getResource(EXTERNAL_LOAD));
 //        loadDirectory(ExtensionLoader.class.getClassLoader().getResource(EXTERNAL_LOAD));
-        log.info("Current ALIAS_CLASS_MAP:{}, INSTANCE_MAP:{}", EXTERNAL_ALIAS_CLASS_MAP, INSTANCE_MAP);
+        logger.info("Current ALIAS_CLASS_MAP:{}, INSTANCE_MAP:{}", EXTERNAL_ALIAS_CLASS_MAP, INSTANCE_MAP);
     }
 
     private void loadInternalDirectory(InputStream resourceAsStream) {
@@ -78,22 +78,20 @@ public class ExtensionLoader {
 
     private void loadExternalDirectory(java.net.URL parent) {
         if (parent != null) {
-            log.info("start reading Extension Files, under path:" + EXTERNAL_LOAD);
+            logger.info("start reading Extension Files, under path:" + EXTERNAL_LOAD);
             File dir = new File(parent.getFile());
             File[] files = dir.listFiles();
             if (files != null) {
                 for (File file : files) {
                     handleFile(file);
                 }
-                log.info("Extension configuration file read complete");
-            } else {
-                log.warn("cannot find files under path:{}" + parent.getFile());
+                logger.info("Extension configuration file read complete");
             }
         }
     }
 
     private void handleFile(File file) {
-        log.info("start reading file:{}", file);
+        logger.info("start reading file:{}", file);
         String interfaceName = file.getName();
             //根据文件名找到对应的Class对象
         try {
@@ -115,14 +113,14 @@ public class ExtensionLoader {
                 }
             }
         } catch (Exception e) {
-            log.error("Fail to load file，filename->" + interfaceName + ", exception:" + e.getMessage());
+            logger.error("Fail to load file，filename->" + interfaceName + ", exception:" + e.getMessage());
         }
     }
 
     private Class<?> checkImpl(Class<?> interfaceClass, String implClassName) throws ClassNotFoundException {
         Class<?> impl = Class.forName(implClassName);
         if (!interfaceClass.isAssignableFrom(impl)) {
-            log.error("实现类{}不是该接口{}的子类", impl, interfaceClass);
+            logger.error("实现类{}不是该接口{}的子类", impl, interfaceClass);
             throw new IllegalStateException("实现类{}不是该接口{}的子类");
         }
         return impl;
@@ -147,7 +145,7 @@ public class ExtensionLoader {
                             instance = clazz.newInstance();
                             INSTANCE_MAP.put(clazz, instance);
                         } catch (Exception e) {
-                            log.error("Fail to instantiate class " +  clazz.getCanonicalName(), ".exception:" + e.getMessage());
+                            logger.error("Fail to instantiate class " +  clazz.getCanonicalName(), ".exception:" + e.getMessage());
                         }
                     }
                 }
@@ -165,7 +163,7 @@ public class ExtensionLoader {
                         Class<?> clazz = Class.forName(impl);
                         Object instance = clazz.newInstance();
                         INSTANCE_MAP.put(clazz, ExtensionLoader.instance);
-                        return (T) ExtensionLoader.instance;
+                        return (T) instance;
                     }
                 }
             } catch (IOException e) {

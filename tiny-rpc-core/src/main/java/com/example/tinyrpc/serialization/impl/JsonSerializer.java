@@ -1,4 +1,4 @@
-package com.example.tinyrpc.serialization.serializer;
+package com.example.tinyrpc.serialization.impl;
 
 import com.example.tinyrpc.serialization.Serializer;
 import com.alibaba.fastjson.JSONObject;

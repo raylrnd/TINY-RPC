@@ -30,7 +30,7 @@ import static com.example.tinyrpc.codec.Codec.*;
  */
 public class NettyClient implements Client {
 
-    private static Logger log = LoggerFactory.getLogger(ClientHandler.class);
+    private static Logger logger = LoggerFactory.getLogger(ClientHandler.class);
 
     private Channel channel;
 
@@ -65,14 +65,14 @@ public class NettyClient implements Client {
                 })
                 .option(ChannelOption.SO_KEEPALIVE, true)
                 .option(ChannelOption.TCP_NODELAY, true);
-        log.info("Client OPEN!");
+        logger.info("Client OPEN!");
     }
 
     public void connect() {
         String[] ipAndPort = address.trim().split(":");
         ChannelFuture future = bootstrap.connect(ipAndPort[0], Integer.valueOf(ipAndPort[1]));
         channel = future.channel();
-        log.info("Client CONNECTED at: {}", address);
+        logger.info("Client CONNECTED at: {}", address);
     }
 
     @Override
@@ -85,12 +85,12 @@ public class NettyClient implements Client {
 
     @Override
     public void close() {
-        log.info("正在关闭 Client:{}", address);
+        logger.info("正在关闭 Client:{}", address);
         if (this.channel != null && channel.isOpen()) {
             try {
                 this.channel.close().sync();
             } catch (InterruptedException e) {
-                log.error("Fail to close client, address:" + address);
+                logger.error("Fail to close client, address:" + address);
             }
         }
     }

@@ -1,6 +1,8 @@
-package com.example.tinyrpc.filter;
+package com.example.tinyrpc.filter.impl;
 
 import com.example.tinyrpc.common.Invocation;
+import com.example.tinyrpc.filter.Filter;
+import com.example.tinyrpc.filter.RPCStatus;
 import com.example.tinyrpc.protocol.Invoker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,9 +11,9 @@ import org.slf4j.LoggerFactory;
  * @auther zhongshunchao
  * @date 28/06/2020 13:59
  */
-public class ActiveLimitFilter implements Filter{
+public class ActiveLimitFilter implements Filter {
 
-    private static Logger log = LoggerFactory.getLogger(ActiveLimitFilter.class);
+    private static Logger logger = LoggerFactory.getLogger(ActiveLimitFilter.class);
     @Override
     public Object invoke(Invoker invoker, Invocation invocation) {
         String serviceName = invocation.getServiceName();
@@ -19,15 +21,15 @@ public class ActiveLimitFilter implements Filter{
         String address = invoker.getUrl().getAddress();
         Object result;
         try {
-            log.info("starting,incCount...,{}", invocation);
+            logger.info("starting,incCount...,{}", invocation);
             RPCStatus.incCount(serviceName, methodName, address);
             result = invoker.invoke(invocation);
         } catch (Exception e) {
-            log.info("catch exception,decCount...,{}", invocation);
+            logger.info("catch exception,decCount...,{}", invocation);
             RPCStatus.decCount(serviceName, methodName, address);
             throw e;
         }
-        log.info("finished,decCount...,{}", invocation);
+        logger.info("finished,decCount...,{}", invocation);
         RPCStatus.decCount(serviceName, methodName, address);
         return result;
     }

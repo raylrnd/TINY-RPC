@@ -36,7 +36,7 @@ import static com.example.tinyrpc.codec.Codec.*;
  */
 public class NettyServer implements Server {
 
-    private static Logger log = LoggerFactory.getLogger(ClientHandler.class);
+    private static Logger logger = LoggerFactory.getLogger(ClientHandler.class);
 
     private Channel channel;
 
@@ -71,7 +71,7 @@ public class NettyServer implements Server {
             String[] ipAndPort = address.trim().split(":");
             ChannelFuture future = bootstrap.bind(ipAndPort[0], Integer.valueOf(ipAndPort[1])).sync();
             this.channel = future.channel();
-            log.info("Server successfully bind at : {}" + address);
+            logger.info("Server successfully bind at : {}" + address);
         } catch (InterruptedException e) {
             throw new BusinessException("Server can not bind address:" + address);
         }

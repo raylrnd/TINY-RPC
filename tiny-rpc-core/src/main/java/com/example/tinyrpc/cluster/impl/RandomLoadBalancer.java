@@ -1,5 +1,6 @@
-package com.example.tinyrpc.cluster;
+package com.example.tinyrpc.cluster.impl;
 
+import com.example.tinyrpc.cluster.LoadBalance;
 import com.example.tinyrpc.protocol.Invoker;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -8,7 +9,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * @auther zhongshunchao
  * @date 21/06/2020 12:39
  */
-public class RandomLoadBalancer implements LoadBalance{
+public class RandomLoadBalancer implements LoadBalance {
 
     @Override
     public Invoker select(List<Invoker> invokers) {

@@ -1,4 +1,4 @@
-package com.example.tinyrpc.serialization.serializer;
+package com.example.tinyrpc.serialization.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.caucho.hessian.io.HessianSerializerInput;
@@ -17,7 +17,7 @@ import java.io.IOException;
  */
 public class HessianSerializer implements Serializer {
 
-    private static Logger log = LoggerFactory.getLogger(HessianSerializer.class);
+    private static Logger logger = LoggerFactory.getLogger(HessianSerializer.class);
 
     @Override
     public <T> byte[] serialize(T obj) throws Exception {

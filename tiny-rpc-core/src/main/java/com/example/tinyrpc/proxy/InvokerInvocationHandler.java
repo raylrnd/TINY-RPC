@@ -13,7 +13,7 @@ import java.lang.reflect.Method;
  */
 public class InvokerInvocationHandler implements InvocationHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(InvokerInvocationHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(InvokerInvocationHandler.class);
 
     private final Invoker invoker;
 
@@ -27,7 +27,7 @@ public class InvokerInvocationHandler implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         String methodName = method.getName();
-        log.info("start invoking method {}", methodName);
+        logger.info("start invoking method {}", methodName);
         if (method.getDeclaringClass() == Object.class) {
             return method.invoke(invoker, args);
         }

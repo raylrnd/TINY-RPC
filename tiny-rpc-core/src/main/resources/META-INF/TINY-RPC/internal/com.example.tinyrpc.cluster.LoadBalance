@@ -1,1 +1,1 @@
-random=com.example.tinyrpc.cluster.RandomLoadBalancer
+random=com.example.tinyrpc.cluster.impl.RandomLoadBalancer

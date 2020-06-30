@@ -1,4 +1,4 @@
-package com.example.tinyrpc.serialization.serializer;
+package com.example.tinyrpc.serialization.impl;
 
 import com.dyuproject.protostuff.LinkedBuffer;
 import com.dyuproject.protostuff.ProtostuffIOUtil;

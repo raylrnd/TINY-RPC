@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class ProtocolFilterWrapper implements Protocol {
 
-    private static Logger log = LoggerFactory.getLogger(ProtocolFilterWrapper.class);
+    private static Logger logger = LoggerFactory.getLogger(ProtocolFilterWrapper.class);
 
     private final Protocol protocol;
 
@@ -30,7 +30,7 @@ public class ProtocolFilterWrapper implements Protocol {
         Invoker last = invoker;
         // 获得所有激活的Filter(简化处理，不进行排序)
         List<Filter> filters = ExtensionLoader.getExtensionLoader().buidFilterChain(url.getFilters());
-        log.info("Build Filter Successful, Filters:{}", filters);
+        logger.info("Build Filter Successful, Filters:{}", filters);
         if (filters.size() > 0) {
             for (int i = filters.size() - 1; i >= 0; i--) {
                 final Filter filter = filters.get(i);
