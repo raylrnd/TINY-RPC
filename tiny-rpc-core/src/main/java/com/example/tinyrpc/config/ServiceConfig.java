@@ -20,7 +20,7 @@ public class ServiceConfig {
 
     //将服务发布到ZK并开启server
     public void export(URL url, Object bean) {
-        Protocol protocol = (Protocol) ExtensionLoader.getExtension(url.getProtocol());
+        Protocol protocol = ExtensionLoader.getExtensionLoader().getExtension( Protocol.class, url.getProtocol());
         protocol.export(url);
         ServiceConfig.SERVICE_MAP.put(url.getInterfaceName(), bean);
     }

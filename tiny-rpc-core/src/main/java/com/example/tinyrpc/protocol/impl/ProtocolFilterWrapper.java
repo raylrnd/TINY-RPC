@@ -29,7 +29,7 @@ public class ProtocolFilterWrapper implements Protocol {
     private Invoker buildInvokerChain(final Invoker invoker) {
         Invoker last = invoker;
         // 获得所有激活的Filter(简化处理，不进行排序)
-        List<Filter> filters = ExtensionLoader.buidFilterChain(url.getFilters());
+        List<Filter> filters = ExtensionLoader.getExtensionLoader().buidFilterChain(url.getFilters());
         log.info("Build Filter Successful, Filters:{}", filters);
         if (filters.size() > 0) {
             for (int i = filters.size() - 1; i >= 0; i--) {

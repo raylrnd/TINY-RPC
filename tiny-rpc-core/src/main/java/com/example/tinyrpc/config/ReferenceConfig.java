@@ -16,8 +16,8 @@ public class ReferenceConfig {
 
     public Object getProxy(Invocation invocation) {
         URL url = invocation.getUrl();
-        Protocol protocol = (Protocol) ExtensionLoader.getExtension(url.getProtocol());
-        ProxyFactory proxyFactory = (ProxyFactory) ExtensionLoader.getExtension(url.getProxy());
+        Protocol protocol = ExtensionLoader.getExtensionLoader().getExtension(Protocol.class, url.getProtocol());
+        ProxyFactory proxyFactory = ExtensionLoader.getExtensionLoader().getExtension(ProxyFactory.class, url.getProxy());
         Invoker invoker = protocol.refer(invocation);
         return proxyFactory.getProxy(invoker, invocation);
     }

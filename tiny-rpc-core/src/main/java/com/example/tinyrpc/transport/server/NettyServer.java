@@ -44,7 +44,7 @@ public class NettyServer implements Server {
 
     private String address;
 
-    private ExecutorService executor = ExtensionLoader.getDefaultExecutor();
+    private ExecutorService executor = ExtensionLoader.getExtensionLoader().getDefaultExecutor();
 
     public NettyServer(String address) {
         this.address = address;
