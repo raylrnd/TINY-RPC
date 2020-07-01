@@ -6,10 +6,10 @@ TINY-RPC
 |version1.0 : 仅仅为可运行的版本  (Done 2020.06.06)    
 |version1.1 : 为TINY-RPC 添加 SpringBoot Stater  (Done 2020.06.14)  
 |version1.2 : 添加Zookeeper，提供服务发现和注册, 添加负载均衡策略LoadBalancer  (Done 2020.06.27)  
-|version1.3 : 添加ExtensionLoader (Done 2020.06.30) 
-|version1.4 : 添加同步、异步调用方式
-|version2.0 : 添加Filter，实现链路跟踪和限流 
-How to Run:  
+|version1.3 : 添加ExtensionLoader (Done 2020.06.30)     
+|version1.4 : 添加同步、异步调用方式  
+|version2.0 : 添加Filter，实现链路跟踪和限流   
+How to Run:    
 在测试仓库[https://github.com/raylrnd/tiny-rpc-sample.git](https://github.com/raylrnd/tiny-rpc-sample.git)中分别运行'ServerDemo'和'ClientDemo'  
 version1.2 运行效果图  
 客户端效果图
