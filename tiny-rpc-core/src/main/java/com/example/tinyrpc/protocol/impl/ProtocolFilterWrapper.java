@@ -18,13 +18,9 @@ public class ProtocolFilterWrapper implements Protocol {
 
     private static Logger logger = LoggerFactory.getLogger(ProtocolFilterWrapper.class);
 
-    private final Protocol protocol;
+    private static final Protocol PROTOCOL = new RegistryProtocol();
 
     private URL url;
-
-    public ProtocolFilterWrapper() {
-        this.protocol = new RegistryProtocol();
-    }
 
     private Invoker buildInvokerChain(final Invoker invoker) {
         Invoker last = invoker;
@@ -67,12 +63,13 @@ public class ProtocolFilterWrapper implements Protocol {
     @Override
     public Invoker refer(Invocation invocation) {
         this.url = invocation.getUrl();
-        return buildInvokerChain(protocol.refer(invocation));
+        Invoker invoker = PROTOCOL.refer(invocation);
+        return buildInvokerChain(invoker);
     }
 
     //为了简化设计，只处理consumer端，不处理provider端
     @Override
     public void export(URL url) {
-        protocol.export(url);
+        PROTOCOL.export(url);
     }
 }

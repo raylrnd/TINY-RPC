@@ -19,7 +19,8 @@ public @interface Reference {
     String serializer() default "protobuff";
     String proxy() default "jdk";
     String protocol() default "TINY-RPC";
-    String[] filter() default {};
+    String[] filter() default {"active-limit-filter", "log-filter"};
+    String registry() default "zookeeper";
     /**
      * Load balance strategy, legal values include: random, roundrobin, leastactive
      */

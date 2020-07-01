@@ -1,14 +1,16 @@
 package com.example.tinyrpc.protocol.impl;
 
+import com.example.tinyrpc.common.ExtensionLoader;
 import com.example.tinyrpc.common.Invocation;
 import com.example.tinyrpc.common.URL;
 import com.example.tinyrpc.protocol.Invoker;
 import com.example.tinyrpc.protocol.Protocol;
-import com.example.tinyrpc.registry.ZkServiceRegistry;
+import com.example.tinyrpc.registry.Registry;
 import com.example.tinyrpc.transport.Server;
 import com.example.tinyrpc.transport.server.NettyServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -26,7 +28,7 @@ public class RegistryProtocol implements Protocol {
      */
     private static final Map<String, Invoker> PROXY_INVOKER_MAP = new ConcurrentHashMap<>();
 
-    private final ZkServiceRegistry zkServiceRegistry = ZkServiceRegistry.getInstance();
+    private Registry zkServiceRegistry;
 
 
     /**
@@ -36,6 +38,7 @@ public class RegistryProtocol implements Protocol {
 
     @Override
     public Invoker refer(Invocation invocation) {
+        zkServiceRegistry = ExtensionLoader.getExtensionLoader().getExtension(Registry.class, invocation.getUrl().getRegistry());
         Invoker invoker = PROXY_INVOKER_MAP.get(invocation.getServiceName());
         if (invoker != null) {
             return invoker;
@@ -46,6 +49,7 @@ public class RegistryProtocol implements Protocol {
 
     @Override
     public void export(URL url) {
+        zkServiceRegistry = ExtensionLoader.getExtensionLoader().getExtension(Registry.class, url.getRegistry());
         String address = url.getAddress();
         Server server = SERVER_MAP.get(address);
         if (server == null) {

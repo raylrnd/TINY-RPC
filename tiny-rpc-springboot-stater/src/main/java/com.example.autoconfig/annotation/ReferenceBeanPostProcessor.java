@@ -37,7 +37,7 @@ public class ReferenceBeanPostProcessor implements BeanPostProcessor {
                     URL url = new URL();
                     url.setOneWay(reference.oneway()).setTimeout(reference.timeout()).setProtocol(reference.protocol())
                             .setProxy(reference.proxy()).setLoadbalance(reference.loadbalance())
-                            .setSerializer(SERIALIZER_MAP.get(reference.serializer())).setFilters(reference.filter());
+                            .setSerializer(SERIALIZER_MAP.get(reference.serializer())).setFilters(reference.filter()).setRegistry(reference.registry());
                     invocation.setInterfaceClass(interfaceClass);
                     invocation.setServiceName(interfaceClass.getName());
                     invocation.setUrl(url);

@@ -1,13 +1,12 @@
 package com.example.tinyrpc.protocol.impl;
 
 import com.example.tinyrpc.cluster.LoadBalance;
-import com.example.tinyrpc.cluster.impl.RandomLoadBalancer;
 import com.example.tinyrpc.common.ExtensionLoader;
 import com.example.tinyrpc.common.Invocation;
 import com.example.tinyrpc.common.URL;
 import com.example.tinyrpc.common.exception.BusinessException;
 import com.example.tinyrpc.protocol.Invoker;
-import com.example.tinyrpc.registry.ZkServiceRegistry;
+import com.example.tinyrpc.registry.Registry;
 import com.example.tinyrpc.transport.Client;
 import com.example.tinyrpc.transport.client.NettyClient;
 import org.slf4j.Logger;
@@ -36,12 +35,14 @@ public class InvokerClientWrapper implements Invoker {
      */
     private final Map<String, Invoker> invokerMap = new ConcurrentHashMap<>();
 
-    private final ZkServiceRegistry zkServiceRegistry = ZkServiceRegistry.getInstance();
+    private final Registry zkServiceRegistry;
 
-    private final LoadBalance loadBalance = ExtensionLoader.getExtensionLoader().getExtension(LoadBalance.class, invocation.getUrl().getLoadbalance());
+    private final LoadBalance loadBalance;
 
     InvokerClientWrapper(Invocation invocation) {
         this.invocation = invocation;
+        zkServiceRegistry = ExtensionLoader.getExtensionLoader().getExtension(Registry.class, invocation.getUrl().getRegistry());
+        loadBalance = ExtensionLoader.getExtensionLoader().getExtension(LoadBalance.class, invocation.getUrl().getLoadbalance());
         init();
     }
 
@@ -49,8 +50,8 @@ public class InvokerClientWrapper implements Invoker {
      * 初始化方法，每个对象只执行一次，初始化invokerMap
      */
     private void init() {
-        String serviceName = this.invocation.getInterfaceClass().getCanonicalName();
-        Set<String> serviceUrlList = zkServiceRegistry.findServiceUrl(serviceName, this::handleZkCallBack);
+        String serviceName = this.invocation.getInterfaceClass().getName();
+        Set<String> serviceUrlList = zkServiceRegistry.subscribe(serviceName, this::handleZkCallBack);
         for (String url : serviceUrlList) {
             createInvoker(url);
         }

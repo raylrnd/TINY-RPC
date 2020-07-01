@@ -22,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @auther zhongshunchao
  * @date 20/06/2020 17:16
  */
-public class ZkServiceRegistry {
+public class ZkServiceRegistry implements Registry{
 
     private static Logger logger = LoggerFactory.getLogger(ZkServiceRegistry.class);
 
@@ -32,10 +32,6 @@ public class ZkServiceRegistry {
 
     //本地缓存的Zookeeper的全量信息。无法连接Zookeeper时，可以从该缓存中获取地址。每次调用updateAddress()时被更新
     private static final Map<String, Set<String>> SERVICE_URL_MAP = new ConcurrentHashMap<>();
-
-    private static volatile ZkServiceRegistry instance = null;
-
-    private ZkServiceRegistry() {}
 
     // 初始化时拉取全量的数据，dubbo把Zookeeper中所有服务的地址都拉取过来并持久化到硬盘,这里为了实现方便，不持久化到硬盘
     static {
@@ -58,30 +54,20 @@ public class ZkServiceRegistry {
         }
     }
 
-    public static ZkServiceRegistry getInstance() {
-        if (instance == null) {
-            synchronized (ZkServiceRegistry.class) {
-                if (instance == null) {
-                    instance = new ZkServiceRegistry();
-                }
-            }
-        }
-        return instance;
-    }
-
     /**
      * 初始化之后，采用订阅-通知模式进行部分数据同步
      * @param interfaceName 被代理的接口名
      * @param updateAddressCallBack 回调函数，用于更新缓存中的zk地址
      */
-    public Set<String> findServiceUrl(String interfaceName, UpdateAddressCallBack updateAddressCallBack) {
+    @Override
+    public Set<String> subscribe(String interfaceName, UpdateAddressCallBack updateAddressCallBack) {
         try {
             //在与Zookeeper非失联的情况下，从Zookeeper拉取最新的数据。如果在客户端已经启动的情况下，处于RPC通信状态，此时Zookeeper的数据变化，那么会通过Watcher回调来更新缓存中的地址
             List<String> newUrlList = ZK_SUPPORT.getChildren(getPath(interfaceName), new Watcher() {
                 @Override
                 public void process(WatchedEvent event) {
                     if (event.getType() == Event.EventType.NodeChildrenChanged) {
-                        findServiceUrl(interfaceName, updateAddressCallBack);
+                        subscribe(interfaceName, updateAddressCallBack);
                     }
                 }
             });
@@ -129,6 +115,7 @@ public class ZkServiceRegistry {
         return newAddressSet;
     }
 
+    @Override
     public void register(URL url) {
         String path = getPath(url.getInterfaceName());
         String data = url.exposeURL();

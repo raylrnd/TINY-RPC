@@ -24,15 +24,10 @@ public class ProviderBeanPostProcessor implements BeanPostProcessor {
         Provider rpcService = beanClass.getAnnotation(Provider.class);
         URL url = new URL();
         String interfaceName = rpcService.interfaceClass().getName();
-        url.setInterfaceName(interfaceName);
-        url.setPort(rpcService.port());
-        url.setWeight(rpcService.weight());
-        url.setIp(Constants.LOCAL_HOST);
-        url.setAddress(Constants.LOCAL_HOST + ":" + rpcService.port());
-        url.setProtocol(rpcService.protocol());
-        url.setFilters(rpcService.filter());
-        url.setProxy(rpcService.proxy());
-        url.setSerializer(SERIALIZER_MAP.get(rpcService.serializer()));
+        url.setInterfaceName(interfaceName).setPort(rpcService.port()).setWeight(rpcService.weight())
+                .setIp(Constants.LOCAL_HOST).setAddress(Constants.LOCAL_HOST + ":" + rpcService.port())
+                .setProtocol(rpcService.protocol()).setFilters(rpcService.filter()).setProxy(rpcService.proxy())
+                .setSerializer(SERIALIZER_MAP.get(rpcService.serializer())).setRegistry(rpcService.registry());
         ServiceConfig serviceConfig = new ServiceConfig();
         serviceConfig.export(url, bean);
         return bean;

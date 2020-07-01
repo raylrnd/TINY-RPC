@@ -21,5 +21,6 @@ public @interface Provider {
     String serializer() default "protobuff";
     String proxy() default "jdk";
     String protocol() default "TINY-RPC";
+    String registry() default "zookeeper";
     String[] filter() default {};
 }

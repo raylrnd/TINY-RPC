@@ -33,6 +33,8 @@ public class URL {
 
     private String[] filters;
 
+    private String registry;
+
     public boolean isEvent() {
         return event;
     }
@@ -99,40 +101,45 @@ public class URL {
         return filters;
     }
 
-    public void setFilters(String[] filters) {
+    public URL setFilters(String[] filters) {
         this.filters = filters;
+        return this;
     }
 
     public String getInterfaceName() {
         return interfaceName;
     }
 
-    public void setInterfaceName(String interfaceName) {
+    public URL setInterfaceName(String interfaceName) {
         this.interfaceName = interfaceName;
+        return this;
     }
 
     public int getWeight() {
         return weight;
     }
 
-    public void setWeight(int weight) {
+    public URL setWeight(int weight) {
         this.weight = weight;
+        return this;
     }
 
     public String getIp() {
         return ip;
     }
 
-    public void setIp(String ip) {
+    public URL setIp(String ip) {
         this.ip = ip;
+        return this;
     }
 
     public int getPort() {
         return port;
     }
 
-    public void setPort(int port) {
+    public URL setPort(int port) {
         this.port = port;
+        return this;
     }
 
     public String exposeURL() {
@@ -140,11 +147,21 @@ public class URL {
     }
 
 
-    public void setAddress(String address) {
+    public URL setAddress(String address) {
         this.address = address;
+        return this;
     }
 
     public String getAddress() {
         return address;
     }
+
+    public String getRegistry() {
+        return registry;
+    }
+
+    public void setRegistry(String registry) {
+        this.registry = registry;
+    }
+
 }
