@@ -1,5 +1,8 @@
 package com.example.tinyrpc.common;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 /**
  * @auther zhongshunchao
  * @date 2020/5/19 6:30 下午
@@ -67,4 +70,26 @@ public class Invocation {
     public void setUrl(URL url) {
         this.url = url;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Invocation)) return false;
+        Invocation that = (Invocation) o;
+        return getServiceName().equals(that.getServiceName()) &&
+                getMethodName().equals(that.getMethodName()) &&
+                Arrays.equals(getParameterTypes(), that.getParameterTypes()) &&
+                Arrays.equals(getArguments(), that.getArguments()) &&
+                getUrl().equals(that.getUrl()) &&
+                getInterfaceClass().equals(that.getInterfaceClass());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(getServiceName(), getMethodName(), getUrl(), getInterfaceClass());
+        result = 31 * result + Arrays.hashCode(getParameterTypes());
+        result = 31 * result + Arrays.hashCode(getArguments());
+        return result;
+    }
+
 }

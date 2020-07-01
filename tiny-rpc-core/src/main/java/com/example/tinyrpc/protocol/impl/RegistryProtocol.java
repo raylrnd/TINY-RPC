@@ -26,7 +26,7 @@ public class RegistryProtocol implements Protocol {
     /**
      * interfaceName -> InvokerClientWrapper
      */
-    private static final Map<String, Invoker> PROXY_INVOKER_MAP = new ConcurrentHashMap<>();
+    private static final Map<Invocation, Invoker> WRAPPED_INVOKER_MAP = new ConcurrentHashMap<>();
 
     private Registry zkServiceRegistry;
 
@@ -39,11 +39,13 @@ public class RegistryProtocol implements Protocol {
     @Override
     public Invoker refer(Invocation invocation) {
         zkServiceRegistry = ExtensionLoader.getExtensionLoader().getExtension(Registry.class, invocation.getUrl().getRegistry());
-        Invoker invoker = PROXY_INVOKER_MAP.get(invocation.getServiceName());
+        Invoker invoker = WRAPPED_INVOKER_MAP.get(invocation);
         if (invoker != null) {
             return invoker;
         } else {
-            return new InvokerClientWrapper(invocation);
+            invoker = new InvokerClientWrapper(invocation);
+            WRAPPED_INVOKER_MAP.put(invocation, invoker);
+            return invoker;
         }
     }
 
