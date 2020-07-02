@@ -27,6 +27,6 @@ public class ServerHandler extends SimpleChannelInboundHandler<Request> {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Request request) throws Exception {
         logger.info("服务端 ServerHandler 收到Request为：{}", request);
-        server.handleRequest(ctx, request);
+        server.received(ctx, request);
     }
 }

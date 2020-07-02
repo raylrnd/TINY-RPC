@@ -1,7 +1,10 @@
 package com.example.tinyrpc.transport;
 
 import com.example.tinyrpc.common.Request;
+import com.example.tinyrpc.common.Response;
+import io.netty.channel.ChannelHandlerContext;
 import org.springframework.stereotype.Component;
+
 import java.util.concurrent.Future;
 
 /**
@@ -12,6 +15,8 @@ import java.util.concurrent.Future;
 public interface Client {
 
     Future<Object> send(Request message);
+
+    void received(ChannelHandlerContext ctx, Response response) throws Exception;
 
     void close();
 }

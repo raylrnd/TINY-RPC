@@ -43,3 +43,7 @@ version1.3
 |/TINY-RPC/com.example.tinyrpc.AService | 192.168.1.1:1221$100 |  
 |/TINY-RPC/com.example.tinyrpc.BService | 192.168.1.4:1221$200 |  
 |/TINY-RPC/com.example.tinyrpc.AService | 192.168.1.2:1221&300 |  
+
+参考书籍：
+《深入理解Apache Dubbo与实践》、《深度剖析Apache Dubbo核心技术内幕》  
+个人博客:[shunchao.ink](http://www.shunchao.ink)

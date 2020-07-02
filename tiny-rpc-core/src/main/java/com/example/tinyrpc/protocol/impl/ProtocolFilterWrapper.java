@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
+ * 该类为被SPI加载的扩展点，负责包装RegistryProtocol，以及生产InvokerChain
  * @auther zhongshunchao
  * @date 27/06/2020 20:29
  */
@@ -22,6 +23,11 @@ public class ProtocolFilterWrapper implements Protocol {
 
     private URL url;
 
+    /**
+     * 返回责任链头部的Filter
+     * @param invoker
+     * @return
+     */
     private Invoker buildInvokerChain(final Invoker invoker) {
         Invoker last = invoker;
         // 获得所有激活的Filter(简化处理，不进行排序)

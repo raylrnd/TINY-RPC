@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * 实现了消费端的流量控制
  * @auther zhongshunchao
  * @date 28/06/2020 13:59
  */

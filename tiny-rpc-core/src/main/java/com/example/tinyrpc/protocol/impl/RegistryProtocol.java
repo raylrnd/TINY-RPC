@@ -15,18 +15,18 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * 一个address对应一个Client，一个Client对应一个Invoker，Invoker可以理解为对Client的封装
  * @auther zhongshunchao
  * @date 20/06/2020 15:42
- * 一个address对应一个Client，一个Client对应一个Invoker，Invoker可以理解为对Client的封装
  */
 public class RegistryProtocol implements Protocol {
 
     private static Logger logger = LoggerFactory.getLogger(RegistryProtocol.class);
 
     /**
-     * interfaceName -> InvokerClientWrapper
+     * InvokerClientWrapper缓存
      */
-    private static final Map<Invocation, Invoker> WRAPPED_INVOKER_MAP = new ConcurrentHashMap<>();
+    private static final Map<Invocation, Invoker> WRAPPED_INVOKER_CACHE = new ConcurrentHashMap<>();
 
     private Registry zkServiceRegistry;
 
@@ -39,12 +39,12 @@ public class RegistryProtocol implements Protocol {
     @Override
     public Invoker refer(Invocation invocation) {
         zkServiceRegistry = ExtensionLoader.getExtensionLoader().getExtension(Registry.class, invocation.getUrl().getRegistry());
-        Invoker invoker = WRAPPED_INVOKER_MAP.get(invocation);
+        Invoker invoker = WRAPPED_INVOKER_CACHE.get(invocation);
         if (invoker != null) {
             return invoker;
         } else {
             invoker = new InvokerClientWrapper(invocation);
-            WRAPPED_INVOKER_MAP.put(invocation, invoker);
+            WRAPPED_INVOKER_CACHE.put(invocation, invoker);
             return invoker;
         }
     }

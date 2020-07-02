@@ -52,32 +52,34 @@ public class NettyServer implements Server {
     }
     //Start Server
     public void open() {
-        EventLoopGroup bossGroup = new NioEventLoopGroup();
-        EventLoopGroup workGroup = new NioEventLoopGroup();
-        try {
-            bootstrap.group(bossGroup, workGroup)
-                    .channel(NioServerSocketChannel.class)
-                    .childHandler(new ChannelInitializer<SocketChannel>() {
-                        @Override
-                        protected void initChannel(SocketChannel ch) {
+        executor.submit(() -> {
+            EventLoopGroup bossGroup = new NioEventLoopGroup();
+            EventLoopGroup workGroup = new NioEventLoopGroup();
+            try {
+                bootstrap.group(bossGroup, workGroup)
+                        .channel(NioServerSocketChannel.class)
+                        .childHandler(new ChannelInitializer<SocketChannel>() {
+                            @Override
+                            protected void initChannel(SocketChannel ch) {
 //                            插入到ChannelHandlerContext这个双链表当中
-                            ch.pipeline()
-                                    .addLast(new Encoder())
-                                    .addLast("LengthFieldBasedFrameDecoder", new LengthFieldBasedFrameDecoder(MAX_FRAME_LENGTH, LENGTH_FIELD_OFFSET, LENGTH_FIELD_LENGTH, LENGTH_ADJUSTMENT, INITIAL_BYTES_TO_STRIP))
-                                    .addLast(new Decoder())
-                                    .addLast(new ServerHandler(NettyServer.this));
-                        }
-                    });
-            String[] ipAndPort = address.trim().split(":");
-            ChannelFuture future = bootstrap.bind(ipAndPort[0], Integer.valueOf(ipAndPort[1])).sync();
-            this.channel = future.channel();
-            logger.info("Server successfully bind at : {}" + address);
-        } catch (InterruptedException e) {
-            throw new BusinessException("Server can not bind address:" + address);
-        }
+                                ch.pipeline()
+                                        .addLast(new Encoder())
+                                        .addLast("LengthFieldBasedFrameDecoder", new LengthFieldBasedFrameDecoder(MAX_FRAME_LENGTH, LENGTH_FIELD_OFFSET, LENGTH_FIELD_LENGTH, LENGTH_ADJUSTMENT, INITIAL_BYTES_TO_STRIP))
+                                        .addLast(new Decoder())
+                                        .addLast(new ServerHandler(NettyServer.this));
+                            }
+                        });
+                String[] ipAndPort = address.trim().split(":");
+                ChannelFuture future = bootstrap.bind(ipAndPort[0], Integer.valueOf(ipAndPort[1])).sync();
+                this.channel = future.channel();
+                logger.info("Server successfully bind at : {}" + address);
+            } catch (InterruptedException e) {
+                throw new BusinessException("Server can not bind address:" + address);
+            }
+        });
     }
 
-    public void handleRequest(ChannelHandlerContext ctx, Request request) throws Exception{
+    public void received(ChannelHandlerContext ctx, Request request) throws Exception{
         executor.submit(() -> {
             //调用代理，通过反射的方式调用本地jvm中的方法
             Response response = new Response(request.getRequestId());

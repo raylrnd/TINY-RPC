@@ -19,6 +19,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * 该类对象被当作代理对象，替换掉被@Reference标识的类对象。该类包装了RealInvoker，实现了invoker之间的负载均衡
  * @auther zhongshunchao
  * @date 2020/5/21 11:16 上午
  */
@@ -47,7 +48,7 @@ public class InvokerClientWrapper implements Invoker {
     }
 
     /**
-     * 初始化方法，每个对象只执行一次，初始化invokerMap
+     * 初始化方法，每个对象只执行一次，从Zookeeper拉取address，封装成invokerMap。并在InvokerClientWrapper初始化的过程中进行负载均衡
      */
     private void init() {
         String serviceName = this.invocation.getInterfaceClass().getName();

@@ -13,6 +13,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * 原生的Invoker
  * @auther zhongshunchao
  * @date 26/06/2020 21:43
  */
@@ -35,7 +36,7 @@ public class RealInvoker implements Invoker {
     }
 
     @Override
-    public Object invoke(Invocation invocation) {
+    public Object invoke(final Invocation invocation) {
         URL url = invocation.getUrl();
         Request request = new Request(123456789);
         request.setData(invocation);
