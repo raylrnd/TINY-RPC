@@ -20,7 +20,7 @@ import java.util.concurrent.*;
  */
 public class ExtensionLoader {
 
-    private static Logger logger = LoggerFactory.getLogger(ExtensionLoader.class);
+    private static final Logger logger = LoggerFactory.getLogger(ExtensionLoader.class);
 
     // alias -> Class
     private static final Map<String, Class> EXTERNAL_ALIAS_CLASS_MAP = new HashMap<>();

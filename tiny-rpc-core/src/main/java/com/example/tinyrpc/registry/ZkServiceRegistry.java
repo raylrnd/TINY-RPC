@@ -24,7 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ZkServiceRegistry implements Registry{
 
-    private static Logger logger = LoggerFactory.getLogger(ZkServiceRegistry.class);
+    private static final Logger logger = LoggerFactory.getLogger(ZkServiceRegistry.class);
 
     private static final String ZK_REGISTRY_PATH = "/TINY-RPC";
 

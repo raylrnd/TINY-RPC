@@ -11,7 +11,7 @@ import java.util.concurrent.CountDownLatch;
 
 public class ZkSupport {
 
-    private static Logger logger = LoggerFactory.getLogger(ZkSupport.class);
+    private static final Logger logger = LoggerFactory.getLogger(ZkSupport.class);
 
     /**
      * zk变量

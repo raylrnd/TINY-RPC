@@ -11,7 +11,7 @@ public interface Server {
 
     void start();
 
-    void received(ChannelHandlerContext ctx, Request request) throws Exception;
+    void received(ChannelHandlerContext ctx, Request request);
 
     void stop();
 

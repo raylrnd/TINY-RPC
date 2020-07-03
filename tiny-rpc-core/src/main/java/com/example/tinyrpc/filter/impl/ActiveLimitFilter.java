@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ActiveLimitFilter implements Filter {
 
-    private static Logger logger = LoggerFactory.getLogger(ActiveLimitFilter.class);
+    private static final Logger logger = LoggerFactory.getLogger(ActiveLimitFilter.class);
     @Override
     public Object invoke(Invoker invoker, Invocation invocation) {
         String serviceName = invocation.getServiceName();

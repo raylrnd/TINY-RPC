@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
  */
 public class LogFilter implements Filter {
 
-    private static Logger logger = LoggerFactory.getLogger(LogFilter.class);
+    private static final Logger logger = LoggerFactory.getLogger(LogFilter.class);
 
     @Override
     public Object invoke(Invoker invoker, Invocation invocation) {

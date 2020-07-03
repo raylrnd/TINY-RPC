@@ -17,7 +17,7 @@ import java.io.IOException;
  */
 public class HessianSerializer implements Serializer {
 
-    private static Logger logger = LoggerFactory.getLogger(HessianSerializer.class);
+    private static final Logger logger = LoggerFactory.getLogger(HessianSerializer.class);
 
     @Override
     public <T> byte[] serialize(T obj) throws Exception {

@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ClientHandler extends SimpleChannelInboundHandler<Response> {
 
-    private static Logger logger = LoggerFactory.getLogger(ClientHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(ClientHandler.class);
 
     private Client client;
 

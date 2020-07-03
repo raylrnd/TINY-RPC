@@ -32,7 +32,7 @@ import static com.example.tinyrpc.common.Response.SERVICE_ERROR;
  */
 public class NettyClient implements Client {
 
-    private static Logger logger = LoggerFactory.getLogger(ClientHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(ClientHandler.class);
 
     private Channel channel;
 

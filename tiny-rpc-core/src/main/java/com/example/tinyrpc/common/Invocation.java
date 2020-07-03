@@ -1,6 +1,8 @@
 package com.example.tinyrpc.common;
 
+import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -8,7 +10,7 @@ import java.util.Objects;
  * @date 2020/5/19 6:30 下午
  */
 // 封装对方发送过来的request请求
-public class Invocation {
+public class Invocation implements Serializable {
 
     private String serviceName;
 
@@ -18,7 +20,13 @@ public class Invocation {
 
     private Object[] arguments;
 
-    private URL url;
+    private Map<String, String> attachments;
+
+    private transient boolean isClientSide;
+
+    private transient int timeout = 1000;
+
+    private transient URL url;
 
     private transient Class<?> interfaceClass;
 
@@ -69,6 +77,30 @@ public class Invocation {
 
     public void setUrl(URL url) {
         this.url = url;
+    }
+
+    public int getTimeout() {
+        return timeout;
+    }
+
+    public void setTimeout(int timeout) {
+        this.timeout = timeout;
+    }
+
+    public boolean isClientSide() {
+        return isClientSide;
+    }
+
+    public void setClientSide(boolean clientSide) {
+        isClientSide = clientSide;
+    }
+
+    public Map<String, String> getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(Map<String, String> attachments) {
+        this.attachments = attachments;
     }
 
     @Override

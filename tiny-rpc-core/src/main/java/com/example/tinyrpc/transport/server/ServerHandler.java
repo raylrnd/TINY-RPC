@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 // 消息被读取后，会自动释放资源
 public class ServerHandler extends SimpleChannelInboundHandler<Request> {
 
-    private static Logger logger = LoggerFactory.getLogger(ClientHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(ClientHandler.class);
 
     private Server server;
 

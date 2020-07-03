@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class RegistryProtocol implements Protocol {
 
-    private static Logger logger = LoggerFactory.getLogger(RegistryProtocol.class);
+    private static final Logger logger = LoggerFactory.getLogger(RegistryProtocol.class);
 
     /**
      * InvokerClientWrapper缓存

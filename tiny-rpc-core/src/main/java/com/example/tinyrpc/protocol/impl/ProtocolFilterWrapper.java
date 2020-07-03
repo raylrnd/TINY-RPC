@@ -3,6 +3,7 @@ package com.example.tinyrpc.protocol.impl;
 import com.example.tinyrpc.common.ExtensionLoader;
 import com.example.tinyrpc.common.Invocation;
 import com.example.tinyrpc.common.URL;
+import com.example.tinyrpc.config.ServiceConfig;
 import com.example.tinyrpc.filter.Filter;
 import com.example.tinyrpc.protocol.Invoker;
 import com.example.tinyrpc.protocol.Protocol;
@@ -17,7 +18,7 @@ import java.util.List;
  */
 public class ProtocolFilterWrapper implements Protocol {
 
-    private static Logger logger = LoggerFactory.getLogger(ProtocolFilterWrapper.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProtocolFilterWrapper.class);
 
     private static final Protocol PROTOCOL = new RegistryProtocol();
 
@@ -73,9 +74,12 @@ public class ProtocolFilterWrapper implements Protocol {
         return buildInvokerChain(invoker);
     }
 
-    //为了简化设计，只处理consumer端，不处理provider端
     @Override
     public void export(URL url) {
+        Object ref = url.getRef();
+        RealInvoker invoker = new RealInvoker(null, 0, url);
+        invoker.setRef(ref);
+        ServiceConfig.INVOKER_MAP.put(url.getInterfaceName(), buildInvokerChain(invoker));
         PROTOCOL.export(url);
     }
 }

@@ -5,6 +5,7 @@ import com.example.tinyrpc.codec.Encoder;
 import com.example.tinyrpc.common.*;
 import com.example.tinyrpc.common.exception.BusinessException;
 import com.example.tinyrpc.config.ServiceConfig;
+import com.example.tinyrpc.protocol.Invoker;
 import com.example.tinyrpc.transport.Server;
 import com.example.tinyrpc.transport.client.ClientHandler;
 import io.netty.bootstrap.ServerBootstrap;
@@ -16,7 +17,6 @@ import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Method;
 import java.util.concurrent.ExecutorService;
 
 import static com.example.tinyrpc.codec.Codec.*;
@@ -36,7 +36,7 @@ import static com.example.tinyrpc.codec.Codec.*;
  */
 public class NettyServer implements Server {
 
-    private static Logger logger = LoggerFactory.getLogger(ClientHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(ClientHandler.class);
 
     private Channel channel;
 
@@ -79,17 +79,19 @@ public class NettyServer implements Server {
         });
     }
 
-    public void received(ChannelHandlerContext ctx, Request request) throws Exception{
+    public void received(ChannelHandlerContext ctx, Request request) {
         executor.submit(() -> {
             //调用代理，通过反射的方式调用本地jvm中的方法
             Response response = new Response(request.getRequestId());
-            Invocation data = request.getData();
-            String className = data.getServiceName();
-            Object bean = ServiceConfig.SERVICE_MAP.get(className);
-            Method method;
+            Invocation invocation = request.getData();
+            String className = invocation.getServiceName();
+            Invoker invoker = ServiceConfig.INVOKER_MAP.get(className);
             try {
-                method = bean.getClass().getMethod(data.getMethodName(), data.getParameterTypes());
-                Object result = method.invoke(bean, data.getArguments());
+                Object result = invoker.invoke(invocation);
+                // oneway调用则直接返回
+                if (invocation.getUrl().isOneWay()) {
+                    return;
+                }
                 ResponseBody responseBody = new ResponseBody();
                 responseBody.setResult(result);
                 response.setResponseBody(responseBody);

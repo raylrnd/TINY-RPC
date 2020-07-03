@@ -21,6 +21,8 @@ public class URL {
 
     private boolean oneWay = false;
 
+    private boolean aync = false;
+
     private long timeout;
 
     private int serializer;
@@ -34,6 +36,8 @@ public class URL {
     private String[] filters;
 
     private String registry;
+
+    private Object ref;
 
     public boolean isEvent() {
         return event;
@@ -50,6 +54,14 @@ public class URL {
     public URL setOneWay(boolean oneWay) {
         this.oneWay = oneWay;
         return this;
+    }
+
+    public boolean isAync() {
+        return aync;
+    }
+
+    public void setAync(boolean aync) {
+        this.aync = aync;
     }
 
     public long getTimeout() {
@@ -164,4 +176,11 @@ public class URL {
         this.registry = registry;
     }
 
+    public Object getRef() {
+        return ref;
+    }
+
+    public void setRef(Object ref) {
+        this.ref = ref;
+    }
 }
