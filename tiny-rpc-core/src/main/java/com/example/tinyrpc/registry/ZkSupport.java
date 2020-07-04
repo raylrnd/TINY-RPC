@@ -53,8 +53,7 @@ public class ZkSupport {
             byte[] bytes = data.getBytes(Charset.forName("UTF-8"));
             zookeeper.create(path + "/" + data, bytes, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
         } catch (InterruptedException | KeeperException ex) {
-            ex.printStackTrace();
-            logger.error("Fail to register path :" + path + ": data ；" + data);
+            logger.error("Fail to register path :" + path + ": data ；" + data, ex);
         }
     }
 

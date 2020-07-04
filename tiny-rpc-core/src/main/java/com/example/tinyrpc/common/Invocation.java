@@ -2,6 +2,7 @@ package com.example.tinyrpc.common;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -20,15 +21,17 @@ public class Invocation implements Serializable {
 
     private Object[] arguments;
 
-    private Map<String, String> attachments;
+    private Map<String, Object> attachments = new HashMap<>();
 
-    private transient boolean isClientSide;
+    private transient int side = 1;
 
     private transient int timeout = 1000;
 
     private transient URL url;
 
     private transient Class<?> interfaceClass;
+
+    private transient boolean injvm;
 
     public String getServiceName() {
         return serviceName;
@@ -71,6 +74,14 @@ public class Invocation implements Serializable {
         this.interfaceClass = interfaceClass;
     }
 
+    public boolean isInjvm() {
+        return injvm;
+    }
+
+    public void setInjvm(boolean injvm) {
+        this.injvm = injvm;
+    }
+
     public URL getUrl() {
         return url;
     }
@@ -87,20 +98,20 @@ public class Invocation implements Serializable {
         this.timeout = timeout;
     }
 
-    public boolean isClientSide() {
-        return isClientSide;
-    }
-
-    public void setClientSide(boolean clientSide) {
-        isClientSide = clientSide;
-    }
-
-    public Map<String, String> getAttachments() {
+    public Map<String, Object> getAttachments() {
         return attachments;
     }
 
-    public void setAttachments(Map<String, String> attachments) {
+    public void setAttachments(Map<String, Object> attachments) {
         this.attachments = attachments;
+    }
+
+    public int getSide() {
+        return side;
+    }
+
+    public void setSide(int side) {
+        this.side = side;
     }
 
     @Override

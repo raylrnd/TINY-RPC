@@ -4,9 +4,10 @@ package com.example.autoconfig.annotation;
 import com.example.tinyrpc.common.Invocation;
 import com.example.tinyrpc.common.URL;
 import com.example.tinyrpc.config.ReferenceConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-
 import java.lang.reflect.Field;
 
 import static com.example.tinyrpc.common.utils.SerializerUtil.SERIALIZER_MAP;
@@ -17,6 +18,8 @@ import static com.example.tinyrpc.common.utils.SerializerUtil.SERIALIZER_MAP;
  */
 //解析@Reference
 public class ReferenceBeanPostProcessor implements BeanPostProcessor {
+
+    private static final Logger logger = LoggerFactory.getLogger(ReferenceBeanPostProcessor.class);
 
     @Override
     public Object postProcessBeforeInitialization(Object o, String s) throws BeansException {
@@ -41,6 +44,7 @@ public class ReferenceBeanPostProcessor implements BeanPostProcessor {
                     invocation.setInterfaceClass(interfaceClass);
                     invocation.setServiceName(interfaceClass.getName());
                     invocation.setUrl(url);
+                    invocation.setInjvm(reference.injvm());
                     //将含有@Reference的字段的属性替换成代理对象
                     try {
                         field.setAccessible(true);
@@ -48,7 +52,7 @@ public class ReferenceBeanPostProcessor implements BeanPostProcessor {
                         Object proxy = referenceConfig.getProxy(invocation);
                         field.set(bean, proxy);
                     } catch (IllegalAccessException e) {
-                        e.printStackTrace();
+                        logger.error("Unable to set field", e);
                     }
                 }
             }

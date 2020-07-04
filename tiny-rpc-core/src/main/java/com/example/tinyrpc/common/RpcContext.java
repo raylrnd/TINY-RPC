@@ -1,5 +1,7 @@
 package com.example.tinyrpc.common;
 
+import com.example.tinyrpc.filter.Span;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -25,11 +27,13 @@ public class RpcContext {
         }
     };
 
-    private Map<String, String> attachments = new HashMap<>();
+    private Map<String, Object> attachments = new HashMap<>();
 
     private Invocation invocation;
 
     private Future future;
+
+    private Span span;
 
     /**
      * get context.
@@ -49,11 +53,11 @@ public class RpcContext {
         return SERVER_LOCAL.get();
     }
 
-    public Map<String, String> getAttachments() {
+    public Map<String, Object> getAttachments() {
         return attachments;
     }
 
-    public void setAttachments(Map<String, String> attachments) {
+    public void setAttachments(Map<String, Object> attachments) {
         this.attachments = attachments;
     }
 
@@ -83,5 +87,13 @@ public class RpcContext {
 
     public void setFuture(Future future) {
         this.future = future;
+    }
+
+    public Span getSpan() {
+        return span;
+    }
+
+    public void setSpan(Span span) {
+        this.span = span;
     }
 }

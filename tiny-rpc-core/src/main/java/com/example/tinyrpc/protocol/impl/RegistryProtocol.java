@@ -30,7 +30,6 @@ public class RegistryProtocol implements Protocol {
 
     private Registry zkServiceRegistry;
 
-
     /**
      * 服务端侧只有一个server实例，不同服务可以共享同一个端口
      */

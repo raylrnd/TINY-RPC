@@ -1,11 +1,11 @@
 package com.example.autoconfig.annotation;
 
-import com.example.tinyrpc.common.Constants;
 import com.example.tinyrpc.common.URL;
 import com.example.tinyrpc.config.ServiceConfig;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 
+import static com.example.tinyrpc.common.Constants.LOCAL_HOST;
 import static com.example.tinyrpc.common.utils.SerializerUtil.SERIALIZER_MAP;
 
 /**
@@ -25,11 +25,12 @@ public class ProviderBeanPostProcessor implements BeanPostProcessor {
         URL url = new URL();
         String interfaceName = rpcService.interfaceClass().getName();
         url.setInterfaceName(interfaceName).setPort(rpcService.port()).setWeight(rpcService.weight())
-                .setIp(Constants.LOCAL_HOST).setAddress(Constants.LOCAL_HOST + ":" + rpcService.port())
+                .setIp(LOCAL_HOST).setAddress(LOCAL_HOST + ":" + rpcService.port())
                 .setProtocol(rpcService.protocol()).setFilters(rpcService.filter()).setProxy(rpcService.proxy())
                 .setSerializer(SERIALIZER_MAP.get(rpcService.serializer())).setRegistry(rpcService.registry());
         ServiceConfig serviceConfig = new ServiceConfig();
-        serviceConfig.export(url, bean);
+        url.setRef(bean);
+        serviceConfig.export(url);
         return bean;
     }
 

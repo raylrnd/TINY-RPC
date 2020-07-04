@@ -21,9 +21,8 @@ public class ServiceConfig {
     public static final Map<String, Invoker> INVOKER_MAP = new ConcurrentHashMap<>();
 
     //将服务发布到ZK并开启server
-    public void export(URL url, Object bean) {
+    public void export(URL url) {
         Protocol protocol = ExtensionLoader.getExtensionLoader().getExtension( Protocol.class, url.getProtocol());
-        url.setRef(bean);
         protocol.export(url);
     }
 }

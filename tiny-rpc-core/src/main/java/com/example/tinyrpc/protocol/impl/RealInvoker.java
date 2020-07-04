@@ -6,6 +6,7 @@ import com.example.tinyrpc.common.Request;
 import com.example.tinyrpc.common.RpcContext;
 import com.example.tinyrpc.common.URL;
 import com.example.tinyrpc.common.exception.BusinessException;
+import com.example.tinyrpc.common.utils.UUIDUtils;
 import com.example.tinyrpc.protocol.Invoker;
 import com.example.tinyrpc.transport.Client;
 import org.slf4j.Logger;
@@ -14,6 +15,8 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Method;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+
+import static com.example.tinyrpc.common.Constants.CLIENT_SIDE;
 
 /**
  * 原生的Invoker
@@ -42,10 +45,10 @@ public class RealInvoker implements Invoker {
 
     @Override
     public Object invoke(final Invocation invocation) {
-        invocation.setAttachments(RpcContext.getContext().getAttachments());
-        if (invocation.isClientSide()) {
+        invocation.getAttachments().putAll(RpcContext.getContext().getAttachments());
+        if (invocation.getSide() == CLIENT_SIDE) {
             URL url = invocation.getUrl();
-            Request request = new Request(123456789);
+            Request request = new Request(UUIDUtils.getUUID());
             request.setData(invocation);
             request.setIs2way(!url.isOneWay());
             request.setSerializationId(url.getSerializer());

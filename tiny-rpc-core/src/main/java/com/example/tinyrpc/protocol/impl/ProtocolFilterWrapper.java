@@ -24,6 +24,8 @@ public class ProtocolFilterWrapper implements Protocol {
 
     private URL url;
 
+    private String[] filters = {"active-limit-filter", "log-filter"};
+
     /**
      * 返回责任链头部的Filter
      * @param invoker
@@ -32,6 +34,7 @@ public class ProtocolFilterWrapper implements Protocol {
     private Invoker buildInvokerChain(final Invoker invoker) {
         Invoker last = invoker;
         // 获得所有激活的Filter(简化处理，不进行排序)
+        // TODO 将
         List<Filter> filters = ExtensionLoader.getExtensionLoader().buidFilterChain(url.getFilters());
         logger.info("Build Filter Successful, Filters:{}", filters);
         if (filters.size() > 0) {
@@ -70,16 +73,23 @@ public class ProtocolFilterWrapper implements Protocol {
     @Override
     public Invoker refer(Invocation invocation) {
         this.url = invocation.getUrl();
-        Invoker invoker = PROTOCOL.refer(invocation);
-        return buildInvokerChain(invoker);
+        // 进行负载均衡之后得到invoker
+        Invoker invoker;
+        String serviceName = invocation.getServiceName();
+        if (invocation.isInjvm() && ServiceConfig.INVOKER_MAP.containsKey(serviceName)) {
+            return ServiceConfig.INVOKER_MAP.get(serviceName);
+        } else {
+            // 构建invoker chain
+            invoker = PROTOCOL.refer(invocation);
+            return buildInvokerChain(invoker);
+        }
     }
 
     @Override
     public void export(URL url) {
-        Object ref = url.getRef();
-        RealInvoker invoker = new RealInvoker(null, 0, url);
-        invoker.setRef(ref);
-        ServiceConfig.INVOKER_MAP.put(url.getInterfaceName(), buildInvokerChain(invoker));
         PROTOCOL.export(url);
+        RealInvoker invoker = new RealInvoker(null, 0, url);
+        invoker.setRef(url.getRef());
+        ServiceConfig.INVOKER_MAP.put(url.getInterfaceName(), buildInvokerChain(invoker));
     }
 }

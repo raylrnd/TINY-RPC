@@ -19,12 +19,16 @@ public @interface Reference {
     String serializer() default "protobuff";
     String proxy() default "jdk";
     String protocol() default "TINY-RPC";
-    String[] filter() default {"active-limit-filter", "log-filter"};
+    String[] filter() default {};
     String registry() default "zookeeper";
     /**
      * Load balance strategy, legal values include: random, roundrobin, leastactive
      */
     String loadbalance() default "random";
+    /**
+     * When enable, prefer to call local service in the same JVM if it's present, default value is true
+     */
+    boolean injvm() default true;
 //    String callbackMethod() default "";
 //    int callbackParamIndex() default 1;
 }

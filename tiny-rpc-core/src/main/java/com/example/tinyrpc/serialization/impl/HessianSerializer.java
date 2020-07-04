@@ -62,7 +62,7 @@ public class HessianSerializer implements Serializer {
                     is.close();
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error("Fail to close serializer IO", e);
             }
         }
         return result;
