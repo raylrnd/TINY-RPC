@@ -11,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.List;
 
+import static com.example.tinyrpc.common.Constants.CLIENT_SIDE;
+
 /**
  * 该类为被SPI加载的扩展点，负责包装RegistryProtocol，以及生产InvokerChain
  * @auther zhongshunchao
@@ -31,11 +33,10 @@ public class ProtocolFilterWrapper implements Protocol {
      * @param invoker
      * @return
      */
-    private Invoker buildInvokerChain(final Invoker invoker) {
+    private Invoker buildInvokerChain(final Invoker invoker, int side) {
         Invoker last = invoker;
         // 获得所有激活的Filter(简化处理，不进行排序)
-        // TODO 将
-        List<Filter> filters = ExtensionLoader.getExtensionLoader().buidFilterChain(url.getFilters());
+        List<Filter> filters = ExtensionLoader.getExtensionLoader().buidFilterChain(url.getFilters(), side);
         logger.info("Build Filter Successful, Filters:{}", filters);
         if (filters.size() > 0) {
             for (int i = filters.size() - 1; i >= 0; i--) {
@@ -81,7 +82,7 @@ public class ProtocolFilterWrapper implements Protocol {
         } else {
             // 构建invoker chain
             invoker = PROTOCOL.refer(invocation);
-            return buildInvokerChain(invoker);
+            return buildInvokerChain(invoker, CLIENT_SIDE);
         }
     }
 
@@ -90,6 +91,6 @@ public class ProtocolFilterWrapper implements Protocol {
         PROTOCOL.export(url);
         RealInvoker invoker = new RealInvoker(null, 0, url);
         invoker.setRef(url.getRef());
-        ServiceConfig.INVOKER_MAP.put(url.getInterfaceName(), buildInvokerChain(invoker));
+        ServiceConfig.INVOKER_MAP.put(url.getInterfaceName(), buildInvokerChain(invoker, CLIENT_SIDE));
     }
 }
