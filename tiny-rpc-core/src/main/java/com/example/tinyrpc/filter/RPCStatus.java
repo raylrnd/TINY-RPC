@@ -20,7 +20,7 @@ public class RPCStatus {
         if (ACTIVE_COUNT.containsKey(key)) {
             ACTIVE_COUNT.put(key, ACTIVE_COUNT.get(key) + 1);
         } else {
-            ACTIVE_COUNT.put(key, Integer.valueOf(1));
+            ACTIVE_COUNT.put(key, 1);
         }
     }
 
