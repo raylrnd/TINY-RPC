@@ -26,7 +26,7 @@ public class ZkSupport {
 
     private static final String ZK_ADDRESS = "127.0.0.1:2181";
 
-    ZkSupport() {
+    public ZkSupport() {
         try {
             this.zookeeper = new ZooKeeper(ZK_ADDRESS, ZK_SESSION_TIMEOUT, (WatchedEvent event) -> {
                 //获取事件的状态
@@ -48,7 +48,7 @@ public class ZkSupport {
         }
     }
 
-    void createNodeIfAbsent(String data, String path) {
+    public void createNodeIfAbsent(String data, String path) {
         try {
             byte[] bytes = data.getBytes(Charset.forName("UTF-8"));
             zookeeper.create(path + "/" + data, bytes, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
@@ -57,11 +57,11 @@ public class ZkSupport {
         }
     }
 
-    List<String> getChildren(final String path, Watcher watcher) throws KeeperException, InterruptedException {
+    public List<String> getChildren(final String path, Watcher watcher) throws KeeperException, InterruptedException {
         return zookeeper.getChildren(path, watcher);
     }
 
-    List<String> getChildren(String path, boolean watch) throws KeeperException, InterruptedException {
+    public List<String> getChildren(String path, boolean watch) throws KeeperException, InterruptedException {
         return zookeeper.getChildren(path, watch);
     }
 
@@ -73,14 +73,14 @@ public class ZkSupport {
      * @param path
      * @param createMode
      */
-    void createPathIfAbsent(String path, CreateMode createMode) throws KeeperException, InterruptedException {
+    public void createPathIfAbsent(String path, CreateMode createMode) throws KeeperException, InterruptedException {
         Stat s = zookeeper.exists(path, false);
         if (s == null) {
             zookeeper.create(path, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE, createMode);
         }
     }
 
-    boolean hasNoRoot(String path) throws KeeperException, InterruptedException {
+    public boolean hasNoRoot(String path) throws KeeperException, InterruptedException {
         Stat stat = zookeeper.exists(path, false);
         return stat == null;
     }

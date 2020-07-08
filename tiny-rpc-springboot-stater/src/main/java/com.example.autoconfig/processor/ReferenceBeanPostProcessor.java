@@ -1,16 +1,15 @@
-package com.example.autoconfig.annotation;
+package com.example.autoconfig.processor;
 
 
-import com.example.tinyrpc.common.Invocation;
-import com.example.tinyrpc.common.URL;
+import com.example.autoconfig.annotation.Reference;
+import com.example.tinyrpc.common.domain.Invocation;
+import com.example.tinyrpc.common.domain.URL;
 import com.example.tinyrpc.config.ReferenceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import java.lang.reflect.Field;
-
-import static com.example.tinyrpc.common.utils.SerializerUtil.SERIALIZER_MAP;
 
 /**
  * @auther zhongshunchao
@@ -40,11 +39,14 @@ public class ReferenceBeanPostProcessor implements BeanPostProcessor {
                     URL url = new URL();
                     url.setOneWay(reference.oneway()).setTimeout(reference.timeout()).setProtocol(reference.protocol())
                             .setProxy(reference.proxy()).setLoadbalance(reference.loadbalance())
-                            .setSerializer(SERIALIZER_MAP.get(reference.serializer())).setFilters(reference.filter()).setRegistry(reference.registry());
+                            .setSerialization(reference.serializer()).setFilters(reference.filter()).setRegistry(reference.registry());
                     invocation.setInterfaceClass(interfaceClass);
                     invocation.setServiceName(interfaceClass.getName());
                     invocation.setUrl(url);
                     invocation.setInjvm(reference.injvm());
+                    invocation.setCallback(reference.callback());
+                    invocation.setCallbackMethod(reference.callbackMethod());
+                    invocation.setCallbackParamIndex(reference.callbackParamIndex());
                     //将含有@Reference的字段的属性替换成代理对象
                     try {
                         field.setAccessible(true);

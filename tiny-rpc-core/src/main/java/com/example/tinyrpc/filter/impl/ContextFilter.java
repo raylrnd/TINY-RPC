@@ -1,11 +1,11 @@
 package com.example.tinyrpc.filter.impl;
 
-import com.example.tinyrpc.common.Invocation;
-import com.example.tinyrpc.common.RpcContext;
+import com.example.tinyrpc.common.domain.Invocation;
+import com.example.tinyrpc.common.domain.RpcContext;
 import com.example.tinyrpc.filter.Filter;
 import com.example.tinyrpc.protocol.Invoker;
 import java.util.Map;
-import static com.example.tinyrpc.common.Constants.SERVER_SIDE;
+import static com.example.tinyrpc.common.domain.Constants.SERVER_SIDE;
 
 /**
  * 服务端
@@ -15,7 +15,7 @@ import static com.example.tinyrpc.common.Constants.SERVER_SIDE;
 public class ContextFilter implements Filter {
 
     @Override
-    public Object invoke(Invoker invoker, Invocation invocation) {
+    public Object invoke(Invoker invoker, Invocation invocation) throws Exception {
         invocation.setSide(SERVER_SIDE);
         Map<String, Object> attachments = invocation.getAttachments();
         if (attachments != null) {

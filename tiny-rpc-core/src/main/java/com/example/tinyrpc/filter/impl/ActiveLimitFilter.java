@@ -1,6 +1,6 @@
 package com.example.tinyrpc.filter.impl;
 
-import com.example.tinyrpc.common.Invocation;
+import com.example.tinyrpc.common.domain.Invocation;
 import com.example.tinyrpc.filter.Filter;
 import com.example.tinyrpc.filter.RPCStatus;
 import com.example.tinyrpc.protocol.Invoker;
@@ -16,7 +16,7 @@ public class ActiveLimitFilter implements Filter {
 
     private static final Logger logger = LoggerFactory.getLogger(ActiveLimitFilter.class);
     @Override
-    public Object invoke(Invoker invoker, Invocation invocation) {
+    public Object invoke(Invoker invoker, Invocation invocation) throws Exception{
         String serviceName = invocation.getServiceName();
         String methodName = invocation.getMethodName();
         String address = invoker.getUrl().getAddress();

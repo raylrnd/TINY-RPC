@@ -1,6 +1,5 @@
 package com.example.tinyrpc.transport.client;
 
-import com.example.tinyrpc.common.Response;
 import com.example.tinyrpc.transport.Client;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -11,7 +10,7 @@ import org.slf4j.LoggerFactory;
  * @auther zhongshunchao
  * @date 08/05/2020 08:33
  */
-public class ClientHandler extends SimpleChannelInboundHandler<Response> {
+public class ClientHandler extends SimpleChannelInboundHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(ClientHandler.class);
 
@@ -20,9 +19,9 @@ public class ClientHandler extends SimpleChannelInboundHandler<Response> {
     public ClientHandler(Client client) {
         this.client = client;
     }
-    //读取responde消息
+
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, Response response) throws Exception {
-        client.received(ctx, response);
+    protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
+        client.received(ctx, msg);
     }
 }

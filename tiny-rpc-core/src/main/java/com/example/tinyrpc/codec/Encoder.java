@@ -1,8 +1,8 @@
 package com.example.tinyrpc.codec;
 
-import com.example.tinyrpc.common.Request;
-import com.example.tinyrpc.common.Response;
-import com.example.tinyrpc.serialization.impl.ProtostuffSerializer;
+import com.example.tinyrpc.common.domain.Request;
+import com.example.tinyrpc.common.domain.Response;
+import com.example.tinyrpc.serialization.impl.FastJsonSerialization;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
@@ -19,9 +19,9 @@ public class Encoder extends MessageToByteEncoder implements Codec{
         buffer.writerIndex(savedStart + 4);
         buffer.writeBytes(MAGIC_ARRAY);
         if (msg instanceof Request) {
-            encodeRequest(ctx, (Request) msg, buffer);
+            encodeRequest((Request) msg, buffer);
         } else {
-            encodeResponse(ctx, (Response) msg, buffer);
+            encodeResponse((Response) msg, buffer);
         }
         int end = buffer.writerIndex();
         buffer.writerIndex(savedStart);
@@ -29,10 +29,10 @@ public class Encoder extends MessageToByteEncoder implements Codec{
         buffer.writerIndex(end);
     }
 
-    public void encodeRequest(ChannelHandlerContext ctx, Request request, ByteBuf buffer) throws Exception {
+    private void encodeRequest(Request request, ByteBuf buffer) {
         // header.
         byte [] flag = new byte[2];
-        if (request.isIs2way()) {
+        if (request.isOneway()) {
             flag[0] |= FLAG_TWOWAY;
         }
         flag[0] |= FLAG_REQUEST;
@@ -40,47 +40,30 @@ public class Encoder extends MessageToByteEncoder implements Codec{
         if (request.isEvent()) {
             flag[0] |= FLAG_EVENT;
         }
-        // set serializer id.
-        flag[0] |= 0x01;
+        // set serialization id.
+        flag[0] |= request.getSerializationId();
         buffer.writeBytes(flag);
         long requestId = request.getRequestId();
         buffer.writeLong(requestId);
-        byte[] body = new ProtostuffSerializer().serialize(request.getData());
+        byte[] body = new FastJsonSerialization().serialize(request.getData());
         buffer.writeBytes(body);
-
     }
 
     //比request多了个status
-    private void encodeResponse(ChannelHandlerContext ctx, Response response, ByteBuf buffer) throws Exception {
+    private void encodeResponse(Response response, ByteBuf buffer) {
         // header.
         byte [] flag = new byte[2];
         // is PONG
         if (response.isEvent()) {
             flag[0] |= FLAG_EVENT;
         }
-        // set serializer id.
-        flag[0] |= 0x01;
+        // set serialization id.
+        flag[0] |= response.getSerializationId();
         flag[1] |= response.getStatus();
         buffer.writeBytes(flag);
         long requestId = response.getRequestId();
         buffer.writeLong(requestId);
-        byte[] body = new ProtostuffSerializer().serialize(response.getResponseBody());
+        byte[] body = new FastJsonSerialization().serialize(response.getResponseBody());
         buffer.writeBytes(body);
     }
-
-//    private int buildBody(ByteBuf buffer, byte[] body) {
-//        int savedWriterIndex = buffer.writerIndex();
-////        // skip 2 bytes
-////        buffer.writerIndex(savedWriterIndex + 2);
-//        // write body
-//        buffer.writeBytes(body);
-////        //每回写一次就要save一次
-////        int savedEnd = buffer.writerIndex();
-////        int bodyLength = savedEnd - (2 + savedWriterIndex);
-//        buffer.writerIndex(savedWriterIndex);
-//        // write data length
-////        buffer.writeInt(bodyLength);
-//        buffer.writerIndex(savedEnd);
-////        return bodyLength;
-//    }
 }

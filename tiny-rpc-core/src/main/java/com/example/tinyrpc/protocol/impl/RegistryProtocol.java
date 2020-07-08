@@ -1,11 +1,12 @@
 package com.example.tinyrpc.protocol.impl;
 
-import com.example.tinyrpc.common.ExtensionLoader;
-import com.example.tinyrpc.common.Invocation;
-import com.example.tinyrpc.common.URL;
+import com.example.tinyrpc.common.extension.ExtensionLoader;
+import com.example.tinyrpc.common.domain.Invocation;
+import com.example.tinyrpc.common.domain.URL;
 import com.example.tinyrpc.protocol.Invoker;
 import com.example.tinyrpc.protocol.Protocol;
 import com.example.tinyrpc.registry.Registry;
+import com.example.tinyrpc.transport.Endpoint;
 import com.example.tinyrpc.transport.Server;
 import com.example.tinyrpc.transport.server.NettyServer;
 import org.slf4j.Logger;
@@ -49,7 +50,7 @@ public class RegistryProtocol implements Protocol {
     }
 
     @Override
-    public void export(URL url) {
+    public Endpoint export(URL url) {
         zkServiceRegistry = ExtensionLoader.getExtensionLoader().getExtension(Registry.class, url.getRegistry());
         String address = url.getAddress();
         Server server = SERVER_MAP.get(address);
@@ -64,6 +65,7 @@ public class RegistryProtocol implements Protocol {
             }
         }
         zkServiceRegistry.register(url);
+        return server;
     }
 
 }

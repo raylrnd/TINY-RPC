@@ -1,3 +1,0 @@
-json=com.example.tinyrpc.serialization.impl.JsonSerializer
-hessian=com.example.tinyrpc.serialization.impl.HessianSerializer
-protostuff=com.example.tinyrpc.serialization.impl.ProtostuffSerializer

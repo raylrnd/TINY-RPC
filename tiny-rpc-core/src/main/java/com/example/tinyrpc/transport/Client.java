@@ -1,20 +1,9 @@
 package com.example.tinyrpc.transport;
 
-import com.example.tinyrpc.common.Request;
-import com.example.tinyrpc.common.Response;
-import io.netty.channel.ChannelHandlerContext;
-
-import java.util.concurrent.Future;
-
 /**
  * @auther zhongshunchao
  * @date 2020/5/21 11:25 上午
  */
-public interface Client {
+public interface Client extends Endpoint {
 
-    Future<Object> send(Request message);
-
-    void received(ChannelHandlerContext ctx, Response response) throws Exception;
-
-    void close();
 }

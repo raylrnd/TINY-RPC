@@ -1,6 +1,6 @@
 package com.example.tinyrpc.transport.server;
 
-import com.example.tinyrpc.common.Request;
+import com.example.tinyrpc.common.domain.Request;
 import com.example.tinyrpc.transport.Server;
 import com.example.tinyrpc.transport.client.ClientHandler;
 import io.netty.channel.ChannelHandlerContext;

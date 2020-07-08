@@ -1,17 +1,18 @@
 package com.example.tinyrpc.protocol.impl;
 
-import com.example.tinyrpc.common.ExtensionLoader;
-import com.example.tinyrpc.common.Invocation;
-import com.example.tinyrpc.common.URL;
+import com.example.tinyrpc.common.domain.Constants;
+import com.example.tinyrpc.common.domain.Invocation;
+import com.example.tinyrpc.common.domain.URL;
+import com.example.tinyrpc.common.extension.ExtensionLoader;
 import com.example.tinyrpc.config.ServiceConfig;
 import com.example.tinyrpc.filter.Filter;
 import com.example.tinyrpc.protocol.Invoker;
 import com.example.tinyrpc.protocol.Protocol;
+import com.example.tinyrpc.transport.Endpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.util.List;
 
-import static com.example.tinyrpc.common.Constants.CLIENT_SIDE;
+import java.util.List;
 
 /**
  * 该类为被SPI加载的扩展点，负责包装RegistryProtocol，以及生产InvokerChain
@@ -25,8 +26,6 @@ public class ProtocolFilterWrapper implements Protocol {
     private static final Protocol PROTOCOL = new RegistryProtocol();
 
     private URL url;
-
-    private String[] filters = {"active-limit-filter", "log-filter"};
 
     /**
      * 返回责任链头部的Filter
@@ -56,7 +55,7 @@ public class ProtocolFilterWrapper implements Protocol {
                     }
 
                     @Override
-                    public Object invoke(Invocation invocation) {
+                    public Object invoke(Invocation invocation) throws Exception {
                         return filter.invoke(next, invocation);
                     }
 
@@ -82,15 +81,18 @@ public class ProtocolFilterWrapper implements Protocol {
         } else {
             // 构建invoker chain
             invoker = PROTOCOL.refer(invocation);
-            return buildInvokerChain(invoker, CLIENT_SIDE);
+            return buildInvokerChain(invoker, Constants.CLIENT_SIDE);
         }
     }
 
     @Override
-    public void export(URL url) {
-        PROTOCOL.export(url);
+    public Endpoint export(URL url) {
+        this.url = url;
+        Endpoint endpoint = PROTOCOL.export(url);
         RealInvoker invoker = new RealInvoker(null, 0, url);
         invoker.setRef(url.getRef());
-        ServiceConfig.INVOKER_MAP.put(url.getInterfaceName(), buildInvokerChain(invoker, CLIENT_SIDE));
+        invoker.setEndpoint(endpoint);
+        ServiceConfig.INVOKER_MAP.put(url.getInterfaceName(), buildInvokerChain(invoker, Constants.SERVER_SIDE));
+        return endpoint;
     }
 }

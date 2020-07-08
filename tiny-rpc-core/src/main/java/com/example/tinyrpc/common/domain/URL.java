@@ -1,4 +1,4 @@
-package com.example.tinyrpc.common;
+package com.example.tinyrpc.common.domain;
 
 /**
  * @auther zhongshunchao
@@ -25,7 +25,7 @@ public class URL {
 
     private long timeout;
 
-    private int serializer;
+    private String serialization;
 
     private String protocol;
 
@@ -38,6 +38,12 @@ public class URL {
     private String registry;
 
     private Object ref;
+
+    private int threads;
+
+    private int queues;
+
+    private String threadFactoryName;
 
     public boolean isEvent() {
         return event;
@@ -73,12 +79,12 @@ public class URL {
         return this;
     }
 
-    public int getSerializer() {
-        return serializer;
+    public String getSerialization() {
+        return serialization;
     }
 
-    public URL setSerializer(int serializer) {
-        this.serializer = serializer;
+    public URL setSerialization(String serialization) {
+        this.serialization = serialization;
         return this;
     }
 
@@ -182,5 +188,29 @@ public class URL {
 
     public void setRef(Object ref) {
         this.ref = ref;
+    }
+
+    public int getThreads() {
+        return threads;
+    }
+
+    public void setThreads(int threads) {
+        this.threads = threads;
+    }
+
+    public int getQueues() {
+        return queues;
+    }
+
+    public void setQueues(int queues) {
+        this.queues = queues;
+    }
+
+    public String getThreadFactoryName() {
+        return threadFactoryName;
+    }
+
+    public void setThreadFactoryName(String threadFactoryName) {
+        this.threadFactoryName = threadFactoryName;
     }
 }

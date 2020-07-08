@@ -2,14 +2,19 @@ package com.example.tinyrpc.transport.client;
 
 import com.example.tinyrpc.codec.Decoder;
 import com.example.tinyrpc.codec.Encoder;
-import com.example.tinyrpc.common.ExtensionLoader;
-import com.example.tinyrpc.common.Request;
-import com.example.tinyrpc.common.Response;
+import com.example.tinyrpc.common.domain.Invocation;
+import com.example.tinyrpc.common.domain.Request;
+import com.example.tinyrpc.common.domain.Response;
 import com.example.tinyrpc.common.exception.BusinessException;
 import com.example.tinyrpc.common.utils.FutureContext;
+import com.example.tinyrpc.config.GlobalConfig;
+import com.example.tinyrpc.transport.AbstractEndpoint;
 import com.example.tinyrpc.transport.Client;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.*;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
 import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -19,39 +24,43 @@ import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Method;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 import static com.example.tinyrpc.codec.Codec.*;
-import static com.example.tinyrpc.common.Response.SERVICE_ERROR;
+import static com.example.tinyrpc.common.domain.Response.SERVICE_ERROR;
 
 /**
  * @auther zhongshunchao
  * @date 13/04/2020 12:54
  */
-public class NettyClient implements Client {
+public class NettyClient extends AbstractEndpoint implements Client {
 
-    private static final Logger logger = LoggerFactory.getLogger(ClientHandler.class);
-
-    private Channel channel;
+    private static final Logger logger = LoggerFactory.getLogger(NettyClient.class);
 
     private static final NioEventLoopGroup NIO_EVENT_LOOP_GROUP = new NioEventLoopGroup();
 
-    private String address;
-
     private Bootstrap bootstrap;
 
-    private ExecutorService executorService = ExtensionLoader.getExtensionLoader().getDefaultExecutor();
 
     public NettyClient(String address) {
-        this.address = address;
+        super(address);
         this.bootstrap = new Bootstrap();
-        open();
         connect();
     }
 
-    public void open() {
+    public void connect() {
+        executor.submit(() -> {
+            String[] ipAndPort = address.trim().split(":");
+            ChannelFuture future = bootstrap.connect(ipAndPort[0], Integer.valueOf(ipAndPort[1]));
+            channel = future.channel();
+            logger.info("Client CONNECTED at: {}", address);
+        });
+    }
+
+    @Override
+    public void start() {
         bootstrap.group(NIO_EVENT_LOOP_GROUP)
                 .channel(Epoll.isAvailable() ? EpollSocketChannel.class : NioSocketChannel.class)
                 .handler(new ChannelInitializer<SocketChannel>() {
@@ -72,19 +81,10 @@ public class NettyClient implements Client {
         logger.info("Client OPEN!");
     }
 
-    public void connect() {
-        executorService.submit(() -> {
-            String[] ipAndPort = address.trim().split(":");
-            ChannelFuture future = bootstrap.connect(ipAndPort[0], Integer.valueOf(ipAndPort[1]));
-            channel = future.channel();
-            logger.info("Client CONNECTED at: {}", address);
-        });
-    }
-
     @Override
     public Future<Object> send(Request request) {
         CompletableFuture<Object> responseFuture = new CompletableFuture<>();
-        executorService.submit(() -> {
+        executor.submit(() -> {
             FutureContext.FUTURE_CACHE.putIfAbsent(request.getRequestId(), responseFuture);
             channel.writeAndFlush(request);
         });
@@ -92,34 +92,44 @@ public class NettyClient implements Client {
     }
 
     @Override
-    public void received(ChannelHandlerContext ctx, Response response) throws Exception {
-        executorService.submit(() -> {
-            logger.info("客户端 ClientHandler 收到Response为:{}" + response);
-            if (response == null || response.getResponseBody() == null) {
-                throw new BusinessException("response is null");
-            }
-            //解析状态码，如果是500，则不要向上传递result了，直接抛出异常
-            if (response.getStatus() == SERVICE_ERROR) {
-                throw new BusinessException(response.getResponseBody().getErrorMsg());
-            }
-            long requestId = response.getRequestId();
-            CompletableFuture future = FutureContext.FUTURE_CACHE.remove(requestId);
-            if (future == null) {
-                throw new BusinessException("requestId错误，response没有对应的request相匹配");
-            }
-            future.complete(response.getResponseBody().getResult());
-        });
+    public void sendCallBack(Request request) {
+        channel.writeAndFlush(request);
     }
 
+
     @Override
-    public void close() {
-        executorService.submit(() -> {
-            logger.info("正在关闭 Client:{}", address);
-            if (this.channel != null && channel.isOpen()) {
+    @SuppressWarnings("unchecked")
+    public void received(ChannelHandlerContext ctx, Object msg) {
+        executor.submit(() -> {
+            if (msg == null) {
+                throw new BusinessException("msg is null");
+            }
+            if (msg instanceof  Response) {
+                Response response = (Response) msg;
+                logger.info("客户端 ClientHandler 收到Response为:{}" + response);
+                //解析状态码，如果是500，则不要向上传递result了，直接抛出异常
+                if (response.getStatus() == SERVICE_ERROR) {
+                    throw new BusinessException(response.getResponseBody().getErrorMsg());
+                }
+                long requestId = response.getRequestId();
+                CompletableFuture future = FutureContext.FUTURE_CACHE.remove(requestId);
+                if (future == null) {
+                    throw new BusinessException("requestId错误，response没有对应的request相匹配");
+                }
+                future.complete(response.getResponseBody().getResult());
+            } else {
+                Request request = (Request) msg;
+                Invocation invocation = request.getData();
+                Object callBack = GlobalConfig.getAndRemoveCallBack(request.getRequestId());
+                String methodName = invocation.getMethodName();
+                Object[] arguments = invocation.getArguments();
+                Class<?>[] parameterTypes = invocation.getParameterTypes();
                 try {
-                    this.channel.close().sync();
-                } catch (InterruptedException e) {
-                    logger.error("Fail to close client, address:" + address);
+                    Method method = callBack.getClass().getMethod(methodName, parameterTypes);
+                    method.setAccessible(true);
+                    method.invoke(callBack, arguments);
+                } catch (Exception e) {
+                    throw new BusinessException("Fail to invoke callback method:" + methodName , e);
                 }
             }
         });

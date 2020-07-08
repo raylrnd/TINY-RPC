@@ -13,7 +13,7 @@ public interface Codec {
     byte FLAG_TWOWAY = (byte) 0x40;
     byte FLAG_EVENT = (byte) 0x20;
 
-    int SERIALIZATION_MASK = 0x0f;
+    byte SERIALIZATION_MASK = 0x0f;
     // status
     int STATUS = 0xf0;
 

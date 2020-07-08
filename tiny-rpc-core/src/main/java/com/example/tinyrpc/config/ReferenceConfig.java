@@ -1,8 +1,8 @@
 package com.example.tinyrpc.config;
 
-import com.example.tinyrpc.common.ExtensionLoader;
-import com.example.tinyrpc.common.Invocation;
-import com.example.tinyrpc.common.URL;
+import com.example.tinyrpc.common.extension.ExtensionLoader;
+import com.example.tinyrpc.common.domain.Invocation;
+import com.example.tinyrpc.common.domain.URL;
 import com.example.tinyrpc.protocol.Invoker;
 import com.example.tinyrpc.protocol.Protocol;
 import com.example.tinyrpc.protocol.impl.InvokerClientWrapper;

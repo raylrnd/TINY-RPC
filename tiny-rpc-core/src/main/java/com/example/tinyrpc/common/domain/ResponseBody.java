@@ -1,4 +1,4 @@
-package com.example.tinyrpc.common;
+package com.example.tinyrpc.common.domain;
 
 /**
  * @auther zhongshunchao

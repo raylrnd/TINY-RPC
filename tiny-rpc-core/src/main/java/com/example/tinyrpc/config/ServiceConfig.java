@@ -1,7 +1,7 @@
 package com.example.tinyrpc.config;
 
-import com.example.tinyrpc.common.ExtensionLoader;
-import com.example.tinyrpc.common.URL;
+import com.example.tinyrpc.common.extension.ExtensionLoader;
+import com.example.tinyrpc.common.domain.URL;
 import com.example.tinyrpc.protocol.Invoker;
 import com.example.tinyrpc.protocol.Protocol;
 import org.slf4j.Logger;

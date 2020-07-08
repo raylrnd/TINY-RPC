@@ -1,7 +1,4 @@
-package com.example.tinyrpc.common;
-
-import java.util.HashSet;
-import java.util.Set;
+package com.example.tinyrpc.common.domain;
 
 /**
  * @auther zhongshunchao
@@ -17,5 +14,9 @@ public interface Constants {
 
     String SPAN_KEY = "span";
 
-    Set<String> FILTER_SET = new HashSet<>();
+    String INTERNAL_PATH = "/META-INF/TINY-RPC/internal/";
+
+    String EXTERNAL_PATH = "META-INF/TINY-RPC";
+
+    String DEFAULT_SERIALIATION = "protostuff";
 }

@@ -1,16 +1,18 @@
-package com.example.tinyrpc.common;
+package com.example.tinyrpc.common.extension;
 
+import com.example.tinyrpc.common.domain.Constants;
 import com.example.tinyrpc.common.exception.BusinessException;
 import com.example.tinyrpc.filter.Filter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
-
-import java.io.*;
+import org.springframework.util.StringUtils;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.*;
 
-import static com.example.tinyrpc.common.Constants.CLIENT_SIDE;
 
 /**
  * @auther zhongshunchao
@@ -29,13 +31,6 @@ public class ExtensionLoader {
 
     // Class -> Instance
     private static final Map<Class, Object> INSTANCE_MAP = new ConcurrentHashMap<>();
-
-    /**
-     * 对 Class.getResourceAsStream() 方法来说，不加”/”表示从当前类路径下查找，加”/”表示从classpath的根路径下查找
-     */
-    private static final String INTERNAL_PATH = "/META-INF/TINY-RPC/internal";
-
-    private static final String EXTERNAL_PATH = "META-INF/TINY-RPC";
 
     private static List<Filter> defaultClientFilterList = new ArrayList<>();
 
@@ -64,13 +59,14 @@ public class ExtensionLoader {
 
     // dubbo 源码中采用策略模式获取不同的目录
     private ExtensionLoader() {
-        loadExternalDirectory(this.getClass().getClassLoader().getResource(EXTERNAL_PATH));
+        loadExternalDirectory(this.getClass().getClassLoader().getResource(Constants.EXTERNAL_PATH));
         logger.info("Current ALIAS_CLASS_MAP:{}, INSTANCE_MAP:{}", EXTERNAL_ALIAS_CLASS_MAP, INSTANCE_MAP);
+        buidDefaultFilterChain();
     }
 
     private void loadExternalDirectory(java.net.URL parent) {
         if (parent != null) {
-            logger.info("start reading Extension Files, under path:" + EXTERNAL_PATH);
+            logger.info("start reading Extension Files, under path:" + Constants.EXTERNAL_PATH);
             File dir = new File(parent.getFile());
             File[] files = dir.listFiles();
             if (files != null) {
@@ -111,10 +107,11 @@ public class ExtensionLoader {
     }
 
     //如果map里没有，则通过反射生成
+    @SuppressWarnings("unchecked")
     public <T> T getExtension(Class<T> type, String alias) {
         if (INSTANCE_MAP.containsKey(type)) {
             return (T) INSTANCE_MAP.get(type);
-        } else if (EXTERNAL_ALIAS_CLASS_MAP.containsKey(alias)){
+        } else if (!StringUtils.isEmpty(alias) && EXTERNAL_ALIAS_CLASS_MAP.containsKey(alias)){
             //从map中取出class反射出instance
             Class<T> clazz = EXTERNAL_ALIAS_CLASS_MAP.get(alias);
             if (clazz == null) {
@@ -129,20 +126,27 @@ public class ExtensionLoader {
                             instance = clazz.newInstance();
                             INSTANCE_MAP.put(clazz, instance);
                         } catch (Exception e) {
-                            logger.error("Fail to instantiate class " +  clazz.getTypeName(), ".exception:" + e.getMessage());
+                            logger.error("Fail to instantiate class " +  clazz.getTypeName(), e);
                         }
                     }
                 }
             }
             return (T) INSTANCE_MAP.get(clazz);
         } else {
-            return loadInternalExtension(type, alias);
+            return loadInternalExtension(type);
         }
     }
 
-    private <T> T loadInternalExtension(Class<T> type, String alias) {
+    public <T> T getDefaultExtension(Class<T> type) {
+        return getExtension(type, null);
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> T loadInternalExtension(Class<T> type) {
+        // 获取默认的扩展点别名
+        String alias = getSPIValue(type);
         // 加载默认扩展点
-        InputStream resourceAsStream = ExtensionLoader.class.getResourceAsStream(INTERNAL_PATH + type.getTypeName());
+        InputStream resourceAsStream = ExtensionLoader.class.getResourceAsStream(Constants.INTERNAL_PATH + type.getTypeName());
         Properties prop = new Properties();
         try {
             prop.load(resourceAsStream);
@@ -156,14 +160,32 @@ public class ExtensionLoader {
                 }
             }
         } catch (Exception e) {
-            logger.error("Fail to instantiate class " +  type.getTypeName(), ".exception:" + e.getMessage());
+            logger.error("Fail to instantiate class " +  type.getTypeName(), ".exception:", e);
         }
         return null;
     }
+    private  <T> String getSPIValue(Class<T> type) {
+        if (type == null) {
+            throw new IllegalArgumentException("Extension type == null");
+        }
+        if (!type.isInterface()) {
+            throw new IllegalArgumentException("Extension type (" + type + ") is not an interface!");
+        }
+        if (!type.isAnnotationPresent(SPI.class)) {
+            throw new IllegalArgumentException("Extension type (" + type +
+                    ") is not an extension, because it is NOT annotated with @" + SPI.class.getSimpleName() + "!");
+        }
+        final SPI defaultAnnotation = type.getAnnotation(SPI.class);
+        String value = defaultAnnotation.value();
+        if ((value.trim()).length() <= 0) {
+            throw new IllegalArgumentException("Default Extension SPI value == null");
+        }
+        return value;
+    }
 
-    private <T> void loadInternalFilterExtension(String alias, int side) {
+    private void loadInternalFilterExtension(String alias, int side) {
         // 加载默认扩展点
-        InputStream resourceAsStream = ExtensionLoader.class.getResourceAsStream(INTERNAL_PATH + Filter.class.getTypeName());
+        InputStream resourceAsStream = ExtensionLoader.class.getResourceAsStream(Constants.INTERNAL_PATH + Filter.class.getTypeName());
         Properties prop = new Properties();
         try {
             prop.load(resourceAsStream);
@@ -172,7 +194,7 @@ public class ExtensionLoader {
                     String impl = prop.getProperty(key);
                     Class<?> clazz = Class.forName(impl);
                     Filter instance = (Filter) clazz.newInstance();
-                    if (side == CLIENT_SIDE) {
+                    if (side == Constants.CLIENT_SIDE) {
                         defaultClientFilterList.add(instance);
                     } else {
                         defaultServerFilterList.add(instance);
@@ -180,29 +202,33 @@ public class ExtensionLoader {
                 }
             }
         } catch (Exception e) {
-            logger.error("Fail to instantiate Internal Filter Extension .exception:" + e.getMessage());
+            logger.error("Fail to instantiate Internal Filter Extension", e);
         }
     }
 
+    private void buidDefaultFilterChain() {
+        for (String filter : CLIENT_SIDE_FILTERS) {
+            loadInternalFilterExtension(filter, Constants.CLIENT_SIDE);
+        }
+        for (String filter : SERVER_SIDE_FILTERS) {
+            loadInternalFilterExtension(filter, Constants.SERVER_SIDE);
+        }
+    }
     public List<Filter> buidFilterChain(String[] filters, int side) {
         List<Filter> filterList = new ArrayList<>();
-        if (side == CLIENT_SIDE) {
-            for (String filter : CLIENT_SIDE_FILTERS) {
-                loadInternalFilterExtension(filter, side);
-            }
+        if (side == Constants.CLIENT_SIDE) {
             filterList.addAll(defaultClientFilterList);
         } else {
-            for (String filter : SERVER_SIDE_FILTERS) {
-                loadInternalFilterExtension(filter, side);
-            }
             filterList.addAll(defaultServerFilterList);
         }
-        List<Filter> newFilterList = new ArrayList<>();
-        for (String filter : filters) {
-            Filter newFilter = getExtension(Filter.class, filter);
-            newFilterList.add(newFilter);
+        if (filters != null) {
+            List<Filter> newFilterList = new ArrayList<>();
+            for (String filter : filters) {
+                Filter newFilter = getExtension(Filter.class, filter);
+                newFilterList.add(newFilter);
+            }
+            filterList.addAll(newFilterList);
         }
-        filterList.addAll(newFilterList);
         return filterList;
     }
 

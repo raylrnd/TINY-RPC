@@ -1,4 +1,4 @@
-package com.example.tinyrpc.common;
+package com.example.tinyrpc.common.domain;
 
 import com.example.tinyrpc.filter.Span;
 
@@ -28,6 +28,8 @@ public class RpcContext {
     };
 
     private Map<String, Object> attachments = new HashMap<>();
+
+    private long requestId;
 
     private Invocation invocation;
 
@@ -59,6 +61,14 @@ public class RpcContext {
 
     public void setAttachments(Map<String, Object> attachments) {
         this.attachments = attachments;
+    }
+
+    public long getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(long requestId) {
+        this.requestId = requestId;
     }
 
     public Invocation getInvocation() {

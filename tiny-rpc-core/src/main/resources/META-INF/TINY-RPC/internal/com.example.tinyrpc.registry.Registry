@@ -1,1 +1,1 @@
-zookeeper=com.example.tinyrpc.registry.ZkServiceRegistry
+zookeeper=com.example.tinyrpc.registry.impl.ZkServiceRegistry

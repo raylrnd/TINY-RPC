@@ -1,7 +1,7 @@
 package com.example.tinyrpc.protocol;
 
-import com.example.tinyrpc.common.Invocation;
-import com.example.tinyrpc.common.URL;
+import com.example.tinyrpc.common.domain.Invocation;
+import com.example.tinyrpc.common.domain.URL;
 
 /**
  * @auther zhongshunchao
@@ -13,7 +13,7 @@ public interface Invoker {
 
     Class<?> getInterface();
 
-    Object invoke(Invocation invocation);
+    Object invoke(Invocation invocation) throws Exception;
 
     void destroy();
 }
