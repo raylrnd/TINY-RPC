@@ -8,15 +8,12 @@ import com.example.tinyrpc.common.domain.URL;
 import com.example.tinyrpc.common.exception.BusinessException;
 import com.example.tinyrpc.common.utils.CodecSupport;
 import com.example.tinyrpc.common.utils.UUIDUtils;
-import com.example.tinyrpc.config.GlobalConfig;
 import com.example.tinyrpc.protocol.Invoker;
-import com.example.tinyrpc.proxy.CallBackInvocationHandler;
 import com.example.tinyrpc.transport.Endpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -61,11 +58,6 @@ public class RealInvoker implements Invoker {
             Request request = new Request(UUIDUtils.getUUID(), CodecSupport.getIDByName(url.getSerialization()));
             request.setOneway(!url.isOneWay());
             request.setSerializationId(CodecSupport.getIDByName(url.getSerialization()));
-            if (invocation.isCallback()) {
-                Object[] arguments = invocation.getArguments();
-                int callbackParamIndex = invocation.getCallbackParamIndex();
-                GlobalConfig.saveCallBack(request.getRequestId(), arguments[callbackParamIndex]);
-            }
             request.setData(invocation);
             Future<Object> future = endpoint.send(request);
             Object response = null;
@@ -83,19 +75,6 @@ public class RealInvoker implements Invoker {
             return response;
         } else {
             Method method = ref.getClass().getMethod(invocation.getMethodName(), invocation.getParameterTypes());
-            if (invocation.isCallback()) {
-                Object[] arguments = invocation.getArguments();
-                Class<?>[] parameterTypes = invocation.getParameterTypes();
-                int callbackParamIndex = invocation.getCallbackParamIndex();
-                String callbackMethod = invocation.getCallbackMethod();
-                Class<?> interfaceClass = parameterTypes[callbackParamIndex];
-                Object proxy = Proxy.newProxyInstance(
-                        interfaceClass.getClassLoader(),
-                        new Class<?>[]{interfaceClass},
-                        new CallBackInvocationHandler(callbackMethod, invocation.getUrl(), endpoint)
-                );
-                arguments[callbackParamIndex] = proxy;
-            }
             method.setAccessible(true);
             return method.invoke(ref, invocation.getArguments());
         }

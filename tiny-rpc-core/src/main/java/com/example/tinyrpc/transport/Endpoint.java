@@ -15,8 +15,6 @@ public interface Endpoint {
 
     Future<Object> send(Request request);
 
-    void sendCallBack(Request message);
-
     void received(ChannelHandlerContext ctx, Object msg) ;
 
     void close();

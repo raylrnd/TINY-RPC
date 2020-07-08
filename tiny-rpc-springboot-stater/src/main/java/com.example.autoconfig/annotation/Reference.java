@@ -13,9 +13,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Reference {
     boolean async() default false;
-    boolean callback() default false;
-    String callbackMethod() default "callback";
-    int callbackParamIndex() default 0;
     boolean oneway() default  false;
     long timeout() default 50000;
     String serializer() default "";
@@ -31,6 +28,4 @@ public @interface Reference {
      * When enable, prefer to call local service in the same JVM if it's present, default value is true
      */
     boolean injvm() default true;
-//    String callbackMethod() default "";
-//    int callbackParamIndex() default 1;
 }

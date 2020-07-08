@@ -2,12 +2,10 @@ package com.example.tinyrpc.transport.client;
 
 import com.example.tinyrpc.codec.Decoder;
 import com.example.tinyrpc.codec.Encoder;
-import com.example.tinyrpc.common.domain.Invocation;
 import com.example.tinyrpc.common.domain.Request;
 import com.example.tinyrpc.common.domain.Response;
 import com.example.tinyrpc.common.exception.BusinessException;
 import com.example.tinyrpc.common.utils.FutureContext;
-import com.example.tinyrpc.config.GlobalConfig;
 import com.example.tinyrpc.transport.AbstractEndpoint;
 import com.example.tinyrpc.transport.Client;
 import io.netty.bootstrap.Bootstrap;
@@ -24,7 +22,6 @@ import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Method;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
@@ -92,12 +89,6 @@ public class NettyClient extends AbstractEndpoint implements Client {
     }
 
     @Override
-    public void sendCallBack(Request request) {
-        channel.writeAndFlush(request);
-    }
-
-
-    @Override
     @SuppressWarnings("unchecked")
     public void received(ChannelHandlerContext ctx, Object msg) {
         executor.submit(() -> {
@@ -117,20 +108,6 @@ public class NettyClient extends AbstractEndpoint implements Client {
                     throw new BusinessException("requestId错误，response没有对应的request相匹配");
                 }
                 future.complete(response.getResponseBody().getResult());
-            } else {
-                Request request = (Request) msg;
-                Invocation invocation = request.getData();
-                Object callBack = GlobalConfig.getAndRemoveCallBack(request.getRequestId());
-                String methodName = invocation.getMethodName();
-                Object[] arguments = invocation.getArguments();
-                Class<?>[] parameterTypes = invocation.getParameterTypes();
-                try {
-                    Method method = callBack.getClass().getMethod(methodName, parameterTypes);
-                    method.setAccessible(true);
-                    method.invoke(callBack, arguments);
-                } catch (Exception e) {
-                    throw new BusinessException("Fail to invoke callback method:" + methodName , e);
-                }
             }
         });
     }

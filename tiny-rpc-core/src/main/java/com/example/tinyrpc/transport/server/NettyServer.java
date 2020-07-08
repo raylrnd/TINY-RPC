@@ -80,10 +80,6 @@ public class NettyServer extends AbstractEndpoint implements Server {
     }
 
     @Override
-    public void sendCallBack(Request message) {
-    }
-
-    @Override
     public void received(ChannelHandlerContext ctx, Object msg) {
         executor.submit(() -> {
             if (msg instanceof Request) {
@@ -91,8 +87,6 @@ public class NettyServer extends AbstractEndpoint implements Server {
                 //调用代理，通过反射的方式调用本地jvm中的方法
                 long requestId = request.getRequestId();
                 Response response = new Response(requestId);
-                // 为了实现callback而保存了requestId
-                RpcContext.getContext().setRequestId(requestId);
                 Invocation invocation = request.getData();
                 invocation.setSide(Constants.SERVER_SIDE);
                 URL url = new URL();

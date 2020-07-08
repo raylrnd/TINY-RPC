@@ -44,9 +44,6 @@ public class ReferenceBeanPostProcessor implements BeanPostProcessor {
                     invocation.setServiceName(interfaceClass.getName());
                     invocation.setUrl(url);
                     invocation.setInjvm(reference.injvm());
-                    invocation.setCallback(reference.callback());
-                    invocation.setCallbackMethod(reference.callbackMethod());
-                    invocation.setCallbackParamIndex(reference.callbackParamIndex());
                     //将含有@Reference的字段的属性替换成代理对象
                     try {
                         field.setAccessible(true);

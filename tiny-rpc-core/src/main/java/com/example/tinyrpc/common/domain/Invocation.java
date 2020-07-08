@@ -33,12 +33,6 @@ public class Invocation implements Serializable {
 
     private transient boolean injvm;
 
-    private boolean callback = false;
-
-    private String callbackMethod;
-
-    private int callbackParamIndex;
-
     public String getServiceName() {
         return serviceName;
     }
@@ -86,30 +80,6 @@ public class Invocation implements Serializable {
 
     public void setInjvm(boolean injvm) {
         this.injvm = injvm;
-    }
-
-    public boolean isCallback() {
-        return callback;
-    }
-
-    public void setCallback(boolean callback) {
-        this.callback = callback;
-    }
-
-    public String getCallbackMethod() {
-        return callbackMethod;
-    }
-
-    public void setCallbackMethod(String callbackMethod) {
-        this.callbackMethod = callbackMethod;
-    }
-
-    public int getCallbackParamIndex() {
-        return callbackParamIndex;
-    }
-
-    public void setCallbackParamIndex(int callbackParamIndex) {
-        this.callbackParamIndex = callbackParamIndex;
     }
 
     public URL getUrl() {
