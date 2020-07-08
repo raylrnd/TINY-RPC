@@ -7,10 +7,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * @auther zhongshunchao
  * @date 28/06/2020 14:00
  */
-public class RPCStatus {
+public class RpcStatus {
     private static final Map<String, Integer> ACTIVE_COUNT = new ConcurrentHashMap<>();
 
-    public synchronized static int getCount(String interfaceName, String methodName, String address) {
+    public synchronized static int getActive(String interfaceName, String methodName, String address) {
         Integer count = ACTIVE_COUNT.get(generateKey(interfaceName, methodName, address));
         return count == null ? 0 : count;
     }
