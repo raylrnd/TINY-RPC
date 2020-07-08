@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @auther zhongshunchao
  * @date 05/07/2020 17:54
  */
-public class Proxy {
+public class JavassistProxy {
 
     private static final String PREFIX = "$Proxy";
 
@@ -17,7 +17,7 @@ public class Proxy {
 
     protected static InvocationHandler invocationHandler;
 
-    protected Proxy(InvocationHandler invocationHandler) {
+    protected JavassistProxy(InvocationHandler invocationHandler) {
         this.invocationHandler = invocationHandler;
     }
 
@@ -29,7 +29,7 @@ public class Proxy {
         int methodIndex = 0;
         CtClass[] interfaces = ctClass.getInterfaces();
         //将Proxy类设置成父类   关键！！！
-        proxyCls.setSuperclass(pool.get(Proxy.class.getName()));
+        proxyCls.setSuperclass(pool.get(JavassistProxy.class.getName()));
         for (int i = 0; i < interfaces.length; i++) {
             CtClass ctInter = interfaces[i];
             proxyCls.addInterface(ctInter);
@@ -49,7 +49,7 @@ public class Proxy {
         //生成构造函数
         generateConstructor(pool, proxyCls);
         // 持久化class到硬盘
-        proxyCls.writeFile(Proxy.class.getResource("/").getPath());
+        proxyCls.writeFile(JavassistProxy.class.getResource("/").getPath());
 
         return proxyCls.toClass(loader, null).getConstructor(InvocationHandler.class).newInstance(invocationHandler);
     }

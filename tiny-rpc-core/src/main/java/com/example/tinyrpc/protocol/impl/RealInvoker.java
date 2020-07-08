@@ -10,7 +10,6 @@ import com.example.tinyrpc.common.utils.CodecSupport;
 import com.example.tinyrpc.common.utils.UUIDUtils;
 import com.example.tinyrpc.config.GlobalConfig;
 import com.example.tinyrpc.protocol.Invoker;
-import com.example.tinyrpc.proxy.CallBackInvocationHandler;
 import com.example.tinyrpc.transport.Endpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
