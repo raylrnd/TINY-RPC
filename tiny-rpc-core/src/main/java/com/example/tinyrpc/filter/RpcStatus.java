@@ -1,35 +1,58 @@
 package com.example.tinyrpc.filter;
 
+import com.example.tinyrpc.common.domain.URL;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @auther zhongshunchao
  * @date 28/06/2020 14:00
  */
 public class RpcStatus {
-    private static final Map<String, Integer> ACTIVE_COUNT = new ConcurrentHashMap<>();
 
-    public synchronized static int getActive(String interfaceName, String methodName, String address) {
-        Integer count = ACTIVE_COUNT.get(generateKey(interfaceName, methodName, address));
-        return count == null ? 0 : count;
+    private static final Map<String, RpcStatus> METHOD_STATISTICS = new ConcurrentHashMap<>();
+
+    private final AtomicInteger active = new AtomicInteger();
+
+    private RpcStatus() {
     }
 
-    public synchronized static void incCount(String interfaceName, String methodName, String address) {
-        String key = generateKey(interfaceName, methodName, address);
-        if (ACTIVE_COUNT.containsKey(key)) {
-            ACTIVE_COUNT.put(key, ACTIVE_COUNT.get(key) + 1);
-        } else {
-            ACTIVE_COUNT.put(key, 1);
+    public static RpcStatus getStatus(URL url) {
+        String uri = url.toIdentityString();
+        return METHOD_STATISTICS.computeIfAbsent(uri, key -> new RpcStatus());
+    }
+
+    public int getActive() {
+        return active.get();
+    }
+
+    public static void removeStatus(URL url) {
+        String uri = url.toIdentityString();
+        METHOD_STATISTICS.remove(uri);
+    }
+
+    public static boolean beginCount(URL url, int max) {
+        max = (max <= 0) ? Integer.MAX_VALUE : max;
+        RpcStatus methodStatus = getStatus(url);
+        if (methodStatus.active.get() == Integer.MAX_VALUE) {
+            return false;
         }
+        int i;
+        while (true) {
+            i = methodStatus.active.get();
+            if (i + 1 > max) {
+                return false;
+            }
+            if (methodStatus.active.compareAndSet(i, i + 1)) {
+                break;
+            }
+        }
+        methodStatus.active.incrementAndGet();
+        return true;
     }
 
-    public synchronized static void decCount(String interfaceName, String methodName, String address) {
-        String key = generateKey(interfaceName, methodName, address);
-        ACTIVE_COUNT.put(key, ACTIVE_COUNT.get(key) - 1);
-    }
 
-    private static String generateKey(String interfaceName, String methodName, String address) {
-        return new StringBuilder(interfaceName).append(".").append(methodName).append(".").append(address).toString();
-    }
+
 }
