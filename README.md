@@ -1,23 +1,30 @@
 # TINY-RPC
 TINY-RPC  
 基于Netty的小型RPC项目  
-目前为version_1.1版本  
-|功能列表|  
-|version1.0 : 仅仅为可运行的版本  (Done 2020.06.06)    
-|version1.1 : 为TINY-RPC 添加 SpringBoot Stater  (Done 2020.06.14)  
-|version1.2 : 添加Zookeeper，提供服务发现和注册, 添加负载均衡策略LoadBalancer  (Done 2020.06.27)  
-|version1.3 : 添加ExtensionLoader (Done 2020.06.30) 
-|version1.4 : 添加同步、异步调用方式
-|version2.0 : 添加Filter，实现链路跟踪和限流 
-How to Run:  
-在测试仓库[https://github.com/raylrnd/tiny-rpc-sample.git](https://github.com/raylrnd/tiny-rpc-sample.git)中分别运行'ServerDemo'和'ClientDemo'  
+目前为version_1.4版本  
+
+里程碑，预计工时40pd   
+
+ |                             功能点                                  |  完成时间   |
+ | :----------------------------------------------------------:       | :--------: |
+ |                      实现基本的RPC通信                               | 2020.06.06 |
+ |     添加 SpringBoot Stater、实现了类Dubbo协议                         | 2020.06.14 |
+ | 添加Zookeeper，提供服务发现和注册, 添加负载均衡策略LoadBalancer           | 2020.06.27 |
+ |                     添加ExtensionLoader                            | 2020.06.30 |
+ |            添加同步、异步调用方式、添加业务线程池                         | 2020.07.03 |
+ |                添加Filter，实现链路跟踪和限流                          | 2020.07.04 |
+ |              添加FailOver,FailFast等多种集群容错                      | 2020.07.04 |
+ |       支持javassist代理、支持多种负载均衡策略   | 2020.07.05 |
+运行教程   
+1、下载并安装Zookeeper3.1.14，将zookeeper运行在2181端口  
+2、将本项目打包并install到本地仓库  
+3、然后在测试仓库[https://github.com/raylrnd/tiny-rpc-sample.git](https://github.com/raylrnd/tiny-rpc-sample.git)中分别运行'ServerDemo'和'ClientDemo'即可看到效果图如图。     
 version1.2 运行效果图  
 客户端效果图
 ![image](https://upload-images.jianshu.io/upload_images/16081207-b3a03e4f80c366af.png)  
 服务端效果图
 ![image](https://upload-images.jianshu.io/upload_images/16081207-3c0abbcb20799619.png) 
 
-个人博客:[shunchao.ink](http://www.shunchao.ink)
 
 version1.2实现思路：
 生产者：  
@@ -38,8 +45,13 @@ version1.2实现思路：
 version1.3  
 在客户端添加LoadBalance和Filter，从InvokerList里面select出要调用的Invoker。根据权重、随机等，要先实现Filter，获取负载均衡参数，Filter可以采用Pipline模式，参考Pigeon  
 
-本项目的Zookeeper目录格式为 ： 
-|path                                   |  value               |  
-|/TINY-RPC/com.example.tinyrpc.AService | 192.168.1.1:1221$100 |  
-|/TINY-RPC/com.example.tinyrpc.BService | 192.168.1.4:1221$200 |  
-|/TINY-RPC/com.example.tinyrpc.AService | 192.168.1.2:1221&300 |  
+本项目的Zookeeper目录格式为（&后面的数字为权重weight）：   
+  
+| path                                   | value                |
+| :--------------------------------------: | :--------------------: |
+| /TINY-RPC/com.example.tinyrpc.AService | 192.168.1.1:1221&100 |
+| /TINY-RPC/com.example.tinyrpc.BService | 192.168.1.4:1221&200 |
+| /TINY-RPC/com.example.tinyrpc.AService | 192.168.1.2:1221&300 |
+参考书籍：
+《深入理解Apache Dubbo与实践》、《深度剖析Apache Dubbo核心技术内幕》  
+个人博客:[shunchao.ink](http://www.shunchao.ink)

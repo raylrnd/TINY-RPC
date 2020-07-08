@@ -1,6 +1,6 @@
 package com.example.tinyrpc.proxy;
 
-import com.example.tinyrpc.common.Invocation;
+import com.example.tinyrpc.common.domain.Invocation;
 import com.example.tinyrpc.protocol.Invoker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

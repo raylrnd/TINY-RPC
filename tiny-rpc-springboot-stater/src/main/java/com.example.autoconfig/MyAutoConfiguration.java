@@ -1,7 +1,7 @@
 package com.example.autoconfig;
 
-import com.example.autoconfig.annotation.ReferenceBeanPostProcessor;
-import com.example.autoconfig.annotation.ProviderBeanPostProcessor;
+import com.example.autoconfig.processor.ReferenceBeanPostProcessor;
+import com.example.autoconfig.processor.ProviderBeanPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

@@ -1,15 +1,16 @@
 package com.example.tinyrpc.codec;
 
 
-import com.example.tinyrpc.common.Invocation;
-import com.example.tinyrpc.common.ResponseBody;
-import com.example.tinyrpc.serialization.Serializer;
-import com.example.tinyrpc.common.Request;
-import com.example.tinyrpc.common.Response;
-import com.example.tinyrpc.serialization.impl.ProtostuffSerializer;
+import com.example.tinyrpc.common.domain.Invocation;
+import com.example.tinyrpc.common.domain.Request;
+import com.example.tinyrpc.common.domain.Response;
+import com.example.tinyrpc.common.domain.ResponseBody;
+import com.example.tinyrpc.common.extension.ExtensionLoader;
+import com.example.tinyrpc.serialization.Serialization;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
+
 import java.util.List;
 
 
@@ -38,8 +39,6 @@ import java.util.List;
 // 如果req == 1, 应该移交给Client端进行处理。考虑到一台机器可能同时有client和server
 public class Decoder extends ByteToMessageDecoder implements Codec{
 
-    public Serializer serializer;
-
     // 先读头部，解析出消息的长度
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf buffer, List<Object> out) throws Exception {
@@ -55,34 +54,33 @@ public class Decoder extends ByteToMessageDecoder implements Codec{
         buffer.readBytes(header);
         // 解析Request ID
         long requestId = buffer.readLong();
-        // 解析data length
-//        int dataLength = buffer.readInt();
-//        if (buffer.readableBytes() != dataLength) {
-//            throw new Exception("实际长度与dataLength不符");
-//        }
         // 是否是请求消息
         boolean isRequest = (header[0] & FLAG_REQUEST) != 0;
         // 是否期望从服务器返回值
-        boolean is2way = (header[0] & FLAG_TWOWAY) != 0;
+        boolean oneway = (header[0] & FLAG_TWOWAY) != 0;
         // 是否是事件
-        boolean isEvent = (header[0] & FLAG_TWOWAY) != 0;
+        boolean event = (header[0] & FLAG_TWOWAY) != 0;
         // 取后5位，解析出serializationId
-        int serializationId =  (header[0] & SERIALIZATION_MASK);
+        byte serializationId = (byte) (header[0] & SERIALIZATION_MASK);
         // 解析status
         byte status = header[1];
         byte [] body = new byte [len - 12];
         // 解析消息体
         buffer.readBytes(body);
+        Serialization serialization = ExtensionLoader.getExtensionLoader().getDefaultExtension(Serialization.class);
         if (isRequest) {
-            Request request = new Request(requestId);
-            request.setEvent(isEvent);
-            Invocation data = new ProtostuffSerializer().deserialize(body, Invocation.class);
+            Request request = new Request(requestId, serializationId);
+            request.setEvent(event);
+
+            Invocation data = serialization.deserialize(body, Invocation.class);
+//            Invocation data = new ProtostuffSerialization().deserialize(body, Invocation.class);
             request.setData(data);
             out.add(request);
         } else {
             Response response = new Response(requestId);
-            response.setEvent(isEvent);
-            ResponseBody responseBody = new ProtostuffSerializer().deserialize(body, ResponseBody.class);
+            response.setEvent(event);
+            ResponseBody responseBody = serialization.deserialize(body, ResponseBody.class);
+//            ResponseBody responseBody = new ProtostuffSerialization().deserialize(body, ResponseBody.class);
             response.setResponseBody(responseBody);
             out.add(response);
         }

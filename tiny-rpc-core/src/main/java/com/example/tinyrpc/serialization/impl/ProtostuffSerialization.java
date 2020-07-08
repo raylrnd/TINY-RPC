@@ -4,7 +4,7 @@ import com.dyuproject.protostuff.LinkedBuffer;
 import com.dyuproject.protostuff.ProtostuffIOUtil;
 import com.dyuproject.protostuff.Schema;
 import com.dyuproject.protostuff.runtime.RuntimeSchema;
-import com.example.tinyrpc.serialization.Serializer;
+import com.example.tinyrpc.serialization.Serialization;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @auther zhongshunchao
  * @date 2020/5/20 6:23 下午
  */
-public class ProtostuffSerializer implements Serializer {
+public class ProtostuffSerialization implements Serialization {
     private static Map<Class<?>, Schema<?>> cachedSchema = new ConcurrentHashMap<>();
 
     @Override
@@ -22,8 +22,10 @@ public class ProtostuffSerializer implements Serializer {
         LinkedBuffer buffer = LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE);
         try {
             Schema<T> schema = getSchema(cls);
-            return ProtostuffIOUtil.toByteArray(obj, schema, buffer);
+            byte[] bytes = ProtostuffIOUtil.toByteArray(obj, schema, buffer);
+            return bytes;
         } catch (Exception e) {
+            e.printStackTrace();
             throw new IllegalStateException(e.getMessage(), e);
         } finally {
             buffer.clear();

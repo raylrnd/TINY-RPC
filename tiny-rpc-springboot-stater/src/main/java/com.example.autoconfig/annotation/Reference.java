@@ -13,18 +13,24 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Reference {
     boolean async() default false;
-    boolean callback() default  false;
+    boolean callback() default false;
+    String callbackMethod() default "callback";
+    int callbackParamIndex() default 0;
     boolean oneway() default  false;
-    long timeout() default 3000;
-    String serializer() default "protobuff";
-    String proxy() default "jdk";
-    String protocol() default "TINY-RPC";
-    String[] filter() default {"active-limit-filter", "log-filter"};
-    String registry() default "zookeeper";
+    long timeout() default 50000;
+    String serializer() default "";
+    String proxy() default "";
+    String protocol() default "";
+    String[] filter() default {};
+    String registry() default "";
     /**
      * Load balance strategy, legal values include: random, roundrobin, leastactive
      */
-    String loadbalance() default "random";
+    String loadbalance() default "";
+    /**
+     * When enable, prefer to call local service in the same JVM if it's present, default value is true
+     */
+    boolean injvm() default true;
 //    String callbackMethod() default "";
 //    int callbackParamIndex() default 1;
 }

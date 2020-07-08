@@ -1,6 +1,6 @@
 package com.example.tinyrpc.transport.server;
 
-import com.example.tinyrpc.common.Request;
+import com.example.tinyrpc.common.domain.Request;
 import com.example.tinyrpc.transport.Server;
 import com.example.tinyrpc.transport.client.ClientHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 // 消息被读取后，会自动释放资源
 public class ServerHandler extends SimpleChannelInboundHandler<Request> {
 
-    private static Logger logger = LoggerFactory.getLogger(ClientHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(ClientHandler.class);
 
     private Server server;
 
@@ -27,6 +27,6 @@ public class ServerHandler extends SimpleChannelInboundHandler<Request> {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Request request) throws Exception {
         logger.info("服务端 ServerHandler 收到Request为：{}", request);
-        server.handleRequest(ctx, request);
+        server.received(ctx, request);
     }
 }

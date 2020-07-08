@@ -18,9 +18,9 @@ public @interface Provider {
     Class<?> interfaceClass() default void.class;
     int port() default 8787;
     int weight() default 1;
-    String serializer() default "protobuff";
-    String proxy() default "jdk";
-    String protocol() default "TINY-RPC";
-    String registry() default "zookeeper";
+    String serializer() default "";
+    String proxy() default "";
+    String protocol() default "";
+    String registry() default "";
     String[] filter() default {};
 }

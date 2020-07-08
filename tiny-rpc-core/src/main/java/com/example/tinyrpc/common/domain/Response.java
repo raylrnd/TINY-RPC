@@ -1,4 +1,4 @@
-package com.example.tinyrpc.common;
+package com.example.tinyrpc.common.domain;
 
 import java.io.Serializable;
 
@@ -64,6 +64,8 @@ public class Response implements Serializable {
 
     private byte status = OK;
 
+    private byte serializationId;
+
     private ResponseBody responseBody;
 
     public Response(long requestId) {
@@ -100,5 +102,13 @@ public class Response implements Serializable {
 
     public void setResponseBody(ResponseBody responseBody) {
         this.responseBody = responseBody;
+    }
+
+    public byte getSerializationId() {
+        return serializationId;
+    }
+
+    public void setSerializationId(byte serializationId) {
+        this.serializationId = serializationId;
     }
 }

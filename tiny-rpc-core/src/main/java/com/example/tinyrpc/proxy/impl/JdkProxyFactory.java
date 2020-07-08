@@ -1,6 +1,6 @@
 package com.example.tinyrpc.proxy.impl;
 
-import com.example.tinyrpc.common.Invocation;
+import com.example.tinyrpc.common.domain.Invocation;
 import com.example.tinyrpc.protocol.Invoker;
 import com.example.tinyrpc.proxy.InvokerInvocationHandler;
 import com.example.tinyrpc.proxy.ProxyFactory;

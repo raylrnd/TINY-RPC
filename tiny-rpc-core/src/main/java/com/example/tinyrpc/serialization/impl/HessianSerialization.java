@@ -4,9 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.caucho.hessian.io.HessianSerializerInput;
 import com.caucho.hessian.io.HessianSerializerOutput;
 import com.example.tinyrpc.common.exception.BusinessException;
-import com.example.tinyrpc.serialization.Serializer;
+import com.example.tinyrpc.serialization.Serialization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -15,32 +16,31 @@ import java.io.IOException;
  * @auther zhongshunchao
  * @date 23/05/2020 14:26
  */
-public class HessianSerializer implements Serializer {
+public class HessianSerialization implements Serialization {
 
-    private static Logger logger = LoggerFactory.getLogger(HessianSerializer.class);
+    private static final Logger logger = LoggerFactory.getLogger(HessianSerialization.class);
 
     @Override
-    public <T> byte[] serialize(T obj) throws Exception {
-        byte[] results;
+    public <T> byte[] serialize(T obj) {
         ByteArrayOutputStream os = null;
         HessianSerializerOutput hessianOutput;
         try {
             os = new ByteArrayOutputStream();
             hessianOutput = new HessianSerializerOutput(os);
             hessianOutput.writeObject(obj);
-            results = os.toByteArray();
+            return os.toByteArray();
         } catch (Exception e) {
-            throw new Exception("序列化异常:{}");
+            e.printStackTrace();
         } finally {
             try {
                 if (os != null) {
                     os.close();
                 }
             } catch (IOException e) {
-
+                logger.error("Fail to close Hessian serialization IO", e);
             }
         }
-        return results;
+        return null;
     }
 
     @Override
@@ -48,12 +48,11 @@ public class HessianSerializer implements Serializer {
         if (data == null) {
             throw new NullPointerException();
         }
-        T result;
         ByteArrayInputStream is = null;
         try {
             is = new ByteArrayInputStream(data);
             HessianSerializerInput hessianInput = new HessianSerializerInput(is);
-            result = cls.cast(hessianInput.readObject());
+            return cls.cast(hessianInput.readObject());
         } catch (Exception e) {
             throw new BusinessException("Can not deserialize data:", JSON.toJSONString(data));
         } finally {
@@ -62,9 +61,8 @@ public class HessianSerializer implements Serializer {
                     is.close();
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error("Fail to close Hessian serialization IO", e);
             }
         }
-        return result;
     }
 }

@@ -1,12 +1,14 @@
 package com.example.tinyrpc.config;
 
-import com.example.tinyrpc.common.ExtensionLoader;
-import com.example.tinyrpc.common.URL;
+import com.example.tinyrpc.common.extension.ExtensionLoader;
+import com.example.tinyrpc.common.domain.URL;
+import com.example.tinyrpc.protocol.Invoker;
 import com.example.tinyrpc.protocol.Protocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @auther zhongshunchao
@@ -14,15 +16,13 @@ import java.util.HashMap;
  */
 public class ServiceConfig {
 
-    private static Logger logger = LoggerFactory.getLogger(ServiceConfig.class);
+    private static final Logger logger = LoggerFactory.getLogger(ServiceConfig.class);
 
-    public static final HashMap<String, Object> SERVICE_MAP = new HashMap<>();
+    public static final Map<String, Invoker> INVOKER_MAP = new ConcurrentHashMap<>();
 
     //将服务发布到ZK并开启server
-    public void export(URL url, Object bean) {
+    public void export(URL url) {
         Protocol protocol = ExtensionLoader.getExtensionLoader().getExtension( Protocol.class, url.getProtocol());
         protocol.export(url);
-        ServiceConfig.SERVICE_MAP.put(url.getInterfaceName(), bean);
     }
-
 }

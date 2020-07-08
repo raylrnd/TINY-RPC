@@ -1,18 +1,9 @@
 package com.example.tinyrpc.transport;
 
-import com.example.tinyrpc.common.Request;
-import io.netty.channel.ChannelHandlerContext;
-
 /**
  * @auther zhongshunchao
  * @date 2020/5/21 11:29 上午
  */
-public interface Server {
-
-    void start();
-
-    void handleRequest(ChannelHandlerContext ctx, Request request) throws Exception;
-
-    void stop();
+public interface Server extends Endpoint {
 
 }

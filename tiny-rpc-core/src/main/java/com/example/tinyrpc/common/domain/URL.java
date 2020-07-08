@@ -1,4 +1,4 @@
-package com.example.tinyrpc.common;
+package com.example.tinyrpc.common.domain;
 
 /**
  * @auther zhongshunchao
@@ -21,9 +21,11 @@ public class URL {
 
     private boolean oneWay = false;
 
+    private boolean aync = false;
+
     private long timeout;
 
-    private int serializer;
+    private String serialization;
 
     private String protocol;
 
@@ -34,6 +36,14 @@ public class URL {
     private String[] filters;
 
     private String registry;
+
+    private Object ref;
+
+    private int threads;
+
+    private int queues;
+
+    private String threadFactoryName;
 
     public boolean isEvent() {
         return event;
@@ -52,6 +62,14 @@ public class URL {
         return this;
     }
 
+    public boolean isAync() {
+        return aync;
+    }
+
+    public void setAync(boolean aync) {
+        this.aync = aync;
+    }
+
     public long getTimeout() {
         return timeout;
     }
@@ -61,12 +79,12 @@ public class URL {
         return this;
     }
 
-    public int getSerializer() {
-        return serializer;
+    public String getSerialization() {
+        return serialization;
     }
 
-    public URL setSerializer(int serializer) {
-        this.serializer = serializer;
+    public URL setSerialization(String serialization) {
+        this.serialization = serialization;
         return this;
     }
 
@@ -164,4 +182,35 @@ public class URL {
         this.registry = registry;
     }
 
+    public Object getRef() {
+        return ref;
+    }
+
+    public void setRef(Object ref) {
+        this.ref = ref;
+    }
+
+    public int getThreads() {
+        return threads;
+    }
+
+    public void setThreads(int threads) {
+        this.threads = threads;
+    }
+
+    public int getQueues() {
+        return queues;
+    }
+
+    public void setQueues(int queues) {
+        this.queues = queues;
+    }
+
+    public String getThreadFactoryName() {
+        return threadFactoryName;
+    }
+
+    public void setThreadFactoryName(String threadFactoryName) {
+        this.threadFactoryName = threadFactoryName;
+    }
 }
