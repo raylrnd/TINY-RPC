@@ -1,5 +1,6 @@
 package com.example.tinyrpc.filter.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.example.tinyrpc.common.domain.Invocation;
 import com.example.tinyrpc.common.domain.RpcContext;
 import com.example.tinyrpc.common.domain.URL;
@@ -39,7 +40,7 @@ public class TraceFilter implements Filter {
             span.incSpanId();
         }
         attachments.put(SPAN_KEY, span);
-        logger.info(">>>Tracing Result:{}", span);
+        logger.info(">>>Tracing Result:{}", JSON.toJSONString(span));
         return result;
     }
 }

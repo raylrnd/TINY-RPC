@@ -1,5 +1,6 @@
 package com.example.tinyrpc.transport.server;
 
+import com.alibaba.fastjson.JSON;
 import com.example.tinyrpc.common.domain.Request;
 import com.example.tinyrpc.transport.Server;
 import com.example.tinyrpc.transport.client.ClientHandler;
@@ -26,7 +27,7 @@ public class ServerHandler extends SimpleChannelInboundHandler<Request> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Request request) throws Exception {
-        logger.info("服务端 ServerHandler 收到Request为：{}", request);
+        logger.info("服务端 ServerHandler 收到Request为：{}", JSON.toJSONString(request));
         server.received(ctx, request);
     }
 }
