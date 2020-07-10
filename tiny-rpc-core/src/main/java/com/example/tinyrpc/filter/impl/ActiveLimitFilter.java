@@ -2,7 +2,7 @@ package com.example.tinyrpc.filter.impl;
 
 import com.example.tinyrpc.common.domain.Invocation;
 import com.example.tinyrpc.filter.Filter;
-import com.example.tinyrpc.filter.RPCStatus;
+import com.example.tinyrpc.filter.RpcStatus;
 import com.example.tinyrpc.protocol.Invoker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,15 +23,15 @@ public class ActiveLimitFilter implements Filter {
         Object result;
         try {
             logger.info("starting,incCount...,{}", invocation);
-            RPCStatus.incCount(serviceName, methodName, address);
+            RpcStatus.incCount(serviceName, methodName, address);
             result = invoker.invoke(invocation);
         } catch (Exception e) {
             logger.info("catch exception,decCount...,{}", invocation);
-            RPCStatus.decCount(serviceName, methodName, address);
+            RpcStatus.decCount(serviceName, methodName, address);
             throw e;
         }
         logger.info("finished,decCount...,{}", invocation);
-        RPCStatus.decCount(serviceName, methodName, address);
+        RpcStatus.decCount(serviceName, methodName, address);
         return result;
     }
 }

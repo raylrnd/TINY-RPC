@@ -53,7 +53,7 @@ public class ZkServiceRegistry implements Registry {
                 }
             }
         } catch (KeeperException | InterruptedException e) {
-            logger.error("Error when initializing SERVICE_URL_MAP, exception:" + e.getMessage());
+            logger.error("Error when initializing SERVICE_URL_MAP, exception:", e.getMessage());
         }
     }
 
@@ -75,7 +75,7 @@ public class ZkServiceRegistry implements Registry {
                 }
             });
             if (newUrlList == null) {
-                throw new BusinessException("在Zookeeper没有找到interfaceName为：" + interfaceName + "的地址");
+                throw new BusinessException("Fail to find interfaceName in Zookeeper:" + interfaceName);
             }
             return updateAddress(interfaceName, newUrlList, updateAddressCallBack);
         } catch (KeeperException | InterruptedException e) {
@@ -126,7 +126,7 @@ public class ZkServiceRegistry implements Registry {
         try {
             ZK_SUPPORT.createPathIfAbsent(path, CreateMode.PERSISTENT);
         } catch (KeeperException | InterruptedException e) {
-            throw new BusinessException("无法创建Zookeeper目录：" + path);
+            throw new BusinessException("Fail to create Zookeeper path" + path);
         }
         ZK_SUPPORT.createNodeIfAbsent(data, path);
     }

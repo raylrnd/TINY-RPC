@@ -1,1 +1,2 @@
 jdk=com.example.tinyrpc.proxy.impl.JdkProxyFactory
+javassist=com.example.tinyrpc.proxy.impl.JavassistProxyFactory

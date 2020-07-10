@@ -93,7 +93,7 @@ public class InvokerClientWrapper implements Invoker {
     private String[] getSplitsFromUrlString(String url) {
         String[] split = url.split("&");
         if (split.length < 2) {
-            throw new BusinessException("UrlUtils解析url失败，无效的url ：" + url);
+            throw new BusinessException("###UrlUtils: url parse failed, url : " + url + " is invalid");
         }
         return split;
     }

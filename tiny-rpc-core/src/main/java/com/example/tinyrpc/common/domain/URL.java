@@ -213,4 +213,8 @@ public class URL {
     public void setThreadFactoryName(String threadFactoryName) {
         this.threadFactoryName = threadFactoryName;
     }
+
+    public String toIdentityString() {
+        return address + "/" + interfaceName;
+    }
 }
