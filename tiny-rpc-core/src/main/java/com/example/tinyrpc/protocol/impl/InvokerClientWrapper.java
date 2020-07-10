@@ -1,5 +1,6 @@
 package com.example.tinyrpc.protocol.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.example.tinyrpc.cluster.LoadBalance;
 import com.example.tinyrpc.common.extension.ExtensionLoader;
 import com.example.tinyrpc.common.domain.Invocation;
@@ -55,9 +56,9 @@ public class InvokerClientWrapper implements Invoker {
             createInvoker(url);
         }
         logger.info("###init()系统开始进行负载均衡...");
-        logger.info("###init()全局zk地址缓存invokerMap为{}", invokerMap);
+        logger.info("###init()全局zk地址缓存invokerMap为{}", JSON.toJSONString(invokerMap));
         this.realInvoker = loadBalance.select(new ArrayList<>(invokerMap.values()));
-        logger.info("###init()此次被LoadBalancer选中的invoker 为 ：{}", realInvoker);
+        logger.info("###init()此次被LoadBalancer选中的invoker 为 ：{}", JSON.toJSONString(realInvoker));
     }
 
     //这里之前犯过一个错误，不能异步删除和添加Client，防止子线程还没来的及删除该client，然后该client被select了，这样就会导致使用了无效的client
@@ -84,15 +85,16 @@ public class InvokerClientWrapper implements Invoker {
         }
 
         logger.info("###handleZkCallBack()系统开始进行负载均衡...");
-        logger.info("###handleZkCallBack()全局zk地址缓存invokerMap为{}", invokerMap);
+        logger.info("###handleZkCallBack()全局zk地址缓存invokerMap为{}", JSON.toJSONString(invokerMap));
         this.realInvoker = loadBalance.select(new ArrayList<>(invokerMap.values()));
-        logger.info("###handleZkCallBack()此次被LoadBalancer选中的invoker 为 ：{}", realInvoker);
+        logger.info("###handleZkCallBack()此次被LoadBalancer选中的invoker 为 ：{}", JSON.toJSONString(realInvoker));
 
     }
 
     private String[] getSplitsFromUrlString(String url) {
         String[] split = url.split("&");
         if (split.length < 2) {
+            logger.error("###UrlUtils: url parse failed, url : " + url + " is invalid");
             throw new BusinessException("###UrlUtils: url parse failed, url : " + url + " is invalid");
         }
         return split;

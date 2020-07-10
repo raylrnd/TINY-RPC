@@ -44,6 +44,7 @@ public class ZkSupport {
             logger.info("Start connecting Zookeeper");
             connectedSemaphore.await();
         } catch (Exception e) {
+            logger.error("Cannot connect Zookeeper ：" + ZK_ADDRESS);
             throw new BusinessException("Cannot connect Zookeeper ：" + ZK_ADDRESS);
         }
     }

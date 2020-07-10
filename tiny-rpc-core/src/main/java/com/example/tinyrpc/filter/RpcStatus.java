@@ -1,7 +1,6 @@
 package com.example.tinyrpc.filter;
 
 import com.example.tinyrpc.common.domain.URL;
-
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -33,26 +32,27 @@ public class RpcStatus {
         METHOD_STATISTICS.remove(uri);
     }
 
-    public static boolean beginCount(URL url, int max) {
+    public static boolean beginCount(URL url) {
+        int max = url.getActives();
         max = (max <= 0) ? Integer.MAX_VALUE : max;
         RpcStatus methodStatus = getStatus(url);
         if (methodStatus.active.get() == Integer.MAX_VALUE) {
             return false;
         }
         int i;
-        while (true) {
+        do {
             i = methodStatus.active.get();
             if (i + 1 > max) {
                 return false;
             }
-            if (methodStatus.active.compareAndSet(i, i + 1)) {
-                break;
-            }
-        }
+        } while (!methodStatus.active.compareAndSet(i, i + 1));
         methodStatus.active.incrementAndGet();
         return true;
     }
 
-
+    public static void endCount(URL url) {
+        RpcStatus status = getStatus(url);
+        status.active.decrementAndGet();
+    }
 
 }

@@ -75,6 +75,7 @@ public class ZkServiceRegistry implements Registry {
                 }
             });
             if (newUrlList == null) {
+                logger.error("Fail to find interfaceName in Zookeeper:" + interfaceName);
                 throw new BusinessException("Fail to find interfaceName in Zookeeper:" + interfaceName);
             }
             return updateAddress(interfaceName, newUrlList, updateAddressCallBack);
@@ -126,6 +127,7 @@ public class ZkServiceRegistry implements Registry {
         try {
             ZK_SUPPORT.createPathIfAbsent(path, CreateMode.PERSISTENT);
         } catch (KeeperException | InterruptedException e) {
+            logger.error("Fail to create Zookeeper path" + path);
             throw new BusinessException("Fail to create Zookeeper path" + path);
         }
         ZK_SUPPORT.createNodeIfAbsent(data, path);

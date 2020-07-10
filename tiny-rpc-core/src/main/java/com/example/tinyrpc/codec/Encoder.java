@@ -1,11 +1,14 @@
 package com.example.tinyrpc.codec;
 
+import com.alibaba.fastjson.JSON;
 import com.example.tinyrpc.common.domain.Request;
 import com.example.tinyrpc.common.domain.Response;
 import com.example.tinyrpc.serialization.impl.FastJsonSerialization;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @auther zhongshunchao
@@ -13,8 +16,11 @@ import io.netty.handler.codec.MessageToByteEncoder;
  */
 public class Encoder extends MessageToByteEncoder implements Codec{
 
+    private static final Logger logger = LoggerFactory.getLogger(Encoder.class);
+
     @Override
     protected void encode(ChannelHandlerContext ctx, Object msg, ByteBuf buffer) throws Exception {
+        logger.info("###Encoder will send msg :" + JSON.toJSONString(msg));
         int savedStart = buffer.writerIndex();
         buffer.writerIndex(savedStart + 4);
         buffer.writeBytes(MAGIC_ARRAY);

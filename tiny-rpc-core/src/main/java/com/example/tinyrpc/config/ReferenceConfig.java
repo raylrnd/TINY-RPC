@@ -21,6 +21,10 @@ public class ReferenceConfig {
         Protocol protocol = ExtensionLoader.getExtensionLoader().getExtension(Protocol.class, url.getProtocol());
         ProxyFactory proxyFactory = ExtensionLoader.getExtensionLoader().getExtension(ProxyFactory.class, url.getProxy());
         Invoker invoker = protocol.refer(invocation);
-        return proxyFactory.getProxy(invoker, invocation);
+        Object proxy = proxyFactory.getProxy(invoker, invocation);
+        if (proxy == null) {
+            throw new IllegalStateException("getProxy error :proxy == null");
+        }
+        return proxy;
     }
 }

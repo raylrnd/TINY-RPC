@@ -46,6 +46,7 @@ public class RealInvoker implements Invoker {
 
     @Override
     public Object invoke(Invocation invocation) throws Exception {
+        logger.info("###RealInvoker start invoke invocation:" + JSON.toJSONString(invocation));
         invocation.getAttachments().putAll(RpcContext.getContext().getAttachments());
         if (invocation.getSide() == CLIENT_SIDE) {
             URL url = invocation.getUrl();
@@ -69,7 +70,8 @@ public class RealInvoker implements Invoker {
                         response = future.get(invocation.getTimeout(), TimeUnit.MILLISECONDS);
                     }
                 } catch (Exception e) {
-                    throw new BusinessException("Fail to get result from Server when invoking invocation:" + JSON.toJSONString(invocation), e);
+                    logger.error("Server timeout : Fail to get result from Server when invoking invocation:" + JSON.toJSONString(invocation));
+                    throw new BusinessException("Server timeout : Fail to get result from Server when invoking invocation:" + JSON.toJSONString(invocation), e);
                 }
             }
             return response;

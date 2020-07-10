@@ -15,6 +15,7 @@ public @interface Reference {
     boolean async() default false;
     boolean oneway() default  false;
     long timeout() default 50000;
+    int actives() default 0;
     String serializer() default "";
     String proxy() default "";
     String protocol() default "";

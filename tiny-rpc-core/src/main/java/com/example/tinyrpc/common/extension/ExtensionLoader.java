@@ -115,6 +115,7 @@ public class ExtensionLoader {
             //从map中取出class反射出instance
             Class<T> clazz = EXTERNAL_ALIAS_CLASS_MAP.get(alias);
             if (clazz == null) {
+                logger.error("Fail to get Extension. alias=" + alias);
                 throw new BusinessException("Fail to get Extension. alias=" + alias);
             }
             Object instance = INSTANCE_MAP.get(clazz);

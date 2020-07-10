@@ -8,7 +8,7 @@ import com.example.tinyrpc.protocol.Invoker;
  * @auther zhongshunchao
  * @date 19/06/2020 23:54
  */
-@SPI("javassist")
+@SPI("jdk")
 public interface ProxyFactory {
 
     Object getProxy(Invoker invoker, Invocation invocation);

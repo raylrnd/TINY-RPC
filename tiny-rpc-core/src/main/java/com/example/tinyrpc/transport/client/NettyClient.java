@@ -1,5 +1,6 @@
 package com.example.tinyrpc.transport.client;
 
+import com.alibaba.fastjson.JSON;
 import com.example.tinyrpc.codec.Decoder;
 import com.example.tinyrpc.codec.Encoder;
 import com.example.tinyrpc.common.domain.Request;
@@ -93,13 +94,15 @@ public class NettyClient extends AbstractEndpoint implements Client {
     public void received(ChannelHandlerContext ctx, Object msg) {
         executor.submit(() -> {
             if (msg == null) {
+                logger.error("msg is null");
                 throw new BusinessException("msg is null");
             }
             if (msg instanceof  Response) {
                 Response response = (Response) msg;
-                logger.info("客户端 ClientHandler 收到Response为:{}" + response);
+                logger.info("客户端 ClientHandler 收到Response为:{}" + JSON.toJSONString(response));
                 //解析状态码，如果是500，则不要向上传递result了，直接抛出异常
                 if (response.getStatus() == SERVICE_ERROR) {
+                    logger.error(response.getResponseBody().getErrorMsg());
                     throw new BusinessException(response.getResponseBody().getErrorMsg());
                 }
                 long requestId = response.getRequestId();

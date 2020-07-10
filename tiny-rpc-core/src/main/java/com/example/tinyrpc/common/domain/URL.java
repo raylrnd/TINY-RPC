@@ -25,6 +25,8 @@ public class URL {
 
     private long timeout;
 
+    private int actives;
+
     private String serialization;
 
     private String protocol;
@@ -76,6 +78,15 @@ public class URL {
 
     public URL setTimeout(long timeout) {
         this.timeout = timeout;
+        return this;
+    }
+
+    public int getActives() {
+        return actives;
+    }
+
+    public URL setActives(int actives) {
+        this.actives = actives;
         return this;
     }
 

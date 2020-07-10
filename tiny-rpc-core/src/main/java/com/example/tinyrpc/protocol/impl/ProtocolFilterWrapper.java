@@ -1,5 +1,6 @@
 package com.example.tinyrpc.protocol.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.example.tinyrpc.common.domain.Constants;
 import com.example.tinyrpc.common.domain.Invocation;
 import com.example.tinyrpc.common.domain.URL;
@@ -36,7 +37,7 @@ public class ProtocolFilterWrapper implements Protocol {
         Invoker last = invoker;
         // 获得所有激活的Filter(简化处理，不进行排序)
         List<Filter> filters = ExtensionLoader.getExtensionLoader().buidFilterChain(url.getFilters(), side);
-        logger.info("Build Filter Successful, Filters:{}", filters);
+        logger.info("Build Filter Successful, Filters:{}", JSON.toJSONString(filters));
         if (filters.size() > 0) {
             for (int i = filters.size() - 1; i >= 0; i--) {
                 final Filter filter = filters.get(i);

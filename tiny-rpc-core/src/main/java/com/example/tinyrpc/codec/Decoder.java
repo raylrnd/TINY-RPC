@@ -1,6 +1,7 @@
 package com.example.tinyrpc.codec;
 
 
+import com.alibaba.fastjson.JSON;
 import com.example.tinyrpc.common.domain.Invocation;
 import com.example.tinyrpc.common.domain.Request;
 import com.example.tinyrpc.common.domain.Response;
@@ -10,6 +11,8 @@ import com.example.tinyrpc.serialization.Serialization;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -39,9 +42,12 @@ import java.util.List;
 // 如果req == 1, 应该移交给Client端进行处理。考虑到一台机器可能同时有client和server
 public class Decoder extends ByteToMessageDecoder implements Codec{
 
+    private static final Logger logger = LoggerFactory.getLogger(Decoder.class);
+
     // 先读头部，解析出消息的长度
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf buffer, List<Object> out) throws Exception {
+        logger.info("###Decoder received buffer" + JSON.toJSONString(buffer));
         int len = buffer.readableBytes();
         if (buffer.readableBytes() < 16) {
             // 头部异常
@@ -71,7 +77,6 @@ public class Decoder extends ByteToMessageDecoder implements Codec{
         if (isRequest) {
             Request request = new Request(requestId, serializationId);
             request.setEvent(event);
-
             Invocation data = serialization.deserialize(body, Invocation.class);
 //            Invocation data = new ProtostuffSerialization().deserialize(body, Invocation.class);
             request.setData(data);

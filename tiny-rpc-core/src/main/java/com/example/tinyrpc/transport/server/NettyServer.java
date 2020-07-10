@@ -68,6 +68,7 @@ public class NettyServer extends AbstractEndpoint implements Server {
                 channel = future.channel();
                 logger.info("Server successfully bind at : {}" + address);
             } catch (InterruptedException e) {
+                logger.error("Server can not bind address:" + address);
                 throw new BusinessException("Server can not bind address:" + address);
             }
         });

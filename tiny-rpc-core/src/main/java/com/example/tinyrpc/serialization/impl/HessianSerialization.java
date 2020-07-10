@@ -54,6 +54,7 @@ public class HessianSerialization implements Serialization {
             HessianSerializerInput hessianInput = new HessianSerializerInput(is);
             return cls.cast(hessianInput.readObject());
         } catch (Exception e) {
+            logger.error("Can not deserialize data:", JSON.toJSONString(data));
             throw new BusinessException("Can not deserialize data:", JSON.toJSONString(data));
         } finally {
             try {
