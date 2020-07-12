@@ -21,7 +21,7 @@ public class Span implements Serializable {
      * 服务返回状态
      */
     private String status;
-    private boolean async = false;                                  // 异步标识
+    private boolean async = true;                                  // 异步标识
 
     public Span(long traceId, String remoteAddress, String spanName, int side) {
         this.traceId = traceId;

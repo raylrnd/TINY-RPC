@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Reference {
-    boolean async() default false;
+    boolean async() default true;
     boolean oneway() default  false;
     long timeout() default 500000;
     int actives() default 0;

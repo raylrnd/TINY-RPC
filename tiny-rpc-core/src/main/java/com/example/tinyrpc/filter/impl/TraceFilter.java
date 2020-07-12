@@ -28,7 +28,7 @@ public class TraceFilter implements Filter {
     @Override
     public Object invoke(Invoker invoker, Invocation invocation) throws Exception{
         logger.info("###TraceFilter Start tracing...");
-        Map<String, Object> attachments = RpcContext.getServerContext().getAttachments();
+        Map<String, Object> attachments = RpcContext.getContext().getAttachments();
         // 这里默认的序列化方式为fastjson
         Span parentSpan;
         Object obj = attachments.get(SPAN_KEY);
@@ -48,15 +48,15 @@ public class TraceFilter implements Filter {
             String currentSpanNum = parentSpan.incAndGetSpanid();
             curSpan = new Span(parentSpan.getTraceId(), url.getAddress(), spanName, invocation.getSide());
             curSpan.setSpanId(currentSpanNum);
-            logger.info("###Tracing Result, parentSpan == {}, thread id == {}", JSON.toJSONString(parentSpan), Thread.currentThread().getId());
+            logger.warn("###Tracing Result, parentSpan == {}, thread id == {}", JSON.toJSONString(parentSpan), Thread.currentThread().getId());
         }
         attachments.put(SPAN_KEY, curSpan);
-        logger.info("###Tracing Result, curSpan == {}, thread id == {}", JSON.toJSONString(curSpan), Thread.currentThread().getId());
+        logger.warn("###Tracing Result, curSpan == {}, thread id == {}", JSON.toJSONString(curSpan), Thread.currentThread().getId());
         // start invoke
         long startTime = System.currentTimeMillis();
         Object result = invoker.invoke(invocation);
         long endTime = System.currentTimeMillis();
-        logger.info("###Tracing Result, invoke costs time: " + (endTime - startTime));
+        logger.warn("###Tracing Result, invoke costs time: " + (endTime - startTime));
         // end invoke
         // 恢复parent span
         attachments.put(SPAN_KEY, parentSpan);

@@ -25,16 +25,12 @@ public class ServerContextFilter implements Filter {
         invocation.setSide(SERVER_SIDE);
         Map<String, Object> attachments = invocation.getAttachments();
         if (attachments != null) {
-            if (RpcContext.getServerContext().getAttachments() != null) {
-                RpcContext.getServerContext().getAttachments().putAll(attachments);
+            if (RpcContext.getContext().getAttachments() != null) {
+                RpcContext.getContext().getAttachments().putAll(attachments);
             } else {
-                RpcContext.getServerContext().setAttachments(attachments);
+                RpcContext.getContext().setAttachments(attachments);
             }
         }
-        try {
-            return invoker.invoke(invocation);
-        } finally {
-            RpcContext.removeServerContext();
-        }
+        return invoker.invoke(invocation);
     }
 }

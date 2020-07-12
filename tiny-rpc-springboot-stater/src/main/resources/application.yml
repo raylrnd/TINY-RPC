@@ -1,0 +1,3 @@
+logging:
+  file: mylogs.log
+  path: /TINY-RPC-log

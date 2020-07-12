@@ -5,6 +5,7 @@ import com.example.tinyrpc.codec.Decoder;
 import com.example.tinyrpc.codec.Encoder;
 import com.example.tinyrpc.common.domain.Request;
 import com.example.tinyrpc.common.domain.Response;
+import com.example.tinyrpc.common.domain.RpcContext;
 import com.example.tinyrpc.common.exception.BusinessException;
 import com.example.tinyrpc.common.utils.FutureContext;
 import com.example.tinyrpc.transport.AbstractEndpoint;
@@ -93,6 +94,8 @@ public class NettyClient extends AbstractEndpoint implements Client {
     @SuppressWarnings("unchecked")
     public void received(ChannelHandlerContext ctx, Object msg) {
         executor.submit(() -> {
+            // 放回线程池的时候清空Attachments
+            RpcContext.getContext().clearAttachments();
             if (msg == null) {
                 logger.error("msg is null");
                 throw new BusinessException("msg is null");

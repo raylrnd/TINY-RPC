@@ -18,13 +18,6 @@ public class RpcContext {
         }
     };
 
-    private static final ThreadLocal<RpcContext> SERVER_LOCAL = new ThreadLocal<RpcContext>(){
-        @Override
-        protected RpcContext initialValue() {
-            return new RpcContext();
-        }
-    };
-
     private Map<String, Object> attachments = new HashMap<>();
 
     private long requestId;
@@ -40,15 +33,6 @@ public class RpcContext {
      */
     public static RpcContext getContext() {
         return LOCAL.get();
-    }
-
-    /**
-     * get server side context.
-     *
-     * @return server context
-     */
-    public static RpcContext getServerContext() {
-        return SERVER_LOCAL.get();
     }
 
     public Map<String, Object> getAttachments() {
@@ -75,15 +59,11 @@ public class RpcContext {
         this.invocation = invocation;
     }
 
-    public static void removeServerContext() {
-        SERVER_LOCAL.remove();
-    }
-
     public void clearAttachments() {
         this.attachments.clear();
     }
 
-    public static void removeConsumerContext() {
+    public static void removeContext() {
         LOCAL.remove();
     }
 
