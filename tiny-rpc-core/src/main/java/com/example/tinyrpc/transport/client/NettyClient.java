@@ -94,7 +94,7 @@ public class NettyClient extends AbstractEndpoint implements Client {
     @SuppressWarnings("unchecked")
     public void received(ChannelHandlerContext ctx, Object msg) {
         executor.submit(() -> {
-            // 放回线程池的时候清空Attachments
+            // 延迟删除Attachments
             RpcContext.getContext().clearAttachments();
             if (msg == null) {
                 logger.error("msg is null");

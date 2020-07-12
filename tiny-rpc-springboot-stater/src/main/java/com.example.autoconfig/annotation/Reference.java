@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
 public @interface Reference {
     boolean async() default true;
     boolean oneway() default  false;
-    long timeout() default 500000;
+    long timeout() default 100;
     int actives() default 0;
     String serializer() default "";
     String proxy() default "";
