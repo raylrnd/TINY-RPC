@@ -1,2 +1,3 @@
 random=com.example.tinyrpc.cluster.impl.RandomLoadBalancer
 leastactive=com.example.tinyrpc.cluster.impl.LeastActiveLoadBalance
+round=com.example.tinyrpc.cluster.impl.RoundRobinLoadBalancer
