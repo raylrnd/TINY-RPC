@@ -1,7 +1,5 @@
 package com.example.tinyrpc.common.domain;
 
-import com.example.tinyrpc.filter.Span;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -34,8 +32,6 @@ public class RpcContext {
     private Invocation invocation;
 
     private Future future;
-
-    private Span span;
 
     /**
      * get context.
@@ -87,7 +83,7 @@ public class RpcContext {
         this.attachments.clear();
     }
 
-    public static void removeContext() {
+    public static void removeConsumerContext() {
         LOCAL.remove();
     }
 
@@ -97,13 +93,5 @@ public class RpcContext {
 
     public void setFuture(Future future) {
         this.future = future;
-    }
-
-    public Span getSpan() {
-        return span;
-    }
-
-    public void setSpan(Span span) {
-        this.span = span;
     }
 }

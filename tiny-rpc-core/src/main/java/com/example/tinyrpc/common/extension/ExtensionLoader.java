@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 import org.springframework.util.StringUtils;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -230,6 +231,7 @@ public class ExtensionLoader {
             }
             filterList.addAll(newFilterList);
         }
+        logger.info("###global filterList: " + filterList);
         return filterList;
     }
 

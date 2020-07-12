@@ -69,6 +69,7 @@ public class NettyServer extends AbstractEndpoint implements Server {
                 logger.info("Server successfully bind at : {}" + address);
             } catch (InterruptedException e) {
                 logger.error("Server can not bind address:" + address);
+                e.printStackTrace();
                 throw new BusinessException("Server can not bind address:" + address);
             }
         });
@@ -108,6 +109,7 @@ public class NettyServer extends AbstractEndpoint implements Server {
                     ctx.writeAndFlush(response);
                 } catch (Exception e) {
                     logger.error("HandleRequest error, exception:{}", e.getMessage());
+                    e.printStackTrace();
                     throw new BusinessException("HandleRequest error, exception:" + e.getMessage());
                 }
             }

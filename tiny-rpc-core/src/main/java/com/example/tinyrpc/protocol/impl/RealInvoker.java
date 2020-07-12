@@ -71,7 +71,8 @@ public class RealInvoker implements Invoker {
                     }
                 } catch (Exception e) {
                     logger.error("Server timeout : Fail to get result from Server when invoking invocation:" + JSON.toJSONString(invocation));
-                    throw new BusinessException("Server timeout : Fail to get result from Server when invoking invocation:" + JSON.toJSONString(invocation), e);
+                    e.printStackTrace();
+                    throw new BusinessException("Server timeout : Fail to get result from Server when invoking invocation:" + JSON.toJSONString(invocation));
                 }
             }
             return response;

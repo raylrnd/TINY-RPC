@@ -128,6 +128,7 @@ public class ZkServiceRegistry implements Registry {
             ZK_SUPPORT.createPathIfAbsent(path, CreateMode.PERSISTENT);
         } catch (KeeperException | InterruptedException e) {
             logger.error("Fail to create Zookeeper path" + path);
+            e.printStackTrace();
             throw new BusinessException("Fail to create Zookeeper path" + path);
         }
         ZK_SUPPORT.createNodeIfAbsent(data, path);

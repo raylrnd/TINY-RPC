@@ -1,6 +1,7 @@
 package com.example.tinyrpc.filter.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.example.tinyrpc.common.domain.Invocation;
 import com.example.tinyrpc.common.domain.RpcContext;
 import com.example.tinyrpc.common.domain.URL;
@@ -27,20 +28,38 @@ public class TraceFilter implements Filter {
     @Override
     public Object invoke(Invoker invoker, Invocation invocation) throws Exception{
         logger.info("###TraceFilter Start tracing...");
+        Map<String, Object> attachments = RpcContext.getServerContext().getAttachments();
+        // 这里默认的序列化方式为fastjson
+        Span parentSpan;
+        Object obj = attachments.get(SPAN_KEY);
+        if (obj instanceof Span) {
+            parentSpan = (Span) obj;
+        } else {
+            JSONObject parentSpanObject = (JSONObject) attachments.get(SPAN_KEY);
+            parentSpan = JSONObject.toJavaObject(parentSpanObject, Span.class);
+        }
+        URL url = invocation.getUrl();
+        String spanName = invocation.getServiceName() + "#" + invocation.getMethodName();
+        Span curSpan;
+        if (parentSpan == null) {
+            curSpan = new Span(UUIDUtils.getUUID(), url.getAddress(), spanName, invocation.getSide());
+            curSpan.setSpanId("0");
+        } else {
+            String currentSpanNum = parentSpan.incAndGetSpanid();
+            curSpan = new Span(parentSpan.getTraceId(), url.getAddress(), spanName, invocation.getSide());
+            curSpan.setSpanId(currentSpanNum);
+            logger.info("###Tracing Result, parentSpan == {}, thread id == {}", JSON.toJSONString(parentSpan), Thread.currentThread().getId());
+        }
+        attachments.put(SPAN_KEY, curSpan);
+        logger.info("###Tracing Result, curSpan == {}, thread id == {}", JSON.toJSONString(curSpan), Thread.currentThread().getId());
+        // start invoke
         long startTime = System.currentTimeMillis();
         Object result = invoker.invoke(invocation);
         long endTime = System.currentTimeMillis();
-        URL url = invocation.getUrl();
-        Map<String, Object> attachments = RpcContext.getContext().getAttachments();
-        Span span = (Span) attachments.get(SPAN_KEY);
-        if (span == null) {
-            String spanName = invocation.getServiceName() + "." + invocation.getMethodName();
-            span = new Span(UUIDUtils.getUUID(), url.getAddress(), startTime, endTime, spanName, invocation.getSide());
-        } else {
-            span.incSpanId();
-        }
-        attachments.put(SPAN_KEY, span);
-        logger.info(">>>Tracing Result:{}", JSON.toJSONString(span));
+        logger.info("###Tracing Result, invoke costs time: " + (endTime - startTime));
+        // end invoke
+        // 恢复parent span
+        attachments.put(SPAN_KEY, parentSpan);
         return result;
     }
 }

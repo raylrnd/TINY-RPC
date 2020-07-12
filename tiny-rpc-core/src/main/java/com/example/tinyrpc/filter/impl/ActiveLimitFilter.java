@@ -17,12 +17,13 @@ import org.slf4j.LoggerFactory;
 public class ActiveLimitFilter implements Filter {
 
     private static final Logger logger = LoggerFactory.getLogger(ActiveLimitFilter.class);
+
     @Override
     public Object invoke(Invoker invoker, Invocation invocation) throws Exception{
+        logger.info("###ActiveLimitFilter start filtering invocation" + JSON.toJSONString(invocation));
         URL url = invocation.getUrl();
         Object result;
         try {
-            logger.info("starting,incCount...,{}", invocation);
             RpcStatus.beginCount(url);
             result = invoker.invoke(invocation);
         } catch (Exception e) {
@@ -30,7 +31,7 @@ public class ActiveLimitFilter implements Filter {
             RpcStatus.endCount(url);
             throw e;
         }
-        logger.info("finished,decCount...,{}", invocation);
+        logger.info("###ActiveLimitFilter finished, decCount");
         RpcStatus.endCount(url);
         return result;
     }
