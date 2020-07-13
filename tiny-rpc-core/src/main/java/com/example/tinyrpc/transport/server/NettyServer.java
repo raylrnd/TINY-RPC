@@ -17,6 +17,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import io.netty.handler.timeout.IdleStateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +58,7 @@ public class NettyServer extends AbstractEndpoint implements Server {
                             protected void initChannel(SocketChannel ch) {
 //                            插入到ChannelHandlerContext这个双链表当中
                                 ch.pipeline()
+                                        .addLast("IdleStateHandler", new IdleStateHandler(Constants.HEART_BEAT_TIME_OUT_MAX_TIME * Constants.HEART_BEAT_TIME_OUT, 0, 0))
                                         .addLast(new Encoder())
                                         .addLast("LengthFieldBasedFrameDecoder", new LengthFieldBasedFrameDecoder(MAX_FRAME_LENGTH, LENGTH_FIELD_OFFSET, LENGTH_FIELD_LENGTH, LENGTH_ADJUSTMENT, INITIAL_BYTES_TO_STRIP))
                                         .addLast(new Decoder())

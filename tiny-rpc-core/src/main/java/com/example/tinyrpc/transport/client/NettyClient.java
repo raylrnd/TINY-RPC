@@ -3,6 +3,7 @@ package com.example.tinyrpc.transport.client;
 import com.alibaba.fastjson.JSON;
 import com.example.tinyrpc.codec.Decoder;
 import com.example.tinyrpc.codec.Encoder;
+import com.example.tinyrpc.common.domain.Constants;
 import com.example.tinyrpc.common.domain.Request;
 import com.example.tinyrpc.common.domain.Response;
 import com.example.tinyrpc.common.domain.RpcContext;
@@ -21,6 +22,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import io.netty.handler.timeout.IdleStateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,6 +69,7 @@ public class NettyClient extends AbstractEndpoint implements Client {
                     protected void initChannel(SocketChannel ch) {
                         //Encoder: netty自带编码器，可以自动将长度加到头部
                         ch.pipeline()
+                                .addLast("IdleStateHandler", new IdleStateHandler(Constants.HEART_BEAT_TIME_OUT_MAX_TIME * Constants.HEART_BEAT_TIME_OUT, 0, 0))
                                 //Encoder: message to byte
                                 .addLast(new Encoder())
                                 .addLast("LengthFieldBasedFrameDecoder", new LengthFieldBasedFrameDecoder(MAX_FRAME_LENGTH, LENGTH_FIELD_OFFSET, LENGTH_FIELD_LENGTH, LENGTH_ADJUSTMENT, INITIAL_BYTES_TO_STRIP))

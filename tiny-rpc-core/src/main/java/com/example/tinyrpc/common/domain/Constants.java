@@ -19,4 +19,8 @@ public interface Constants {
     String EXTERNAL_PATH = "META-INF/TINY-RPC";
 
     String DEFAULT_SERIALIATION = "protostuff";
+
+    int HEART_BEAT_TIME_OUT = 20;
+
+    int HEART_BEAT_TIME_OUT_MAX_TIME = 3;
 }
