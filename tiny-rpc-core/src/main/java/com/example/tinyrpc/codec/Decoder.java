@@ -37,9 +37,6 @@ import java.util.List;
  *  -----------
  * | Data                                 // 支持变长格式
  */
-// 如果是Client，接收到的入站消息应该是response，直接将response移交给上层
-// 如果是Server，接收到的入站消息应该是request，利用反射得到RPC调用结果，然后发送给Client端
-// 如果req == 1, 应该移交给Client端进行处理。考虑到一台机器可能同时有client和server
 public class Decoder extends ByteToMessageDecoder implements Codec{
 
     private static final Logger logger = LoggerFactory.getLogger(Decoder.class);
@@ -78,14 +75,12 @@ public class Decoder extends ByteToMessageDecoder implements Codec{
             Request request = new Request(requestId, serializationId);
             request.setEvent(event);
             Invocation data = serialization.deserialize(body, Invocation.class);
-//            Invocation data = new ProtostuffSerialization().deserialize(body, Invocation.class);
             request.setData(data);
             out.add(request);
         } else {
             Response response = new Response(requestId);
             response.setEvent(event);
             ResponseBody responseBody = serialization.deserialize(body, ResponseBody.class);
-//            ResponseBody responseBody = new ProtostuffSerialization().deserialize(body, ResponseBody.class);
             response.setResponseBody(responseBody);
             out.add(response);
         }
