@@ -9,10 +9,7 @@ import com.example.tinyrpc.protocol.Invoker;
 import com.example.tinyrpc.transport.AbstractEndpoint;
 import com.example.tinyrpc.transport.Server;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -64,7 +61,13 @@ public class NettyServer extends AbstractEndpoint implements Server {
                                         .addLast(new Decoder())
                                         .addLast(new ServerHandler(NettyServer.this));
                             }
-                        });
+                        })
+                        .option(ChannelOption.SO_BACKLOG, 128)
+                        //指定发送缓冲区大小
+                        .option(ChannelOption.SO_SNDBUF, 32 * 1024)
+                        //指定接收缓冲区大小
+                        .option(ChannelOption.SO_RCVBUF, 32 * 1024)
+                        .option(ChannelOption.TCP_NODELAY, true);
                 String[] ipAndPort = address.trim().split(":");
                 ChannelFuture future = bootstrap.bind(ipAndPort[0], Integer.valueOf(ipAndPort[1])).sync();
                 channel = future.channel();

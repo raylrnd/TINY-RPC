@@ -19,7 +19,6 @@ import java.util.concurrent.*;
  * @auther zhongshunchao
  * @date 27/06/2020 18:07
  * dubbo中的@SPI注解：可以认为是定义默认实现类。如果在@Reference中没有定义，则使用@SPI注解中定义的value。
- * 这里为了简化设计，没有用@SPI，而是在@Reference里定义了默认的扩展点名。
  * 该类在BeanPostProcessor中首次生成，因此会在Spring IOC 容器初始化时加载扩展点而不是真正的请求调用阶段
  * 先把用户自定义的类全部先加载到内存缓存，如果再缓存中找不到，再使用延迟加载策略加载系统内部定义的加载器。(注意：项目的路径不能包含中文名)
  */
@@ -218,11 +217,13 @@ public class ExtensionLoader {
     }
     public List<Filter> buidFilterChain(String[] filters, int side) {
         List<Filter> filterList = new ArrayList<>();
+        // 加载默认的Filter Chain
         if (side == Constants.CLIENT_SIDE) {
             filterList.addAll(defaultClientFilterList);
         } else {
             filterList.addAll(defaultServerFilterList);
         }
+        // 加载用户自定义的Filter Chain
         if (filters != null) {
             List<Filter> newFilterList = new ArrayList<>();
             for (String filter : filters) {

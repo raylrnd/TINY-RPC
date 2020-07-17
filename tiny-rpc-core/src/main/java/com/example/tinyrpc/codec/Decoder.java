@@ -78,14 +78,12 @@ public class Decoder extends ByteToMessageDecoder implements Codec{
             Request request = new Request(requestId, serializationId);
             request.setEvent(event);
             Invocation data = serialization.deserialize(body, Invocation.class);
-//            Invocation data = new ProtostuffSerialization().deserialize(body, Invocation.class);
             request.setData(data);
             out.add(request);
         } else {
             Response response = new Response(requestId);
             response.setEvent(event);
             ResponseBody responseBody = serialization.deserialize(body, ResponseBody.class);
-//            ResponseBody responseBody = new ProtostuffSerialization().deserialize(body, ResponseBody.class);
             response.setResponseBody(responseBody);
             out.add(response);
         }
