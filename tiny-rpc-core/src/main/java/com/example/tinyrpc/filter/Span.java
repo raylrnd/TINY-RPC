@@ -8,8 +8,8 @@ import java.io.Serializable;
  */
 public class Span implements Serializable {
     private long traceId;                                   // 一次请求的全局唯一id
-    private String spanId = "0";                                    // 调用关系id, 标识一次trace中的某一次rpc调用, 签名方式命名, EG : 0, 0.1, 0.2, 01.1
-    private transient int currentSpanNum = 1;            // 标识分配到了第几个span, 用于生成调用下游的spanId
+    private String spanId;                                    // 调用关系id, 标识一次trace中的某一次rpc调用, 签名方式命名, EG : 0, 0.1, 0.2, 01.1
+    private int currentSpanNum = 1;            // 标识分配到了第几个span, 用于生成调用下游的spanId
     private String spanName;                                   // 调用接口的Class Name + "." + Method Name
 //    private transient Span parentSpan;                               // 上游的span
     /**
@@ -23,19 +23,28 @@ public class Span implements Serializable {
     private String status;
     private boolean async = true;                                  // 异步标识
 
-    public Span(long traceId, String remoteAddress, String spanName, int side) {
+    public Span(long traceId, String remoteAddress, String spanName, int side, String spanId) {
         this.traceId = traceId;
         this.remoteAddress = remoteAddress;
         this.spanName = spanName;
         this.side = side;
+        this.spanId = spanId;
     }
 
     public String getSpanId() {
         return spanId;
     }
 
-    public String incAndGetSpanid() {
-        return spanId + "." + currentSpanNum++;
+    public int getCurrentSpanNum() {
+        return currentSpanNum;
+    }
+
+    public void setCurrentSpanNum(int currentSpanNum) {
+        this.currentSpanNum = currentSpanNum;
+    }
+
+    public void incCurrentSpanNum() {
+        ++currentSpanNum;
     }
 
     public long getTraceId() {

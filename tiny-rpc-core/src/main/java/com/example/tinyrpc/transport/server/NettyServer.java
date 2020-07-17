@@ -61,13 +61,7 @@ public class NettyServer extends AbstractEndpoint implements Server {
                                         .addLast(new Decoder())
                                         .addLast(new ServerHandler(NettyServer.this));
                             }
-                        })
-                        .option(ChannelOption.SO_BACKLOG, 128)
-                        //指定发送缓冲区大小
-                        .option(ChannelOption.SO_SNDBUF, 32 * 1024)
-                        //指定接收缓冲区大小
-                        .option(ChannelOption.SO_RCVBUF, 32 * 1024)
-                        .option(ChannelOption.TCP_NODELAY, true);
+                        });
                 String[] ipAndPort = address.trim().split(":");
                 ChannelFuture future = bootstrap.bind(ipAndPort[0], Integer.valueOf(ipAndPort[1])).sync();
                 channel = future.channel();
