@@ -48,7 +48,7 @@ public class ReferenceBeanPostProcessor implements BeanPostProcessor {
                     try {
                         field.setAccessible(true);
                         ReferenceConfig referenceConfig = new ReferenceConfig();
-                        Object proxy = referenceConfig.getProxy(invocation);
+                        Object proxy = referenceConfig.get(invocation);
                         field.set(bean, proxy);
                     } catch (IllegalAccessException e) {
                         logger.error("Unable to set field", e);

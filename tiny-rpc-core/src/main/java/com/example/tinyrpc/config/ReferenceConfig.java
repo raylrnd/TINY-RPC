@@ -16,7 +16,7 @@ import com.example.tinyrpc.proxy.ProxyFactory;
  */
 public class ReferenceConfig {
 
-    public Object getProxy(Invocation invocation) {
+    public Object get(Invocation invocation) {
         URL url = invocation.getUrl();
         Protocol protocol = ExtensionLoader.getExtensionLoader().getExtension(Protocol.class, url.getProtocol());
         ProxyFactory proxyFactory = ExtensionLoader.getExtensionLoader().getExtension(ProxyFactory.class, url.getProxy());

@@ -92,7 +92,6 @@ public class NettyServer extends AbstractEndpoint implements Server {
                 invocation.setSide(Constants.SERVER_SIDE);
                 URL url = new URL();
                 url.setOneWay(request.isOneway());
-//            url.setSerialization(request.getSerializationId());
                 invocation.setUrl(url);
                 String className = invocation.getServiceName();
                 Invoker invoker = ServiceConfig.INVOKER_MAP.get(className);
