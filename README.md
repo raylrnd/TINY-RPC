@@ -31,7 +31,7 @@ Zookeeper中的节点格式为
    | 未来的Feature                                        |
    | ---------------------------------------------------- |
    | 添加Netty长连接，添加心跳策略，实现断线重连          |
-   | 添加javaasssist，代替原有的JDK动态代理，减少反射开销 |
+   | 添加javassist，代替原有的JDK动态代理，减少反射开销 |
    | 添加FailOver,FailFast等多种集群容错                  |
    | 支持callback回调                                     |
    | 实现多种协议，如HTTP                                 |
