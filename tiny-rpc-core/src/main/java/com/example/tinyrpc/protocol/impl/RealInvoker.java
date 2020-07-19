@@ -1,10 +1,7 @@
 package com.example.tinyrpc.protocol.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.example.tinyrpc.common.domain.Invocation;
-import com.example.tinyrpc.common.domain.Request;
-import com.example.tinyrpc.common.domain.RpcContext;
-import com.example.tinyrpc.common.domain.URL;
+import com.example.tinyrpc.common.domain.*;
 import com.example.tinyrpc.common.exception.BusinessException;
 import com.example.tinyrpc.common.utils.CodecSupport;
 import com.example.tinyrpc.common.utils.UUIDUtils;
@@ -64,7 +61,11 @@ public class RealInvoker implements Invoker {
             Object response = null;
             if (url.isAync()) {
                 RpcContext.getContext().setFuture(future);
+            } else if (url.isOneWay()) {
+                RpcContext.getContext().setFuture(null);
+                return new Response();
             } else {
+                RpcContext.getContext().setFuture(null);
                 try {
                     if (future != null) {
                         response = future.get(invocation.getTimeout(), TimeUnit.MILLISECONDS);

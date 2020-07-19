@@ -6,15 +6,13 @@ import com.example.tinyrpc.filter.RpcStatus;
 import com.example.tinyrpc.protocol.Invoker;
 
 import java.util.List;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * 基于权重的最小活跃数算法：活跃调用数越小，表明该服务提供者效率越高，单位时间内可处理更多的请求。此时应优先将请求分配给该服务提供者。
  *
  */
 public class LeastActiveLoadBalance implements LoadBalance {
-
-    private final Random random = new Random();
 
     @Override
     public Invoker select(List<Invoker> invokers) {
@@ -54,7 +52,7 @@ public class LeastActiveLoadBalance implements LoadBalance {
         // 在相同最小或约数中按总权重数随机
         if (! sameWeight && totalWeight > 0) {
             // 如果权重不相同且权重大于0则按总权重数随机
-            int offsetWeight = random.nextInt(totalWeight);
+            int offsetWeight = ThreadLocalRandom.current().nextInt(totalWeight);
             // 并确定随机值落在哪个片断上
             for (int i = 0; i < leastCount; i++) {
                 int leastIndex = leastIndexs[i];
@@ -64,6 +62,6 @@ public class LeastActiveLoadBalance implements LoadBalance {
             }
         }
         // 如果权重相同或权重为0则均等随机
-        return invokers.get(leastIndexs[random.nextInt(leastCount)]);
+        return invokers.get(leastIndexs[ThreadLocalRandom.current().nextInt(leastCount)]);
     }
 }

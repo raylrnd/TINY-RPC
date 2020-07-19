@@ -2,6 +2,7 @@ package com.example.tinyrpc.filter.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.example.tinyrpc.common.domain.Constants;
 import com.example.tinyrpc.common.domain.Invocation;
 import com.example.tinyrpc.common.domain.RpcContext;
 import com.example.tinyrpc.common.domain.URL;
@@ -42,21 +43,22 @@ public class TraceFilter implements Filter {
         String spanName = invocation.getServiceName() + "#" + invocation.getMethodName();
         Span curSpan;
         if (parentSpan == null) {
-            curSpan = new Span(UUIDUtils.getUUID(), url.getAddress(), spanName, invocation.getSide());
-            curSpan.setSpanId("0");
+            curSpan = new Span(UUIDUtils.getUUID(), url.getAddress(), spanName, invocation.getSide(), "0");
+            parentSpan = curSpan;
+            parentSpan.incCurrentSpanNum();
+            logger.warn("###Tracing Result, curSpan == {}, thread id == {}", JSON.toJSONString(curSpan), Thread.currentThread().getId());
         } else {
-            String currentSpanNum = parentSpan.incAndGetSpanid();
-            curSpan = new Span(parentSpan.getTraceId(), url.getAddress(), spanName, invocation.getSide());
-            curSpan.setSpanId(currentSpanNum);
-            logger.warn("###Tracing Result, parentSpan == {}, thread id == {}", JSON.toJSONString(parentSpan), Thread.currentThread().getId());
+            curSpan = new Span(parentSpan.getTraceId(), url.getAddress(), spanName, invocation.getSide(), parentSpan.getSpanId() + "." + parentSpan.getCurrentSpanNum());
+            if (invocation.getSide() == Constants.SERVER_SIDE) {
+                logger.warn("###Tracing Result, curSpan == {}, thread id == {}", JSON.toJSONString(curSpan), Thread.currentThread().getId());
+            } else {
+                parentSpan.incCurrentSpanNum();
+                curSpan = parentSpan;
+            }
         }
         attachments.put(SPAN_KEY, curSpan);
-        logger.warn("###Tracing Result, curSpan == {}, thread id == {}", JSON.toJSONString(curSpan), Thread.currentThread().getId());
         // start invoke
-        long startTime = System.currentTimeMillis();
         Object result = invoker.invoke(invocation);
-        long endTime = System.currentTimeMillis();
-        logger.warn("###Tracing Result, invoke costs time: " + (endTime - startTime));
         // end invoke
         // 恢复parent span
         attachments.put(SPAN_KEY, parentSpan);

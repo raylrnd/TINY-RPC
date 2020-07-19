@@ -68,10 +68,6 @@ public class Response implements Serializable {
 
     private ResponseBody responseBody;
 
-    public Response(long requestId) {
-        this.requestId = requestId;
-    }
-
     public void setStatus(byte status) {
         this.status = status;
     }

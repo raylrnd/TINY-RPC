@@ -68,8 +68,9 @@ public class URL {
         return aync;
     }
 
-    public void setAync(boolean aync) {
+    public URL setAync(boolean aync) {
         this.aync = aync;
+        return this;
     }
 
     public long getTimeout() {
@@ -189,8 +190,9 @@ public class URL {
         return registry;
     }
 
-    public void setRegistry(String registry) {
+    public URL setRegistry(String registry) {
         this.registry = registry;
+        return this;
     }
 
     public Object getRef() {

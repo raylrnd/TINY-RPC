@@ -9,10 +9,7 @@ import com.example.tinyrpc.protocol.Invoker;
 import com.example.tinyrpc.transport.AbstractEndpoint;
 import com.example.tinyrpc.transport.Server;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -90,12 +87,12 @@ public class NettyServer extends AbstractEndpoint implements Server {
                 Request request = (Request) msg;
                 //调用代理，通过反射的方式调用本地jvm中的方法
                 long requestId = request.getRequestId();
-                Response response = new Response(requestId);
+                Response response = new Response();
+                response.setRequestId(requestId);
                 Invocation invocation = request.getData();
                 invocation.setSide(Constants.SERVER_SIDE);
                 URL url = new URL();
                 url.setOneWay(request.isOneway());
-//            url.setSerialization(request.getSerializationId());
                 invocation.setUrl(url);
                 String className = invocation.getServiceName();
                 Invoker invoker = ServiceConfig.INVOKER_MAP.get(className);

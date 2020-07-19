@@ -33,7 +33,10 @@ public class ZkServiceRegistry implements Registry {
 
     private static final ZkSupport ZK_SUPPORT = new ZkSupport();
 
-    //本地缓存的Zookeeper的全量信息。无法连接Zookeeper时，可以从该缓存中获取地址。每次调用updateAddress()时被更新
+    /**
+     * serviceName -> addressList
+     * 本地缓存的Zookeeper的全量信息。无法连接Zookeeper时，可以从该缓存中获取地址。每次调用updateAddress()时被更新
+     */
     private static final Map<String, Set<String>> SERVICE_URL_MAP = new ConcurrentHashMap<>();
 
     // 初始化时拉取全量的数据，dubbo把Zookeeper中所有服务的地址都拉取过来并持久化到硬盘,这里为了实现方便，不持久化到硬盘
