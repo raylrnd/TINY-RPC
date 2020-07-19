@@ -81,7 +81,8 @@ public class Decoder extends ByteToMessageDecoder implements Codec{
             request.setData(data);
             out.add(request);
         } else {
-            Response response = new Response(requestId);
+            Response response = new Response();
+            response.setRequestId(requestId);
             response.setEvent(event);
             ResponseBody responseBody = serialization.deserialize(body, ResponseBody.class);
             response.setResponseBody(responseBody);

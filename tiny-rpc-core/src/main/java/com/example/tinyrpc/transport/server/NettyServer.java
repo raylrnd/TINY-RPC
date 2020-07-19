@@ -87,7 +87,8 @@ public class NettyServer extends AbstractEndpoint implements Server {
                 Request request = (Request) msg;
                 //调用代理，通过反射的方式调用本地jvm中的方法
                 long requestId = request.getRequestId();
-                Response response = new Response(requestId);
+                Response response = new Response();
+                response.setRequestId(requestId);
                 Invocation invocation = request.getData();
                 invocation.setSide(Constants.SERVER_SIDE);
                 URL url = new URL();
