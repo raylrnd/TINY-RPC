@@ -24,8 +24,12 @@ public class ActiveLimitFilter implements Filter {
         URL url = invocation.getUrl();
         Object result;
         try {
-            RpcStatus.beginCount(url);
-            result = invoker.invoke(invocation);
+            if(RpcStatus.beginCount(url)) {
+                result = invoker.invoke(invocation);
+            } else {
+                logger.warn(">>>the connect num is more than permitted actives!");
+                return null;
+            }
         } catch (Exception e) {
             logger.error("###ActiveLimitFiltercatch exception, decCount...,{}", JSON.toJSONString(invocation));
             RpcStatus.endCount(url);

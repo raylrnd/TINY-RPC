@@ -42,7 +42,7 @@ public class RpcStatus {
         int i;
         do {
             i = methodStatus.active.get();
-            if (i + 1 > max) {
+            if (i > max) {
                 return false;
             }
         } while (!methodStatus.active.compareAndSet(i, i + 1));
