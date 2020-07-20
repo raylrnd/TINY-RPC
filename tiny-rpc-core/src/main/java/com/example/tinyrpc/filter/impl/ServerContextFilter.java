@@ -31,6 +31,11 @@ public class ServerContextFilter implements Filter {
                 RpcContext.getContext().setAttachments(attachments);
             }
         }
-        return invoker.invoke(invocation);
+        try {
+            return invoker.invoke(invocation);
+        } finally {
+            RpcContext.removeContext();
+        }
+
     }
 }

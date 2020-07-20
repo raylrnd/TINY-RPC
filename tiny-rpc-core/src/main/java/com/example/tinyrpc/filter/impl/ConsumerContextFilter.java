@@ -24,6 +24,11 @@ public class ConsumerContextFilter implements Filter {
         logger.info("###ConsumerContextFilter start filtering invocation" + JSON.toJSONString(invocation));
         invocation.setSide(CLIENT_SIDE);
         RpcContext.getContext().setInvocation(invocation);
-        return invoker.invoke(invocation);
+        try {
+            return invoker.invoke(invocation);
+        } finally {
+            RpcContext.removeContext();
+        }
+
     }
 }
